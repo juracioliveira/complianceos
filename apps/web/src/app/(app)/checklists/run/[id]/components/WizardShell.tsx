@@ -117,7 +117,7 @@ export default function WizardShell({ checklistId, entityId }: WizardShellProps)
                 <div className="card p-0 overflow-hidden min-h-[500px] flex flex-col">
                     {/* Section Header */}
                     <div className="p-6 border-b border-border bg-muted/20 flex items-center justify-between">
-                        <h2 className="text-xl font-bold">{sections[currentSection].title}</h2>
+                        <h2 className="text-xl font-bold">{sections[currentSection]?.title || 'Finalizando...'}</h2>
                         <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
                             {isSaving ? (
                                 <span className="flex items-center gap-1.5 animate-pulse text-primary">
