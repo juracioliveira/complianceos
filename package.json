@@ -1,0 +1,41 @@
+{
+  "name": "compliance-os",
+  "version": "1.0.0",
+  "private": true,
+  "description": "ComplianceOS — SaaS de Compliance & Governança | Chuangxin Tecnologia",
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "test:integration": "turbo run test:integration",
+    "test:e2e": "turbo run test:e2e",
+    "test:coverage": "turbo run test:coverage",
+    "format": "prettier --write \"**/*.{ts,tsx,md,json}\" --ignore-path .gitignore",
+    "clean": "turbo run clean && rimraf node_modules",
+    "audit": "pnpm audit --audit-level moderate",
+    "db:migrate": "pnpm --filter=@compliance-os/api db:migrate",
+    "db:migrate:create": "pnpm --filter=@compliance-os/api db:migrate:create",
+    "db:migrate:status": "pnpm --filter=@compliance-os/api db:migrate:status",
+    "db:migrate:rollback": "pnpm --filter=@compliance-os/api db:migrate:rollback",
+    "db:seed": "pnpm --filter=@compliance-os/api db:seed",
+    "db:reset": "pnpm --filter=@compliance-os/api db:reset",
+    "db:studio": "pnpm --filter=@compliance-os/api db:studio"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "devDependencies": {
+    "prettier": "^3.2.5",
+    "rimraf": "^5.0.5",
+    "turbo": "^1.13.4",
+    "typescript": "^5.4.5"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "packageManager": "pnpm@8.15.6"
+}

@@ -1,0 +1,45 @@
+{
+    "name": "@compliance-os/sanctions-service",
+    "version": "1.0.0",
+    "description": "API REST para screening de sanções internacionais",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "dev": "tsx watch src/server.ts",
+        "build": "tsup src/server.ts --format esm --clean",
+        "start": "node dist/server.js",
+        "typecheck": "tsc --noEmit",
+        "lint": "eslint src --ext .ts",
+        "test": "vitest run tests/unit",
+        "test:integration": "vitest run tests/integration",
+        "sync:run": "tsx src/jobs/sync.job.ts",
+        "db:migrate": "tsx src/db/migrate.ts"
+    },
+    "dependencies": {
+        "@fastify/rate-limit": "^9.1.0",
+        "bullmq": "^5.4.2",
+        "dotenv": "^16.4.5",
+        "drizzle-orm": "^0.30.10",
+        "fast-xml-parser": "^4.3.6",
+        "fastify": "^4.27.0",
+        "got": "^14.2.1",
+        "ioredis": "^5.3.2",
+        "lodash-es": "^4.17.21",
+        "pg": "^8.11.5",
+        "pino": "^9.1.0",
+        "zod": "^3.23.8"
+    },
+    "devDependencies": {
+        "@testcontainers/postgresql": "^10.7.2",
+        "@testcontainers/redis": "^10.7.2",
+        "@types/lodash-es": "^4.17.12",
+        "@types/node": "^20.12.12",
+        "@types/pg": "^8.11.6",
+        "drizzle-kit": "^0.20.18",
+        "testcontainers": "^10.7.2",
+        "tsup": "^8.0.2",
+        "tsx": "^4.10.5",
+        "typescript": "^5.4.5",
+        "vitest": "^1.6.0"
+    }
+}

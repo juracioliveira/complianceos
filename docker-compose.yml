@@ -1,0 +1,72 @@
+version: '3.9'
+
+services:
+  # ────────────────────────────────────────
+  # PostgreSQL 16 — banco principal
+  # ────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: compliance-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: compliance
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres_dev_password
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=pt_BR.UTF-8"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./apps/api/src/infra/db/init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d compliance"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - compliance-net
+
+  # ────────────────────────────────────────
+  # Redis 7.2 — cache, sessões e filas
+  # ────────────────────────────────────────
+  redis:
+    image: redis:7.2-alpine
+    container_name: compliance-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass ""
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - compliance-net
+
+  # ────────────────────────────────────────
+  # MailHog — servidor SMTP de dev (captura emails)
+  # Acesso UI: http://localhost:8025
+  # ────────────────────────────────────────
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: compliance-mailhog
+    restart: unless-stopped
+    ports:
+      - "1025:1025"   # SMTP
+      - "8025:8025"   # Web UI
+    networks:
+      - compliance-net
+
+volumes:
+  postgres_data:
+    name: compliance-postgres-data
+  redis_data:
+    name: compliance-redis-data
+
+networks:
+  compliance-net:
+    name: compliance-network
+    driver: bridge

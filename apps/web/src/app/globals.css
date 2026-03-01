@@ -1,0 +1,372 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 220 30% 97%;
+    --foreground: 222 25% 10%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 25% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 25% 10%;
+    --primary: 221 83% 53%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 16% 94%;
+    --secondary-foreground: 220 20% 30%;
+    --muted: 220 16% 94%;
+    --muted-foreground: 220 14% 52%;
+    --accent: 220 20% 91%;
+    --accent-foreground: 220 25% 18%;
+    --destructive: 0 84% 50%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 16% 89%;
+    --input: 220 16% 89%;
+    --ring: 221 83% 53%;
+    --radius: 0.625rem;
+    --sidebar-width: 240px;
+  }
+
+  .dark {
+    --background: 222 28% 7%;
+    --foreground: 210 20% 94%;
+    --card: 222 25% 11%;
+    --card-foreground: 210 20% 94%;
+    --popover: 222 25% 11%;
+    --popover-foreground: 210 20% 94%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 222 84% 8%;
+    --secondary: 222 22% 16%;
+    --secondary-foreground: 210 18% 72%;
+    --muted: 222 22% 16%;
+    --muted-foreground: 210 15% 52%;
+    --accent: 222 24% 18%;
+    --accent-foreground: 210 18% 86%;
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 222 22% 18%;
+    --input: 222 22% 18%;
+    --ring: 217 91% 60%;
+  }
+
+  * {
+    @apply border-border box-border;
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11", "ss01";
+  }
+
+  /* Scrollbar fina e elegante */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--border)) transparent;
+  }
+
+  ::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply rounded-full;
+    background: hsl(var(--border));
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground));
+  }
+
+  /* Foco acessível */
+  *:focus-visible {
+    @apply outline-none ring-2 ring-ring ring-offset-1 ring-offset-background;
+  }
+
+  ::selection {
+    @apply bg-primary/20 text-foreground;
+  }
+}
+
+@layer components {
+
+  /* ─── Risk Badges ─────────────────────────────────────────────────── */
+  .risk-badge {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold tracking-wide whitespace-nowrap;
+  }
+
+  .risk-low {
+    @apply bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400;
+  }
+
+  .risk-medium {
+    @apply bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-400;
+  }
+
+  .risk-high {
+    @apply bg-orange-50 text-orange-700 dark:bg-orange-950/60 dark:text-orange-400;
+  }
+
+  .risk-critical {
+    @apply bg-red-50 text-red-700 dark:bg-red-950/60 dark:text-red-400;
+  }
+
+  .risk-unknown {
+    @apply bg-slate-100 text-slate-500 dark:bg-slate-800/60 dark:text-slate-400;
+  }
+
+  /* ─── Cards ──────────────────────────────────────────────────────── */
+  .card {
+    @apply bg-card rounded-xl border border-border;
+  }
+
+  .card-hover {
+    @apply transition-all duration-200 hover:shadow-md hover:-translate-y-px;
+  }
+
+  /* ─── Sidebar ────────────────────────────────────────────────────── */
+  .sidebar {
+    @apply bg-white dark:bg-zinc-900 border-r border-border flex flex-col;
+    width: var(--sidebar-width);
+    flex-shrink: 0;
+  }
+
+  .nav-item {
+    @apply flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground transition-all duration-150 cursor-pointer select-none;
+  }
+
+  .nav-item:hover {
+    @apply bg-accent text-accent-foreground;
+  }
+
+  .nav-item-active {
+    @apply bg-primary/10 text-primary dark:bg-primary/20;
+  }
+
+  /* ─── Inputs ─────────────────────────────────────────────────────── */
+  .input-field {
+    @apply w-full px-3.5 py-2.5 text-sm bg-background border border-input rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent transition-all duration-150;
+  }
+
+  /* ─── Buttons ────────────────────────────────────────────────────── */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-150 cursor-pointer select-none disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-primary {
+    @apply btn bg-primary text-primary-foreground hover:bg-primary/90 active:scale-[.98] shadow-sm;
+  }
+
+  .btn-secondary {
+    @apply btn bg-secondary text-secondary-foreground hover:bg-accent active:scale-[.98];
+  }
+
+  .btn-ghost {
+    @apply btn text-muted-foreground hover:bg-accent hover:text-accent-foreground;
+  }
+
+  .btn-destructive {
+    @apply btn bg-destructive text-destructive-foreground hover:bg-destructive/90;
+  }
+
+  .btn-sm {
+    @apply px-3 py-1.5 text-xs rounded-md;
+  }
+
+  .btn-lg {
+    @apply px-6 py-3 text-base;
+  }
+
+  /* ─── Status / KYC badges ────────────────────────────────────────── */
+  .badge {
+    @apply inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium;
+  }
+
+  .badge-green {
+    @apply bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400;
+  }
+
+  .badge-amber {
+    @apply bg-amber-50 text-amber-700 dark:bg-amber-950/50 dark:text-amber-400;
+  }
+
+  .badge-blue {
+    @apply bg-blue-50 text-blue-700 dark:bg-blue-950/50 dark:text-blue-400;
+  }
+
+  .badge-red {
+    @apply bg-red-50 text-red-700 dark:bg-red-950/50 dark:text-red-400;
+  }
+
+  .badge-slate {
+    @apply bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400;
+  }
+
+  /* ─── Table ──────────────────────────────────────────────────────── */
+  .data-table {
+    @apply w-full text-sm;
+  }
+
+  .data-table thead tr {
+    @apply border-b border-border bg-muted/40;
+  }
+
+  .data-table thead th {
+    @apply px-4 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider;
+  }
+
+  .data-table tbody tr {
+    @apply border-b border-border/60 hover:bg-muted/30 transition-colors cursor-pointer;
+  }
+
+  .data-table tbody td {
+    @apply px-4 py-3;
+  }
+
+  /* ─── Page header ────────────────────────────────────────────────── */
+  .page-header {
+    @apply flex items-start justify-between mb-6;
+  }
+
+  .page-title {
+    @apply text-2xl font-bold text-foreground;
+  }
+
+  .page-subtitle {
+    @apply text-sm text-muted-foreground mt-0.5;
+  }
+
+  /* ─── Stat card ──────────────────────────────────────────────────── */
+  .stat-card {
+    @apply card card-hover p-5;
+  }
+
+  .stat-value {
+    @apply text-3xl font-bold text-foreground leading-none mt-1;
+  }
+
+  .stat-label {
+    @apply text-xs font-semibold text-muted-foreground uppercase tracking-wider;
+  }
+
+  .stat-sub {
+    @apply text-xs text-muted-foreground mt-1;
+  }
+
+  /* ─── Progress bar ───────────────────────────────────────────────── */
+  .progress-bar {
+    @apply w-full bg-muted rounded-full overflow-hidden;
+    height: 6px;
+  }
+
+  .progress-fill {
+    @apply h-full rounded-full transition-all duration-500;
+  }
+
+  /* ─── Alert banner ───────────────────────────────────────────────── */
+  .alert {
+    @apply flex items-start gap-3 p-3 rounded-lg border text-sm;
+  }
+
+  .alert-critical {
+    @apply bg-red-50 border-red-200 text-red-800 dark:bg-red-950/40 dark:border-red-900 dark:text-red-300;
+  }
+
+  .alert-warning {
+    @apply bg-amber-50 border-amber-200 text-amber-800 dark:bg-amber-950/40 dark:border-amber-900 dark:text-amber-300;
+  }
+
+  .alert-info {
+    @apply bg-blue-50 border-blue-200 text-blue-800 dark:bg-blue-950/40 dark:border-blue-900 dark:text-blue-300;
+  }
+
+  .alert-success {
+    @apply bg-emerald-50 border-emerald-200 text-emerald-800 dark:bg-emerald-950/40 dark:border-emerald-900 dark:text-emerald-300;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Grid helper */
+  .grid-auto-fill-280 {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+
+  /* Fade in */
+  .animate-fade-in {
+    animation: fadeIn 0.25s ease-out both;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Slide in from left */
+  .animate-slide-left {
+    animation: slideLeft 0.3s ease-out both;
+  }
+
+  @keyframes slideLeft {
+    from {
+      opacity: 0;
+      transform: translateX(-16px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  /* Skeleton loading */
+  .skeleton {
+    @apply bg-muted rounded animate-pulse;
+  }
+
+  /* Gradiente texto */
+  .text-gradient {
+    @apply bg-gradient-to-r from-primary to-blue-400 bg-clip-text text-transparent;
+  }
+
+  /* Dot de status online */
+  .status-dot {
+    @apply w-2 h-2 rounded-full ring-2 ring-background;
+  }
+
+  .status-online {
+    @apply bg-emerald-500;
+  }
+
+  .status-warning {
+    @apply bg-amber-500;
+  }
+
+  .status-critical {
+    @apply bg-red-500 animate-pulse;
+  }
+}

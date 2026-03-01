@@ -1,0 +1,34 @@
+{
+    "name": "@compliance-os/types",
+    "version": "1.0.0",
+    "description": "Tipos TypeScript compartilhados do ComplianceOS",
+    "main": "./dist/index.js",
+    "module": "./dist/index.mjs",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.mjs",
+            "require": "./dist/index.js"
+        }
+    },
+    "files": [
+        "dist"
+    ],
+    "scripts": {
+        "build": "tsup src/index.ts --format cjs,esm --dts --clean",
+        "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
+        "typecheck": "tsc --noEmit",
+        "lint": "eslint src --ext .ts",
+        "clean": "rimraf dist"
+    },
+    "devDependencies": {
+        "@types/node": "^20.12.12",
+        "rimraf": "^5.0.5",
+        "tsup": "^8.0.2",
+        "typescript": "^5.4.5"
+    },
+    "dependencies": {
+        "zod": "^3.23.8"
+    }
+}

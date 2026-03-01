@@ -1,0 +1,386 @@
+{
+  "id": "a4fb5bff-43ba-40e2-b20a-72ae89866a5c",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "5",
+  "dialect": "pg",
+  "tables": {
+    "sanctions_entities": {
+      "name": "sanctions_entities",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "source": {
+          "name": "source",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "source_id": {
+          "name": "source_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "entity_type": {
+          "name": "entity_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name_primary": {
+          "name": "name_primary",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "names_aliases": {
+          "name": "names_aliases",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'{}'"
+        },
+        "name_normalized": {
+          "name": "name_normalized",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "dob": {
+          "name": "dob",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "dob_raw": {
+          "name": "dob_raw",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "nationalities": {
+          "name": "nationalities",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'{}'"
+        },
+        "id_documents": {
+          "name": "id_documents",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'[]'"
+        },
+        "addresses": {
+          "name": "addresses",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'[]'"
+        },
+        "programs": {
+          "name": "programs",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'{}'"
+        },
+        "sanctions_type": {
+          "name": "sanctions_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "remarks": {
+          "name": "remarks",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "listed_at": {
+          "name": "listed_at",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "delisted_at": {
+          "name": "delisted_at",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "last_synced_at": {
+          "name": "last_synced_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "raw_data": {
+          "name": "raw_data",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "idx_sanctions_unique_source_id": {
+          "name": "idx_sanctions_unique_source_id",
+          "columns": [
+            "source",
+            "source_id"
+          ],
+          "isUnique": false
+        },
+        "idx_sanctions_name_fts": {
+          "name": "idx_sanctions_name_fts",
+          "columns": [
+            "name_primary"
+          ],
+          "isUnique": false
+        },
+        "idx_sanctions_name_trgm": {
+          "name": "idx_sanctions_name_trgm",
+          "columns": [
+            "name_normalized"
+          ],
+          "isUnique": false
+        },
+        "idx_sanctions_source": {
+          "name": "idx_sanctions_source",
+          "columns": [
+            "source",
+            "is_active"
+          ],
+          "isUnique": false
+        },
+        "idx_sanctions_active": {
+          "name": "idx_sanctions_active",
+          "columns": [
+            "is_active",
+            "entity_type"
+          ],
+          "isUnique": false
+        },
+        "idx_sanctions_synced": {
+          "name": "idx_sanctions_synced",
+          "columns": [
+            "last_synced_at"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "sanctions_sync_log": {
+      "name": "sanctions_sync_log",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "bigserial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "source": {
+          "name": "source",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "iniciado_em": {
+          "name": "iniciado_em",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "concluido_em": {
+          "name": "concluido_em",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "entities_before": {
+          "name": "entities_before",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "entities_after": {
+          "name": "entities_after",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "entities_added": {
+          "name": "entities_added",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "entities_removed": {
+          "name": "entities_removed",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "etag": {
+          "name": "etag",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "erro_msg": {
+          "name": "erro_msg",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "screening_results": {
+      "name": "screening_results",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "tenant_id": {
+          "name": "tenant_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "queried_by": {
+          "name": "queried_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "query_name": {
+          "name": "query_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "query_document": {
+          "name": "query_document",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "query_type": {
+          "name": "query_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "hits": {
+          "name": "hits",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'[]'"
+        },
+        "hit_count": {
+          "name": "hit_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "highest_score": {
+          "name": "highest_score",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "risk_level": {
+          "name": "risk_level",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "screened_at": {
+          "name": "screened_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "sources_checked": {
+          "name": "sources_checked",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "latency_ms": {
+          "name": "latency_ms",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "idx_screening_tenant": {
+          "name": "idx_screening_tenant",
+          "columns": [
+            "tenant_id",
+            "screened_at"
+          ],
+          "isUnique": false
+        },
+        "idx_screening_risk": {
+          "name": "idx_screening_risk",
+          "columns": [
+            "risk_level",
+            "screened_at"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

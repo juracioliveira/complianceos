@@ -1,0 +1,37 @@
+<svg width="500" height="150" viewBox="0 0 500 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Definições de Gradientes e Filtros -->
+  <defs>
+    <linearGradient id="brand_gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0047AB" />
+      <stop offset="100%" stop-color="#00AEEF" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.2" />
+    </filter>
+  </defs>
+
+  <!-- Ícone de Escudo/Símbolo de Governança -->
+  <g filter="url(#shadow)">
+    <!-- Base do Escudo -->
+    <path d="M40 20C40 20 40 35 40 45C40 75 75 95 75 95C75 95 110 75 110 45C110 35 110 20 110 20H40Z" fill="url(#brand_gradient)" />
+    
+    <!-- Checkmark Estilizado (Compliance) -->
+    <path d="M60 55L72 67L95 42" stroke="white" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" />
+    
+    <!-- Órbita de Dados/Tecnologia -->
+    <circle cx="75" cy="55" r="45" stroke="#00AEEF" stroke-width="2" stroke-dasharray="5 5" opacity="0.5" />
+  </g>
+
+  <!-- Texto ComplianceOS -->
+  <text x="130" y="85" font-family="Arial, Helvetica, sans-serif" font-weight="800" font-size="52" fill="#1A1A1A">
+    Compliance<tspan fill="url(#brand_gradient)">OS</tspan>
+  </text>
+  
+  <!-- Slogan/Subtexto (Escaped Ampersand) -->
+  <text x="132" y="110" font-family="Arial, Helvetica, sans-serif" font-weight="400" font-size="14" fill="#666" letter-spacing="2">
+    TRUST &amp; GOVERNANCE INFRASTRUCTURE
+  </text>
+  
+  <!-- Detalhe de Automação (Ponto Tecnológico) -->
+  <circle cx="435" cy="58" r="4" fill="#00AEEF" />
+</svg>
