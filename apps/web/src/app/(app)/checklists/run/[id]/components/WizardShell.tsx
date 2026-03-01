@@ -135,7 +135,7 @@ export default function WizardShell({ checklistId, entityId }: WizardShellProps)
 
                     <div className="p-8 flex-1">
                         <SectionRenderer
-                            sectionId={sections[currentSection].id}
+                            sectionId={sections[currentSection]?.id || 'registration'}
                             data={formData}
                             onChange={(data) => setFormData((curr: any) => ({ ...curr, ...data }))}
                         />
