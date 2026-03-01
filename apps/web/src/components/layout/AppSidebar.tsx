@@ -37,6 +37,11 @@ const NAV_GROUPS = [
 export function AppSidebar() {
     const pathname = usePathname()
 
+    const handleLogout = () => {
+        sessionStorage.removeItem('access_token')
+        window.location.href = '/login'
+    }
+
     return (
         <aside className="sidebar h-screen flex flex-col animate-slide-left">
             {/* Logo */}
@@ -91,7 +96,10 @@ export function AppSidebar() {
 
             {/* Tenant info + logout */}
             <div className="border-t border-border px-3 py-3 shrink-0">
-                <div className="flex items-center gap-2.5 px-2 py-2 rounded-lg hover:bg-accent transition-colors cursor-pointer group">
+                <div
+                    onClick={handleLogout}
+                    className="flex items-center gap-2.5 px-2 py-2 rounded-lg hover:bg-accent transition-colors cursor-pointer group"
+                >
                     <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center shrink-0">
                         <span className="text-xs font-bold text-white">AC</span>
                     </div>
