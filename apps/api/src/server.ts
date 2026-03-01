@@ -57,11 +57,13 @@ await app.register(fastifyCors, {
 })
 await app.register(fastifyRateLimit, { global: false, redis })
 
+const cleanB64 = (val?: string) => val ? val.replace(/["'\s]/g, '') : ''
+
 const privateKey = process.env['JWT_PRIVATE_KEY_BASE64']
-    ? Buffer.from(process.env['JWT_PRIVATE_KEY_BASE64'], 'base64').toString('utf8')
+    ? Buffer.from(cleanB64(process.env['JWT_PRIVATE_KEY_BASE64']), 'base64').toString('utf8')
     : 'dev_private_key'
 const publicKey = process.env['JWT_PUBLIC_KEY_BASE64']
-    ? Buffer.from(process.env['JWT_PUBLIC_KEY_BASE64'], 'base64').toString('utf8')
+    ? Buffer.from(cleanB64(process.env['JWT_PUBLIC_KEY_BASE64']), 'base64').toString('utf8')
     : 'dev_public_key'
 
 await app.register(fastifyJwt, {
