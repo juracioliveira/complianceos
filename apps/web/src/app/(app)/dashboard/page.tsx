@@ -113,7 +113,7 @@ export default function DashboardPage() {
                             <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
                                 {(() => {
                                     let accumulated = 0
-                                    return byRisk.map(({ count, color }) => {
+                                    return byRisk.map(({ count, color }: { count: number; color: string }) => {
                                         const pct = (count / totalEntidades) * 100
                                         const dashOffset = 100 - accumulated
                                         accumulated += pct
@@ -141,7 +141,7 @@ export default function DashboardPage() {
 
                     {/* Legenda */}
                     <div className="space-y-2">
-                        {byRisk.map((r) => (
+                        {byRisk.map((r: any) => (
                             <RiskBar key={r.level} {...r} total={totalEntidades} />
                         ))}
                     </div>
@@ -194,7 +194,7 @@ export default function DashboardPage() {
                         <a href="/audit" className="text-xs text-primary hover:underline">Ver audit trail →</a>
                     </div>
                     <div className="flex-1 space-y-0 divide-y divide-border/60">
-                        {recentActivities.map((a, i) => (
+                        {recentActivities.map((a: any, i: number) => (
                             <div key={i} className="py-3 first:pt-0 last:pb-0">
                                 <div className="flex items-start justify-between gap-2">
                                     <div className="min-w-0">
@@ -233,7 +233,7 @@ export default function DashboardPage() {
                             </tr>
                         </thead>
                         <tbody>
-                            {criticalEntities.map((e) => (
+                            {criticalEntities.map((e: any) => (
                                 <tr key={e.cnpj}>
                                     <td>
                                         <p className="font-medium text-foreground">{e.name}</p>
@@ -259,6 +259,67 @@ export default function DashboardPage() {
                     </table>
                 </div>
             </div>
+        </div>
+    )
+}
+
+// Componente KPI card
+function StatCard({
+    label, value, sub, icon: Icon, color, trend,
+}: {
+    label: string
+    value: number | string
+    sub?: string
+    icon: React.ElementType
+    color: 'red' | 'amber' | 'green' | 'blue'
+    trend?: { dir: 'up' | 'down' | 'flat'; text: string }
+}) {
+    const colors = {
+        red: { bg: 'bg-red-50 dark:bg-red-950/40', icon: 'text-red-600 dark:text-red-400', iconBg: 'bg-red-100 dark:bg-red-900/60' },
+        amber: { bg: 'bg-amber-50 dark:bg-amber-950/40', icon: 'text-amber-600 dark:text-amber-400', iconBg: 'bg-amber-100 dark:bg-amber-900/60' },
+        green: { bg: 'bg-emerald-50 dark:bg-emerald-950/40', icon: 'text-emerald-600 dark:text-emerald-400', iconBg: 'bg-emerald-100 dark:bg-emerald-900/60' },
+        blue: { bg: 'bg-blue-50 dark:bg-blue-950/40', icon: 'text-blue-600 dark:text-blue-400', iconBg: 'bg-blue-100 dark:bg-blue-900/60' },
+    }
+    const c = colors[color]
+
+    const TrendIcon = trend?.dir === 'up' ? TrendingUp : trend?.dir === 'down' ? TrendingDown : Minus
+    const trendColor = trend?.dir === 'up' ? 'text-red-500' : trend?.dir === 'down' ? 'text-emerald-500' : 'text-muted-foreground'
+
+    return (
+        <div className={`stat-card border-l-2 ${color === 'red' ? 'border-l-red-500' : color === 'amber' ? 'border-l-amber-500' : color === 'green' ? 'border-l-emerald-500' : 'border-l-blue-500'}`}>
+            <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                    <p className="stat-label">{label}</p>
+                    <p className="stat-value">{value}</p>
+                    {sub && <p className="stat-sub">{sub}</p>}
+                    {trend && (
+                        <div className={`flex items-center gap-1 mt-2 text-xs font-medium ${trendColor}`}>
+                            <TrendIcon className="w-3 h-3" />
+                            <span>{trend.text}</span>
+                        </div>
+                    )}
+                </div>
+                <div className={`w-10 h-10 rounded-xl shrink-0 flex items-center justify-center ${c.iconBg}`}>
+                    <Icon className={`w-5 h-5 ${c.icon}`} />
+                </div>
+            </div>
+        </div>
+    )
+}
+
+// Barra horizontal de risco
+function RiskBar({ level, count, total, color, label }: { level: string; count: number; total: number; color: string; label: string }) {
+    const pct = total > 0 ? (count / total) * 100 : 0
+    return (
+        <div className="flex items-center gap-3">
+            <span className="w-24 text-xs text-muted-foreground text-right shrink-0">{label}</span>
+            <div className="flex-1 progress-bar">
+                <div
+                    className="progress-fill"
+                    style={{ width: `${pct}%`, background: color }}
+                />
+            </div>
+            <span className="w-6 text-xs font-semibold text-foreground text-right shrink-0">{count}</span>
         </div>
     )
 }
