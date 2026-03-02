@@ -45,9 +45,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             try {
                 let apiUrl = process.env.NEXT_PUBLIC_API_URL
                 if (!apiUrl && typeof window !== 'undefined') {
-                    apiUrl = window.location.hostname !== 'localhost'
-                        ? `https://api.${window.location.hostname}`
-                        : 'http://localhost:4000'
+                    if (window.location.hostname !== 'localhost') {
+                        const baseDomain = window.location.hostname.split('.').slice(-3).join('.')
+                        apiUrl = `https://api.${baseDomain}`
+                    } else {
+                        apiUrl = 'http://localhost:3000'
+                    }
                 }
 
                 const res = await fetch(`${apiUrl}/v1/auth/me`, {

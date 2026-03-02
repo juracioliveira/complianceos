@@ -23,9 +23,11 @@ export default function LoginPage() {
                 if (!apiUrl && typeof window !== 'undefined') {
                     // Tenta detectar automaticamente se estiver em produção
                     if (window.location.hostname !== 'localhost') {
-                        apiUrl = `https://api.${window.location.hostname}`
+                        // Remove qualquer subdomínio (ex: 'app.') para pegar o domínio base
+                        const baseDomain = window.location.hostname.split('.').slice(-3).join('.') // complianceos.com.br
+                        apiUrl = `https://api.${baseDomain}`
                     } else {
-                        apiUrl = 'http://localhost:4000'
+                        apiUrl = 'http://localhost:3000'
                     }
                 }
                 const res = await fetch(`${apiUrl}/v1/auth/login`, {
