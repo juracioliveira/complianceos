@@ -143,7 +143,7 @@ async function seed(): Promise<void> {
           $1, 'RISK_ESCALATED', 'CRITICAL',
           'Risco escalado: Alpha Pagamentos S.A.',
           'Entidade Alpha Pagamentos S.A. teve seu nível de risco alterado para HIGH após análise PLD/FT.',
-          'entity', $2, '/entities/' || $2::text
+          'entity', $2::uuid, '/entities/' || $2::text
         )
       `, [tenantA!.id, entityAlpha.id])
 
