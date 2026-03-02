@@ -26,7 +26,7 @@ COMMENT ON COLUMN risk_assessments.expires_at IS 'Calculado: calculated_at + per
 
 CREATE INDEX idx_risk_assessments_entity ON risk_assessments(tenant_id, entity_id, calculated_at DESC);
 CREATE INDEX idx_risk_assessments_level ON risk_assessments(tenant_id, risk_level, calculated_at DESC);
-CREATE INDEX idx_risk_assessments_expired ON risk_assessments(tenant_id, expires_at) WHERE expires_at < NOW();
+CREATE INDEX idx_risk_assessments_expired ON risk_assessments(tenant_id, expires_at);
 
 -- RLS
 ALTER TABLE risk_assessments ENABLE ROW LEVEL SECURITY;
