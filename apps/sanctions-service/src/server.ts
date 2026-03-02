@@ -11,7 +11,7 @@ dotenv.config();
 
 export const logger = pino({
     level: process.env.LOG_LEVEL || 'info',
-    ...(process.env.NODE_ENV !== 'production' ? {
+    ...(process.env.NODE_ENV === 'development' ? {
         transport: {
             target: 'pino-pretty',
             options: { colorize: true }
@@ -40,10 +40,6 @@ server.register(rateLimit, {
 });
 
 server.register(healthRoutes, { prefix: '/health' });
-server.get('/health', async (request, reply) => {
-    // Reutiliza a lógica do plugin mas exposto na raiz do path para garantir compatibilidade
-    return reply.redirect('/health/');
-});
 server.get('/', async () => ({ status: 'ok', service: 'Sanctions Service', uptime: process.uptime() }));
 
 server.register(screeningRoutes, { prefix: '/screen' });
