@@ -1,20 +1,10 @@
-import type { Metadata } from 'next'
-import { Plus, Search, SlidersHorizontal, Download } from 'lucide-react'
+'use client'
+
+import { useEffect, useState } from 'react'
+import { Plus, Search, SlidersHorizontal, Download, Loader2 } from 'lucide-react'
 import { RiskBadge } from '@/components/ui/RiskBadge'
 import { formatCNPJ, formatDate, KYC_LABELS } from '@/lib/utils'
-
-export const metadata: Metadata = { title: 'Entidades' }
-
-const entities = [
-    { id: '1', name: 'Alpha Pagamentos S.A.', cnpj: '11111111000101', type: 'CLIENTE', sector: 'Serviços Financeiros', risk: 'CRITICAL', score: 18, kyc: 'APPROVED', status: 'ACTIVE', createdAt: '2024-01-15', isPep: false },
-    { id: '2', name: 'Beta Distribuidora Ltda', cnpj: '22222222000102', type: 'FORNECEDOR', sector: 'Comércio', risk: 'LOW', score: 88, kyc: 'APPROVED', status: 'ACTIVE', createdAt: '2024-02-20', isPep: false },
-    { id: '3', name: 'Gama Construções Eireli', cnpj: '33333333000103', type: 'PARCEIRO', sector: 'Construção Civil', risk: 'MEDIUM', score: 62, kyc: 'PENDING', status: 'ACTIVE', createdAt: '2024-03-10', isPep: false },
-    { id: '4', name: 'Delta Energia Corp.', cnpj: '44444444000104', type: 'CLIENTE', sector: 'Energia', risk: 'CRITICAL', score: 22, kyc: 'IN_PROGRESS', status: 'ACTIVE', createdAt: '2024-04-05', isPep: true },
-    { id: '5', name: 'Epsilon Consultoria S.A.', cnpj: '55555555000105', type: 'FORNECEDOR', sector: 'Consultoria', risk: 'HIGH', score: 45, kyc: 'APPROVED', status: 'ACTIVE', createdAt: '2024-05-18', isPep: false },
-    { id: '6', name: 'Sigma Exportações Ltda', cnpj: '66666666000106', type: 'PARCEIRO', sector: 'Comércio Exterior', risk: 'CRITICAL', score: 15, kyc: 'PENDING', status: 'ACTIVE', createdAt: '2024-06-30', isPep: false },
-    { id: '7', name: 'Omega Holdings S.A.', cnpj: '77777777000107', type: 'FORNECEDOR', sector: 'Holding', risk: 'CRITICAL', score: 29, kyc: 'REJECTED', status: 'BLOCKED', createdAt: '2024-07-12', isPep: true },
-    { id: '8', name: 'Phi Tecnologia Ltda', cnpj: '88888888000108', type: 'PARCEIRO', sector: 'Tecnologia', risk: 'LOW', score: 91, kyc: 'APPROVED', status: 'ACTIVE', createdAt: '2024-08-01', isPep: false },
-]
+import { useApi } from '@/hooks/useApi'
 
 const TYPE_LABELS: Record<string, string> = {
     CLIENTE: 'Cliente', FORNECEDOR: 'Fornecedor', PARCEIRO: 'Parceiro', COLABORADOR: 'Colaborador',
@@ -33,17 +23,44 @@ const STATUS_BADGE: Record<string, string> = {
     BLOCKED: 'badge badge-red',
 }
 
-const RISK_ORDER: Record<string, number> = { CRITICAL: 0, HIGH: 1, MEDIUM: 2, LOW: 3, UNKNOWN: 4 }
-const sorted = [...entities].sort((a, b) => RISK_ORDER[a.risk]! - RISK_ORDER[b.risk]!)
-
-const summary = {
-    CRITICAL: entities.filter(e => e.risk === 'CRITICAL').length,
-    HIGH: entities.filter(e => e.risk === 'HIGH').length,
-    MEDIUM: entities.filter(e => e.risk === 'MEDIUM').length,
-    LOW: entities.filter(e => e.risk === 'LOW' || e.risk === 'UNKNOWN').length,
-}
-
 export default function EntitiesPage() {
+    const { fetchWithAuth } = useApi()
+    const [entities, setEntities] = useState<any[]>([])
+    const [isLoading, setIsLoading] = useState(true)
+    const [error, setError] = useState<string | null>(null)
+
+    useEffect(() => {
+        async function loadEntities() {
+            try {
+                const { data } = await fetchWithAuth('/v1/entities')
+                setEntities(data)
+            } catch (err: any) {
+                setError(err.message)
+            } finally {
+                setIsLoading(false)
+            }
+        }
+        loadEntities()
+    }, [fetchWithAuth])
+
+    const RISK_ORDER: Record<string, number> = { CRITICAL: 0, HIGH: 1, MEDIUM: 2, LOW: 3, UNKNOWN: 4 }
+    const sorted = [...entities].sort((a, b) => RISK_ORDER[a.riskLevel]! - RISK_ORDER[b.riskLevel]!)
+
+    const summary = {
+        CRITICAL: entities.filter(e => e.riskLevel === 'CRITICAL').length,
+        HIGH: entities.filter(e => e.riskLevel === 'HIGH').length,
+        MEDIUM: entities.filter(e => e.riskLevel === 'MEDIUM').length,
+        LOW: entities.filter(e => e.riskLevel === 'LOW' || e.riskLevel === 'UNKNOWN').length,
+    }
+
+    if (isLoading) {
+        return (
+            <div className="flex h-[60vh] items-center justify-center">
+                <Loader2 className="w-8 h-8 text-primary animate-spin" />
+            </div>
+        )
+    }
+
     return (
         <div className="max-w-7xl mx-auto space-y-5 animate-fade-in">
 
@@ -60,10 +77,10 @@ export default function EntitiesPage() {
                         <Download className="w-3.5 h-3.5" />
                         Exportar
                     </button>
-                    <button className="btn-primary btn-sm gap-1.5">
+                    <a href="/entities/new" className="btn-primary btn-sm gap-1.5 flex items-center">
                         <Plus className="w-3.5 h-3.5" />
                         Nova Entidade
-                    </button>
+                    </a>
                 </div>
             </div>
 
@@ -130,20 +147,20 @@ export default function EntitiesPage() {
                                                     <span className="badge badge-red text-[10px]">PEP</span>
                                                 )}
                                             </div>
-                                            <p className="text-[11px] text-muted-foreground font-mono">{formatCNPJ(e.cnpj)}</p>
+                                            <p className="text-[11px] text-muted-foreground font-mono">{formatCNPJ(e.cnpj || e.cpf || '')}</p>
                                         </div>
                                     </div>
                                 </td>
                                 <td>
-                                    <p className="text-sm text-foreground">{TYPE_LABELS[e.type]}</p>
+                                    <p className="text-sm text-foreground">{TYPE_LABELS[e.entityType]}</p>
                                     <p className="text-xs text-muted-foreground">{e.sector}</p>
                                 </td>
                                 <td>
-                                    <RiskBadge level={e.risk} score={e.score} />
+                                    <RiskBadge level={e.riskLevel} score={e.riskScore} />
                                 </td>
                                 <td>
-                                    <span className={KYC_BADGE[e.kyc] ?? 'badge badge-slate'}>
-                                        {KYC_LABELS[e.kyc] ?? e.kyc}
+                                    <span className={KYC_BADGE[e.kycStatus] ?? 'badge badge-slate'}>
+                                        {KYC_LABELS[e.kycStatus] ?? e.kycStatus}
                                     </span>
                                 </td>
                                 <td>
@@ -167,20 +184,8 @@ export default function EntitiesPage() {
                 {/* Paginação */}
                 <div className="px-5 py-3 border-t border-border flex items-center justify-between bg-muted/20">
                     <p className="text-xs text-muted-foreground">
-                        Mostrando {entities.length} de 138 entidades
+                        Mostrando {entities.length} de {entities.length} entidades
                     </p>
-                    <div className="flex items-center gap-1">
-                        {['Anterior', '1', '2', '3', 'Próxima'].map((p, i) => (
-                            <button
-                                key={p}
-                                className={p === '1'
-                                    ? 'w-8 h-7 rounded text-xs bg-primary text-primary-foreground font-medium'
-                                    : 'w-8 h-7 rounded text-xs text-muted-foreground hover:bg-accent transition-colors border border-border bg-card'}
-                            >
-                                {p}
-                            </button>
-                        ))}
-                    </div>
                 </div>
             </div>
         </div>

@@ -95,12 +95,12 @@ AUTH_MFA_ISSUER="Compliance OS (DEV)"
 
 # ─── S3 / ARMAZENAMENTO ───────────────────────────────────────────────────────
 # Em dev local, usar MinIO (incluído no docker-compose)
-S3_ENDPOINT=http://localhost:9000          # MinIO local
+S3_ENDPOINT=https://complian-os-minio-complianceos.qztbnm.easypanel.host
 S3_REGION=us-east-1
-S3_BUCKET_DOCUMENTS=compliance-docs-dev
-S3_BUCKET_AUDIT=compliance-audit-dev
-S3_ACCESS_KEY_ID=minioadmin               # REQUIRED para prod: AWS IAM key
-S3_SECRET_ACCESS_KEY=minioadmin123        # REQUIRED para prod: via Secrets Manager
+S3_BUCKET_DOCUMENTS=compliance-docs
+S3_BUCKET_AUDIT=compliance-audit
+S3_ACCESS_KEY_ID=admin               # FROM UI
+S3_SECRET_ACCESS_KEY=sjMZIp01gv4g        # FROM UI
 
 # ─── EMAIL ────────────────────────────────────────────────────────────────────
 # Em dev local, usar Mailhog (incluído no docker-compose — UI: localhost:8025)

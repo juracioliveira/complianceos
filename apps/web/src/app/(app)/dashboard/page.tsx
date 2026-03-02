@@ -1,115 +1,44 @@
-import type { Metadata } from 'next'
+'use client'
+
+import { useEffect, useState } from 'react'
 import {
     ShieldAlert, AlertTriangle, CheckCircle2, FileText,
     TrendingUp, TrendingDown, Minus, ArrowUpRight, Clock,
-    Users, BarChart3,
+    Users, BarChart3, Loader2
 } from 'lucide-react'
 import { RiskBadge } from '@/components/ui/RiskBadge'
 import { formatDate } from '@/lib/utils'
-
-export const metadata: Metadata = { title: 'Dashboard' }
-
-// Mock de dados para dev — em produção: fetch de /v1/dashboard/summary
-const stats = {
-    entidadesRiscoAlto: 26,
-    totalEntidades: 138,
-    checklistsVencidos: 12,
-    checklistsVencendoEm30Dias: 27,
-    checklistsConcluidos: 89,
-    checklistsEmAndamento: 7,
-    documentosGerados: 23,
-    documentosExpirando: 5,
-    alertasCriticos: 4,
-    alertasWarning: 11,
-    notificacoesNaoLidas: 18,
-}
-
-const byRisk = [
-    { level: 'CRITICAL', count: 4, color: '#ef4444', label: 'Crítico' },
-    { level: 'HIGH', count: 22, color: '#f97316', label: 'Alto' },
-    { level: 'MEDIUM', count: 61, color: '#f59e0b', label: 'Médio' },
-    { level: 'LOW', count: 48, color: '#10b981', label: 'Baixo' },
-    { level: 'UNKNOWN', count: 3, color: '#94a3b8', label: 'Não avaliado' },
-]
-
-const recentActivities = [
-    { entity: 'Alpha Pagamentos S.A.', action: 'Checklist PLD/FT concluído', risk: 'CRITICAL', time: '10 min atrás', user: 'Maria Silva (CCO)' },
-    { entity: 'Gama Construções Eireli', action: 'KYC iniciado automaticamente', risk: 'MEDIUM', time: '43 min atrás', user: 'Sistema' },
-    { entity: 'Epsilon Consultoria S.A.', action: 'Risco escalado: MEDIUM → HIGH', risk: 'HIGH', time: '1h 12min atrás', user: 'Sistema' },
-    { entity: 'Beta Distribuidora Ltda', action: 'RAT LGPD gerado (PDF)', risk: 'LOW', time: '2h atrás', user: 'João Costa' },
-    { entity: 'Delta Energia Corp.', action: 'Sanção identificada — PEP ativo', risk: 'CRITICAL', time: '3h atrás', user: 'Sistema' },
-]
-
-const criticalEntities = [
-    { name: 'Alpha Pagamentos S.A.', cnpj: '11.111.111/0001-01', type: 'CLIENTE', risk: 'CRITICAL', score: 18, lastCheck: '2024-12-10' },
-    { name: 'Delta Energia Corp.', cnpj: '44.444.444/0001-04', type: 'CLIENTE', risk: 'CRITICAL', score: 22, lastCheck: '2024-11-28' },
-    { name: 'Sigma Exportações Ltda', cnpj: '66.666.666/0001-06', type: 'PARCEIRO', risk: 'CRITICAL', score: 15, lastCheck: '2024-12-01' },
-    { name: 'Omega Holdings S.A.', cnpj: '77.777.777/0001-07', type: 'FORNECEDOR', risk: 'CRITICAL', score: 29, lastCheck: '2024-11-15' },
-]
-
-// Componente KPI card
-function StatCard({
-    label, value, sub, icon: Icon, color, trend,
-}: {
-    label: string
-    value: number | string
-    sub?: string
-    icon: React.ElementType
-    color: 'red' | 'amber' | 'green' | 'blue'
-    trend?: { dir: 'up' | 'down' | 'flat'; text: string }
-}) {
-    const colors = {
-        red: { bg: 'bg-red-50 dark:bg-red-950/40', icon: 'text-red-600 dark:text-red-400', iconBg: 'bg-red-100 dark:bg-red-900/60' },
-        amber: { bg: 'bg-amber-50 dark:bg-amber-950/40', icon: 'text-amber-600 dark:text-amber-400', iconBg: 'bg-amber-100 dark:bg-amber-900/60' },
-        green: { bg: 'bg-emerald-50 dark:bg-emerald-950/40', icon: 'text-emerald-600 dark:text-emerald-400', iconBg: 'bg-emerald-100 dark:bg-emerald-900/60' },
-        blue: { bg: 'bg-blue-50 dark:bg-blue-950/40', icon: 'text-blue-600 dark:text-blue-400', iconBg: 'bg-blue-100 dark:bg-blue-900/60' },
-    }
-    const c = colors[color]
-
-    const TrendIcon = trend?.dir === 'up' ? TrendingUp : trend?.dir === 'down' ? TrendingDown : Minus
-    const trendColor = trend?.dir === 'up' ? 'text-red-500' : trend?.dir === 'down' ? 'text-emerald-500' : 'text-muted-foreground'
-
-    return (
-        <div className={`stat-card border-l-2 ${color === 'red' ? 'border-l-red-500' : color === 'amber' ? 'border-l-amber-500' : color === 'green' ? 'border-l-emerald-500' : 'border-l-blue-500'}`}>
-            <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                    <p className="stat-label">{label}</p>
-                    <p className="stat-value">{value}</p>
-                    {sub && <p className="stat-sub">{sub}</p>}
-                    {trend && (
-                        <div className={`flex items-center gap-1 mt-2 text-xs font-medium ${trendColor}`}>
-                            <TrendIcon className="w-3 h-3" />
-                            <span>{trend.text}</span>
-                        </div>
-                    )}
-                </div>
-                <div className={`w-10 h-10 rounded-xl shrink-0 flex items-center justify-center ${c.iconBg}`}>
-                    <Icon className={`w-5 h-5 ${c.icon}`} />
-                </div>
-            </div>
-        </div>
-    )
-}
-
-// Barra horizontal de risco
-function RiskBar({ level, count, total, color, label }: { level: string; count: number; total: number; color: string; label: string }) {
-    const pct = total > 0 ? (count / total) * 100 : 0
-    return (
-        <div className="flex items-center gap-3">
-            <span className="w-24 text-xs text-muted-foreground text-right shrink-0">{label}</span>
-            <div className="flex-1 progress-bar">
-                <div
-                    className="progress-fill"
-                    style={{ width: `${pct}%`, background: color }}
-                />
-            </div>
-            <span className="w-6 text-xs font-semibold text-foreground text-right shrink-0">{count}</span>
-        </div>
-    )
-}
+import { useApi } from '@/hooks/useApi'
 
 export default function DashboardPage() {
-    const totalEntidades = byRisk.reduce((a, b) => a + b.count, 0)
+    const { fetchWithAuth } = useApi()
+    const [isLoading, setIsLoading] = useState(true)
+    const [data, setData] = useState<any>(null)
+
+    useEffect(() => {
+        async function loadDashboard() {
+            try {
+                const res = await fetchWithAuth('/v1/dashboard/summary')
+                setData(res.data)
+            } catch (err) {
+                console.error('Failed to load dashboard', err)
+            } finally {
+                setIsLoading(false)
+            }
+        }
+        loadDashboard()
+    }, [fetchWithAuth])
+
+    if (isLoading || !data) {
+        return (
+            <div className="flex h-[60vh] items-center justify-center">
+                <Loader2 className="w-8 h-8 text-primary animate-spin" />
+            </div>
+        )
+    }
+
+    const { stats, byRisk, recentActivities, criticalEntities } = data
+    const totalEntidades = byRisk.reduce((a: number, b: any) => a + b.count, 0)
     const today = new Date()
 
     return (

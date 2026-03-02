@@ -34,7 +34,8 @@ export const entitiesRoutes: FastifyPluginAsync = async (fastify) => {
                 data: data.map(r => ({
                     id: r.id,
                     name: r.name,
-                    taxId: r.taxId,
+                    cnpj: r.cnpj,
+                    cpf: r.cpf,
                     entityType: r.entityType,
                     riskLevel: r.riskLevel,
                     kycStatus: r.kycStatus,
@@ -70,6 +71,17 @@ export const entitiesRoutes: FastifyPluginAsync = async (fastify) => {
             }
             const { id } = request.params as { id: string }
             const result = await entitiesService.syncKybData(id, request.tenantId)
+            return reply.send(result)
+        }
+    })
+
+    // POST /v1/entities/:id/due-diligence
+    fastify.post('/:id/due-diligence', {
+        preHandler: [authMiddleware, tenantMiddleware],
+        handler: async (request: FastifyRequest, reply: FastifyReply) => {
+            const user = request.user as JwtPayload
+            const { id } = request.params as { id: string }
+            const result = await entitiesService.startAutomatedDueDiligence(id, request.tenantId, user.id)
             return reply.send(result)
         }
     })

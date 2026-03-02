@@ -37,15 +37,24 @@ export const documents = pgTable('documents', {
 export const entities = pgTable('entities', {
     id: uuid('id').primaryKey().defaultRandom(),
     tenantId: uuid('tenant_id').notNull().references(() => tenants.id),
-    name: varchar('name', { length: 255 }).notNull(),
-    taxId: varchar('tax_id', { length: 14 }).notNull(),
-    entityType: entityTypeEnum('entity_type').notNull(),
+    name: varchar('name', { length: 200 }).notNull(),
+    cnpj: varchar('cnpj', { length: 14 }),
+    cpf: varchar('cpf', { length: 11 }),
+    entityType: varchar('entity_type', { length: 20 }).notNull(), // CLIENTE, FORNECEDOR, PARCEIRO, COLABORADOR
+    sector: varchar('sector', { length: 100 }),
+    corporateData: jsonb('corporate_data').notNull().default({}),
     riskScore: integer('risk_score'),
-    riskLevel: riskLevelEnum('risk_level').default('UNKNOWN'),
-    kycStatus: kycStatusEnum('kyc_status').default('PENDING'),
-    status: statusEnum('status').default('ACTIVE'),
-    lastRiskUpdateBy: uuid('last_risk_update_by').references(() => users.id), // Maker
-    lastRiskApprovalBy: uuid('last_risk_approval_by').references(() => users.id), // Checker (SoD)
+    riskLevel: riskLevelEnum('risk_level').notNull().default('UNKNOWN'),
+    lastAssessedAt: timestamp('last_assessed_at'),
+    status: statusEnum('status').notNull().default('ACTIVE'),
+    blockedReason: varchar('blocked_reason'),
+    kycStatus: varchar('kyc_status', { length: 20 }).notNull().default('PENDING'), // PENDING, IN_PROGRESS, APPROVED, REJECTED
+    kycCompletedAt: timestamp('kyc_completed_at'),
+    isPep: boolean('is_pep').notNull().default(false),
+    pepDetails: jsonb('pep_details'),
+    lastRiskUpdateBy: uuid('last_risk_update_by').references(() => users.id),
+    lastRiskApprovalBy: uuid('last_risk_approval_by').references(() => users.id),
+    createdBy: uuid('created_by').notNull().references(() => users.id),
     createdAt: timestamp('created_at').defaultNow(),
     updatedAt: timestamp('updated_at').defaultNow()
 })
