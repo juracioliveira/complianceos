@@ -1,5 +1,6 @@
 import type { FastifyRequest, FastifyReply } from 'fastify'
 import { pool, dbContext } from '../infra/db/db.js'
+import type { DbClient } from '../infra/db/db.js'
 
 export async function tenantMiddleware(
     request: FastifyRequest,
@@ -32,17 +33,24 @@ export async function tenantMiddleware(
                     // CRÍTICO: esta linha ativa o Row Level Security no nível da conexão
                     await client.query(`SET LOCAL app.tenant_id = '${tenantId}'`)
 
-                    // Injetar o client no request para handlers que ainda usam db injetado
-                    ;(request as any).db = client
+                        // Injetar o client no request para handlers que ainda usam db injetado
+                        ; (request as any).db = client
 
                     // Continuar o processamento da request dentro do contexto
-                    resolve()
+                    resolve(undefined)
                 } catch (err) {
                     client.release()
                     reject(err)
                 }
             } catch (err) {
                 reject(err)
+            }
+        })
+    }).then(() => {
+        // Garantir que a conexão seja liberada após o envio da resposta
+        reply.raw.on('finish', () => {
+            if ((request as any).db) {
+                (request as any).db.release()
             }
         })
     }).catch(err => {
