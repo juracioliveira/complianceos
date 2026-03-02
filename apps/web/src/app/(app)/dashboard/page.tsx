@@ -29,6 +29,12 @@ export default function DashboardPage() {
         loadDashboard()
     }, [fetchWithAuth])
 
+    const [mounted, setMounted] = useState(false)
+
+    useEffect(() => {
+        setMounted(true)
+    }, [])
+
     if (isLoading || !data) {
         return (
             <div className="flex h-[60vh] items-center justify-center">
@@ -74,7 +80,12 @@ export default function DashboardPage() {
                 <div>
                     <h1 className="page-title">Dashboard de Compliance</h1>
                     <p className="page-subtitle">
-                        Visão executiva do programa de conformidade • Atualizado {today.toLocaleDateString('pt-BR')} às {today.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                        Visão executiva do programa de conformidade •
+                        {mounted && (
+                            <span className="ml-1">
+                                Atualizado {today.toLocaleDateString('pt-BR')} às {today.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                            </span>
+                        )}
                     </p>
                 </div>
                 <a href="/entities?filter[risk_level]=CRITICAL" className="btn-secondary btn-sm flex gap-1.5">
@@ -137,9 +148,13 @@ export default function DashboardPage() {
                         <div className="relative w-28 h-28">
                             <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
                                 {(() => {
+                                    if (totalEntidades === 0) {
+                                        return <circle cx="18" cy="18" r="15.9155" fill="transparent" stroke="currentColor" strokeWidth="3.5" className="text-muted/20" />
+                                    }
                                     let accumulated = 0
                                     return byRisk.map(({ count, color }: { count: number; color: string }) => {
                                         const pct = (count / totalEntidades) * 100
+                                        if (pct === 0) return null
                                         const dashOffset = 100 - accumulated
                                         accumulated += pct
                                         return (
