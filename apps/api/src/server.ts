@@ -111,6 +111,22 @@ await app.register(usersRoutes, { prefix: '/v1/users' })
 await app.register(intelligenceRoutes, { prefix: '/v1/intelligence' })
 await app.register(billingRoutes, { prefix: '/v1/billing' })
 
+// ─── Health Checks ───────────────────────────────────────────────────────────
+app.get('/', async () => ({ status: 'ok', service: 'ComplianceOS API', timestamp: new Date().toISOString() }))
+app.get('/health', async (request, reply) => {
+    const dbOk = await checkDatabaseConnection()
+    const redisOk = await checkRedisConnection()
+
+    const status = dbOk && redisOk ? 200 : 503
+    return reply.status(status).send({
+        status: dbOk && redisOk ? 'ok' : 'degraded',
+        database: dbOk ? 'ok' : 'error',
+        redis: redisOk ? 'ok' : 'error',
+        uptime: process.uptime(),
+        timestamp: new Date().toISOString(),
+    })
+})
+
 async function start(): Promise<void> {
     try {
         await app.listen({ port: PORT, host: HOST })

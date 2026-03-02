@@ -26,6 +26,11 @@ async function start() {
 
     // Rotas
     await app.register(healthRoutes, { prefix: '/health' });
+    app.get('/health', async (request, reply) => {
+        return reply.redirect('/health/');
+    });
+    app.get('/', async () => ({ status: 'ok', service: 'CNPJ Service', uptime: process.uptime() }));
+
     await app.register(cnpjRoutes, { prefix: '/cnpj' });
     await app.register(searchRoutes, { prefix: '/search' });
 

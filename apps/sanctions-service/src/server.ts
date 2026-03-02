@@ -40,6 +40,12 @@ server.register(rateLimit, {
 });
 
 server.register(healthRoutes, { prefix: '/health' });
+server.get('/health', async (request, reply) => {
+    // Reutiliza a lógica do plugin mas exposto na raiz do path para garantir compatibilidade
+    return reply.redirect('/health/');
+});
+server.get('/', async () => ({ status: 'ok', service: 'Sanctions Service', uptime: process.uptime() }));
+
 server.register(screeningRoutes, { prefix: '/screen' });
 server.register(entityRoutes, { prefix: '/entities' });
 server.register(searchRoutes, { prefix: '/search' });
