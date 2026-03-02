@@ -10,7 +10,7 @@ BEGIN
 END
 $$;
 
-GRANT CONNECT ON DATABASE compliance TO compliance_app;
+GRANT CONNECT ON DATABASE "db-api-complianceos" TO compliance_app;
 GRANT USAGE ON SCHEMA public TO compliance_app;
 ALTER DEFAULT PRIVILEGES IN SCHEMA public
   GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO compliance_app;
@@ -37,7 +37,7 @@ BEGIN
 END
 $$;
 
-GRANT CONNECT ON DATABASE compliance TO compliance_reader;
+GRANT CONNECT ON DATABASE "db-api-complianceos" TO compliance_reader;
 GRANT USAGE ON SCHEMA public TO compliance_reader;
 ALTER DEFAULT PRIVILEGES IN SCHEMA public
   GRANT SELECT ON TABLES TO compliance_reader;
