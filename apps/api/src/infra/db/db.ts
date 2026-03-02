@@ -8,9 +8,10 @@ const { Pool } = pg
 // Contexto para Multi-tenancy (RLS + Isolamento)
 export const dbContext = new AsyncLocalStorage<{ tenantId: string }>()
 
-const connectionString =
-    process.env['DATABASE_URL'] ??
-    'postgresql://compliance_app:app_password_dev@localhost:5432/compliance'
+const connectionString = process.env['DATABASE_URL']
+if (!connectionString) {
+    throw new Error('DATABASE_URL environment variable is required')
+}
 
 export const pool = new Pool({
     connectionString,
@@ -29,14 +30,14 @@ export const db = drizzle(pool, { schema })
  */
 export async function getTenantDb(tenantId?: string) {
     const id = tenantId || dbContext.getStore()?.tenantId
-    
+
     if (!id) {
         return db // Fallback para query global (uso administrativo restrito)
     }
 
     const client = await pool.connect()
     await client.query(pg.format('SET LOCAL app.tenant_id = %L', id))
-    
+
     // Retornamos um proxy ou wrapper que libera o client após o uso?
     // Para simplificar no Drizzle, podemos usar o client diretamente.
     return drizzle(client, { schema })

@@ -5,6 +5,9 @@ const DEV_DB_URL =
   process.env['DATABASE_MIGRATOR_URL'] ?? process.env['DATABASE_URL'] ?? ''
 
 async function seed(): Promise<void> {
+  const maskedUrl = DEV_DB_URL.replace(/:([^@]+)@/, ':****@')
+  console.log(`📡 Conectando ao banco: ${maskedUrl}`)
+
   const client = new pg.Client({ connectionString: DEV_DB_URL })
   await client.connect()
   console.log('🌱 Iniciando seed de dados de desenvolvimento...\n')
@@ -55,27 +58,35 @@ async function seed(): Promise<void> {
     const { rows: [adminA] } = await client.query<{ id: string }>(`
       INSERT INTO users (tenant_id, email, name, password_hash, role, status)
       VALUES ($1, 'admin@acme-fintech.dev', 'Admin Acme', $2, 'ADMIN', 'ACTIVE')
-      ON CONFLICT (tenant_id, email) DO UPDATE SET name = EXCLUDED.name
+      ON CONFLICT (tenant_id, email) DO UPDATE SET 
+        name = EXCLUDED.name,
+        password_hash = EXCLUDED.password_hash
       RETURNING id
     `, [tenantA!.id, passwordHash])
 
     const { rows: [ccoA] } = await client.query<{ id: string }>(`
       INSERT INTO users (tenant_id, email, name, password_hash, role, status)
       VALUES ($1, 'cco@acme-fintech.dev', 'Maria Silva (CCO)', $2, 'COMPLIANCE_OFFICER', 'ACTIVE')
-      ON CONFLICT (tenant_id, email) DO UPDATE SET name = EXCLUDED.name
+      ON CONFLICT (tenant_id, email) DO UPDATE SET 
+        name = EXCLUDED.name,
+        password_hash = EXCLUDED.password_hash
       RETURNING id
     `, [tenantA!.id, passwordHash])
 
     await client.query(`
       INSERT INTO users (tenant_id, email, name, password_hash, role, status)
       VALUES ($1, 'analista@acme-fintech.dev', 'João Costa (Analista)', $2, 'ANALYST', 'ACTIVE')
-      ON CONFLICT (tenant_id, email) DO UPDATE SET name = EXCLUDED.name
+      ON CONFLICT (tenant_id, email) DO UPDATE SET 
+        name = EXCLUDED.name,
+        password_hash = EXCLUDED.password_hash
     `, [tenantA!.id, passwordHash])
 
     await client.query(`
       INSERT INTO users (tenant_id, email, name, password_hash, role, status)
       VALUES ($1, 'auditor@acme-fintech.dev', 'Ana Auditora', $2, 'AUDITOR', 'ACTIVE')
-      ON CONFLICT (tenant_id, email) DO UPDATE SET name = EXCLUDED.name
+      ON CONFLICT (tenant_id, email) DO UPDATE SET 
+        name = EXCLUDED.name,
+        password_hash = EXCLUDED.password_hash
     `, [tenantA!.id, passwordHash])
 
     console.log('  ✅ Usuários Tenant A: admin, CCO, analista, auditor')
@@ -84,7 +95,9 @@ async function seed(): Promise<void> {
     await client.query(`
       INSERT INTO users (tenant_id, email, name, password_hash, role, status)
       VALUES ($1, 'admin@beta-coop.dev', 'Admin Beta', $2, 'ADMIN', 'ACTIVE')
-      ON CONFLICT (tenant_id, email) DO UPDATE SET name = EXCLUDED.name
+      ON CONFLICT (tenant_id, email) DO UPDATE SET 
+        name = EXCLUDED.name,
+        password_hash = EXCLUDED.password_hash
     `, [tenantB!.id, passwordHash])
 
     console.log('  ✅ Usuários Tenant B: admin')

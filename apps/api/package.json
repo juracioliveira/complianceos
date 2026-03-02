@@ -20,6 +20,7 @@
         "db:migrate:status": "tsx --env-file=../../.env.local src/infra/db/migrate-status.ts",
         "db:migrate:rollback": "tsx --env-file=../../.env.local src/infra/db/migrate-rollback.ts",
         "db:seed": "tsx --env-file=../../.env.local src/infra/db/seed.ts",
+        "db:seed:prod": "tsx src/infra/db/seed.ts",
         "db:reset": "tsx --env-file=../../.env.local src/infra/db/reset.ts",
         "db:studio": "drizzle-kit studio"
     },

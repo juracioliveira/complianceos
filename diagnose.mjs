@@ -1,0 +1,7 @@
+console.log('--- DIAGNÓSTICO DE AMBIENTE ---')
+console.log('NODE_ENV:', process.env.NODE_ENV)
+console.log('DATABASE_URL:', process.env.DATABASE_URL ? 'DEFINIDO (mascarado: ' + process.env.DATABASE_URL.replace(/:([^@]+)@/, ':****@') + ')' : 'MANTIDO VAZIO')
+console.log('DATABASE_MIGRATOR_URL:', process.env.DATABASE_MIGRATOR_URL ? 'DEFINIDO (mascarado: ' + process.env.DATABASE_MIGRATOR_URL.replace(/:([^@]+)@/, ':****@') + ')' : 'MANTIDO VAZIO')
+console.log('PGUSER:', process.env.PGUSER || 'NÃO DEFINIDO')
+console.log('PGPASSWORD:', process.env.PGPASSWORD ? 'DEFINIDO' : 'NÃO DEFINIDO')
+console.log('--- FIM DO DIAGNÓSTICO ---')

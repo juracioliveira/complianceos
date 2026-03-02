@@ -2,6 +2,7 @@ import { DocumentsRepository } from '../repositories/documents.repository.js'
 import { queue } from '../../../infra/queue.js'
 import { ComplianceOSError, ForbiddenError, NotFoundError } from '@compliance-os/types'
 import crypto from 'node:crypto'
+import { storage } from '../../../infra/storage.js'
 
 export class DocumentsService {
     constructor(private documentsRepository: DocumentsRepository) { }
@@ -74,7 +75,7 @@ export class DocumentsService {
         }
 
         // Em produção: gerar presigned URL do S3
-        const presignedUrl = `https://s3.amazonaws.com/${doc.s3Bucket}/${doc.s3Key}?presigned=dev`
+        const presignedUrl = await storage.getPresignedDownloadUrl(doc.s3Bucket, doc.s3Key)
         const expiresAt = new Date(Date.now() + 900_000)
 
         return {

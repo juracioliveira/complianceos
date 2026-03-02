@@ -1,4 +1,5 @@
 const crypto = require('crypto');
+
 const { privateKey, publicKey } = crypto.generateKeyPairSync('rsa', {
     modulusLength: 2048,
     publicKeyEncoding: { type: 'spki', format: 'pem' },
@@ -8,6 +9,6 @@ const { privateKey, publicKey } = crypto.generateKeyPairSync('rsa', {
 const pubB64 = Buffer.from(publicKey).toString('base64');
 const privB64 = Buffer.from(privateKey).toString('base64');
 
-console.log('PUB: ' + pubB64);
-console.log('');
-console.log('PRIV: ' + privB64);
+// Must be exactly one line
+const fs = require('fs');
+fs.writeFileSync('easypanel-keys.txt', `JWT_PRIVATE_KEY_BASE64=${privB64}\nJWT_PUBLIC_KEY_BASE64=${pubB64}\n`);

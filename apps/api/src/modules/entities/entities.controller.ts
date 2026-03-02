@@ -81,7 +81,7 @@ export const entitiesRoutes: FastifyPluginAsync = async (fastify) => {
         handler: async (request: FastifyRequest, reply: FastifyReply) => {
             const user = request.user as JwtPayload
             const { id } = request.params as { id: string }
-            const result = await entitiesService.startAutomatedDueDiligence(id, request.tenantId, user.id)
+            const result = await entitiesService.startAutomatedDueDiligence(id, request.tenantId, user.sub)
             return reply.send(result)
         }
     })
