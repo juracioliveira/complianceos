@@ -36,12 +36,7 @@ export const app = Fastify({
     logger: {
         level: process.env['API_LOG_LEVEL'] ?? 'info',
         ...(isDev
-            ? {
-                transport: {
-                    target: 'pino-pretty',
-                    options: { colorize: true, translateTime: 'HH:MM:ss', ignore: 'pid,hostname' },
-                },
-            }
+            ? {}
             : {}),
         redact: ['req.headers.authorization', 'req.body.password', 'req.body.mfaCode', 'req.body.cpf'],
     },
@@ -57,18 +52,13 @@ await app.register(fastifyCors, {
 })
 await app.register(fastifyRateLimit, { global: false, redis })
 
-const cleanB64 = (val?: string) => val ? val.replace(/["'\s]/g, '') : ''
-
-const privateKey = process.env['JWT_PRIVATE_KEY_BASE64']
-    ? Buffer.from(cleanB64(process.env['JWT_PRIVATE_KEY_BASE64']), 'base64').toString('utf8')
-    : 'dev_private_key'
-const publicKey = process.env['JWT_PUBLIC_KEY_BASE64']
-    ? Buffer.from(cleanB64(process.env['JWT_PUBLIC_KEY_BASE64']), 'base64').toString('utf8')
-    : 'dev_public_key'
+const secretKey = process.env['JWT_SECRET']
+    || process.env['JWT_PRIVATE_KEY_BASE64']
+    || 'dev_secret_key_change_in_production_environment'
 
 await app.register(fastifyJwt, {
-    secret: { private: privateKey, public: publicKey },
-    sign: { algorithm: 'RS256', expiresIn: 900 },
+    secret: secretKey,
+    sign: { algorithm: 'HS256', expiresIn: 900 },
 })
 
 if (isDev) {
