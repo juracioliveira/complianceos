@@ -7,6 +7,7 @@ import {
     FileText, Activity, Bell, Settings, LogOut, ChevronRight,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useAuth } from '@/lib/contexts/AuthContext'
 
 const NAV_GROUPS = [
     {
@@ -36,10 +37,10 @@ const NAV_GROUPS = [
 
 export function AppSidebar() {
     const pathname = usePathname()
+    const { user, logout } = useAuth()
 
     const handleLogout = () => {
-        sessionStorage.removeItem('access_token')
-        window.location.href = '/login'
+        logout()
     }
 
     return (
@@ -100,12 +101,14 @@ export function AppSidebar() {
                     onClick={handleLogout}
                     className="flex items-center gap-2.5 px-2 py-2 rounded-lg hover:bg-accent transition-colors cursor-pointer group"
                 >
-                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center shrink-0">
-                        <span className="text-xs font-bold text-white">AC</span>
+                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center shrink-0 shadow-sm">
+                        <span className="text-xs font-bold text-white">
+                            {user?.name ? user.name.substring(0, 2).toUpperCase() : 'US'}
+                        </span>
                     </div>
                     <div className="min-w-0 flex-1">
-                        <p className="text-xs font-semibold text-foreground truncate">Admin</p>
-                        <p className="text-[11px] text-muted-foreground truncate">Acme Fintech Ltda</p>
+                        <p className="text-xs font-semibold text-foreground truncate">{user?.name || 'Usuário'}</p>
+                        <p className="text-[11px] text-muted-foreground truncate">{user?.tenantName || 'ComplianceOS'}</p>
                     </div>
                     <LogOut className="w-3.5 h-3.5 text-muted-foreground group-hover:text-foreground transition-colors" />
                 </div>

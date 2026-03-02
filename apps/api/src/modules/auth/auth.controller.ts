@@ -87,7 +87,8 @@ export const authRoutes: FastifyPluginAsync = async (fastify) => {
         '/logout',
         { preHandler: [authMiddleware] },
         async (request: FastifyRequest, reply: FastifyReply) => {
-            await authService.logout(request.user.sub)
+            const user = request.user as import('@compliance-os/types').JwtPayload
+            await authService.logout(user.sub)
 
             reply.clearCookie('refreshToken', { path: '/v1/auth/refresh' })
             return reply.status(204).send()
@@ -99,7 +100,12 @@ export const authRoutes: FastifyPluginAsync = async (fastify) => {
         '/me',
         { preHandler: [authMiddleware] },
         async (request: FastifyRequest, reply: FastifyReply) => {
-            return reply.send({ data: request.user })
+            const user = request.user as import('@compliance-os/types').JwtPayload
+            const userProfile = await authService.getMe(user.sub)
+            if (!userProfile) {
+                return reply.status(404).send({ detail: 'Usuário não encontrado' })
+            }
+            return reply.send({ data: userProfile })
         },
     )
 }

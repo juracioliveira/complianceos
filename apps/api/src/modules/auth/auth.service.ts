@@ -119,6 +119,10 @@ export class AuthService {
         await cache.delPattern(`refresh_token:${userId}:*`)
     }
 
+    async getMe(userId: string) {
+        return authRepo.findUserById(userId)
+    }
+
     private decryptMfaSecret(encryptedSecret: string): string {
         return encryptedSecret
     }

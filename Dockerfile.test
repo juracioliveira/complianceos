@@ -1,0 +1,5 @@
+FROM node:20-alpine
+WORKDIR /app
+COPY test-jwt-v20.js .
+RUN npm install fastify @fastify/jwt
+CMD ["node", "test-jwt-v20.js"]

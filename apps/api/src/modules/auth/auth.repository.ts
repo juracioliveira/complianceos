@@ -48,6 +48,35 @@ export class AuthRepository {
         }
     }
 
+    async findUserById(id: string) {
+        const result = await db.execute(sql`
+            SELECT 
+                u.*, 
+                t.name AS tenant_name,
+                t.plan AS tenant_plan, 
+                t.settings->>'modules' AS tenant_modules
+            FROM users u
+            JOIN tenants t ON t.id = u.tenant_id
+            WHERE u.id = ${id}
+            LIMIT 1
+        `)
+
+        const row = result.rows[0] as any
+        if (!row) return null
+
+        return {
+            id: row.id,
+            tenantId: row.tenant_id,
+            email: row.email,
+            name: row.name,
+            role: row.role as User['role'],
+            status: row.status as User['status'],
+            tenantName: row.tenant_name,
+            tenantPlan: row.tenant_plan,
+            tenantModules: JSON.parse(row.tenant_modules ?? '[]') as string[],
+        }
+    }
+
     async incrementFailedAttempts(userId: string) {
         const result = await db.execute(sql`
             UPDATE users

@@ -3,9 +3,11 @@
 import { useState, useCallback } from 'react'
 import { Bell, Search, Sun, Moon, Command } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useAuth } from '@/lib/contexts/AuthContext'
 
 export function AppHeader() {
     const [dark, setDark] = useState(false)
+    const { user } = useAuth()
 
     const toggleDark = useCallback(() => {
         setDark((d) => {
@@ -57,11 +59,13 @@ export function AppHeader() {
                 {/* Avatar */}
                 <button className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-accent transition-colors group">
                     <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center">
-                        <span className="text-[11px] font-bold text-white">AC</span>
+                        <span className="text-[11px] font-bold text-white">
+                            {user?.name ? user.name.substring(0, 2).toUpperCase() : 'US'}
+                        </span>
                     </div>
                     <div className="hidden sm:block text-left">
-                        <p className="text-xs font-semibold text-foreground leading-tight">Admin</p>
-                        <p className="text-[10px] text-muted-foreground leading-tight">ADMIN</p>
+                        <p className="text-xs font-semibold text-foreground leading-tight">{user?.name?.split(' ')[0] || 'Usuário'}</p>
+                        <p className="text-[10px] text-muted-foreground leading-tight">{user?.role || 'USER'}</p>
                     </div>
                 </button>
             </div>

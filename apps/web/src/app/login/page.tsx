@@ -19,7 +19,15 @@ export default function LoginPage() {
 
         startTransition(async () => {
             try {
-                const apiUrl = process.env['NEXT_PUBLIC_API_URL'] ?? 'http://localhost:4000'
+                let apiUrl = process.env['NEXT_PUBLIC_API_URL']
+                if (!apiUrl && typeof window !== 'undefined') {
+                    // Tenta detectar automaticamente se estiver em produção
+                    if (window.location.hostname !== 'localhost') {
+                        apiUrl = `https://api.${window.location.hostname}`
+                    } else {
+                        apiUrl = 'http://localhost:4000'
+                    }
+                }
                 const res = await fetch(`${apiUrl}/v1/auth/login`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -47,6 +55,7 @@ export default function LoginPage() {
 
                 if (data.data?.accessToken) {
                     sessionStorage.setItem('access_token', data.data.accessToken)
+                    document.cookie = `access_token=${data.data.accessToken}; path=/; max-age=86400; samesite=Lax`
                     window.location.href = '/dashboard'
                 }
             } catch (err) {
