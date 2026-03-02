@@ -37,8 +37,33 @@ export default function DashboardPage() {
         )
     }
 
-    const { stats, byRisk, recentActivities, criticalEntities } = data
-    const totalEntidades = byRisk.reduce((a: number, b: any) => a + b.count, 0)
+    // Mapeamento resiliente dos dados da API
+    const stats = {
+        alertasCriticos: data.alerts?.critical ?? 0,
+        entidadesRiscoAlto: data.entities?.byRisk?.['HIGH'] ?? 0,
+        totalEntidades: data.entities?.total ?? 0,
+        checklistsVencidos: data.checklists?.overdue ?? 0,
+        checklistsVencendoEm30Dias: data.checklists?.dueSoon ?? 0,
+        checklistsConcluidos: data.checklists?.completedThisMonth ?? 0,
+        checklistsEmAndamento: data.checklists?.inProgress ?? 0,
+        documentosGerados: data.documents?.generatedThisMonth ?? 0,
+        documentosExpirando: data.documents?.expiringSoon ?? 0,
+        notificacoesNaoLidas: data.alerts?.unread ?? 0,
+        alertasWarning: data.alerts?.warning ?? 0,
+    }
+
+    const byRiskRaw = data.entities?.byRisk ?? {}
+    const byRisk = [
+        { level: 'CRITICAL', label: 'Crítico', count: byRiskRaw['CRITICAL'] ?? 0, color: '#ef4444' },
+        { level: 'HIGH', label: 'Alto', count: byRiskRaw['HIGH'] ?? 0, color: '#f97316' },
+        { level: 'MEDIUM', label: 'Médio', count: byRiskRaw['MEDIUM'] ?? 0, color: '#eab308' },
+        { level: 'LOW', label: 'Baixo', count: byRiskRaw['LOW'] ?? 0, color: '#22c55e' },
+    ]
+
+    const recentActivities = data.recentActivities ?? []
+    const criticalEntities = data.criticalEntities ?? []
+
+    const totalEntidades = stats.totalEntidades || byRisk.reduce((a, b) => a + b.count, 0)
     const today = new Date()
 
     return (

@@ -17,7 +17,7 @@ export const dashboardRoutes: FastifyPluginAsync = async (fastify) => {
             const db = request.db
 
             // KPIs paralelos — conforme queries de referência DEV-04 §7.1 e §7.2
-            const [entityStats, checklistStats, documentStats, alertStats] = await Promise.all([
+            const [entityStats, checklistStats, documentStats, alertStats, recentAudit, criticalList] = await Promise.all([
                 db.query<{ risk_level: string; total: string }>(`
           SELECT risk_level, COUNT(*) AS total
           FROM entities
@@ -57,6 +57,26 @@ export const dashboardRoutes: FastifyPluginAsync = async (fastify) => {
           FROM notifications
           WHERE (user_id = $1 OR user_id IS NULL)
         `, [request.user.sub]),
+                db.query<{ entity: string; action: string; user: string; time: string; risk: string }>(`
+          SELECT 
+            e.name as entity,
+            'Atualização de status' as action,
+            u.name as user,
+            'há pouco' as time,
+            e.risk_level as risk
+          FROM audit_logs al
+          JOIN entities e ON e.id = al.entity_id
+          JOIN users u ON u.id = al.user_id
+          ORDER BY al.created_at DESC
+          LIMIT 5
+        `).catch(() => ({ rows: [] })),
+                db.query<{ name: string; cnpj: string; type: string; risk: string; score: number; lastCheck: string }>(`
+          SELECT 
+            name, cnpj, entity_type as type, risk_level as risk, risk_score as score, updated_at as "lastCheck"
+          FROM entities
+          WHERE risk_level = 'CRITICAL' AND status = 'ACTIVE'
+          LIMIT 5
+        `).catch(() => ({ rows: [] })),
             ])
 
             // Montar objeto de KPIs
@@ -93,6 +113,8 @@ export const dashboardRoutes: FastifyPluginAsync = async (fastify) => {
                     warning: Number(as_.warning),
                     unread: Number(as_.unread),
                 },
+                recentActivities: recentAudit.rows,
+                criticalEntities: criticalList.rows,
                 lastUpdated: new Date().toISOString(),
             }
 

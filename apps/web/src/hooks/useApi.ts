@@ -9,8 +9,12 @@ export function useApi() {
         let apiUrl = process.env.NEXT_PUBLIC_API_URL
         if (!apiUrl && typeof window !== 'undefined') {
             if (window.location.hostname !== 'localhost') {
-                const baseDomain = window.location.hostname.split('.').slice(-3).join('.')
-                apiUrl = `https://api.${baseDomain}`
+                if (window.location.hostname.includes('easypanel.host')) {
+                    apiUrl = `https://${window.location.hostname.replace('-web-', '-api-')}`
+                } else {
+                    const baseDomain = window.location.hostname.split('.').slice(-3).join('.')
+                    apiUrl = `https://api.${baseDomain}`
+                }
             } else {
                 apiUrl = 'http://localhost:3000'
             }
