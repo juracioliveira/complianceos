@@ -1,35 +1,48 @@
-FROM node:20-alpine AS builder
+FROM node:20-alpine AS base
 
-# Enable corepack
+# Setup pnpm
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
 
+# 1. Prune the workspace for the specific app
+FROM base AS builder
+RUN apk update && apk add --no-cache libc6-compat
 WORKDIR /app
-
-COPY package.json pnpm-lock.yaml* ./
-RUN rm -rf node_modules && pnpm install --frozen-lockfile
-
+RUN npm install -g turbo
+# The context must be the root of the monorepo
 COPY . .
+RUN turbo prune @compliance-os/sanctions-service --docker
 
-# Build typescript definition via tsup
-RUN pnpm build
-
-FROM node:20-alpine AS runner
-
-RUN corepack enable
-
+# 2. Install dependencies and build
+FROM base AS installer
+RUN apk update && apk add --no-cache libc6-compat
 WORKDIR /app
 
-# Production only dependencies
-COPY package.json pnpm-lock.yaml* ./
-RUN rm -rf node_modules && pnpm install --prod --ignore-scripts
+# First install the dependencies (as they change less often)
+COPY .gitignore .gitignore
+COPY --from=builder /app/out/json/ .
+COPY --from=builder /app/out/pnpm-lock.yaml ./pnpm-lock.yaml
+RUN pnpm install --frozen-lockfile
 
-# Copy output build
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/src/db/migrations ./src/db/migrations
+# Build the project
+COPY --from=builder /app/out/full/ .
+COPY turbo.json turbo.json
+RUN pnpm turbo run build --filter=@compliance-os/sanctions-service...
 
-ENV NODE_ENV=production
+# 3. Final Production Runner
+FROM base AS runner
+WORKDIR /app
+
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 api_user
+
+# Copy the entire built monorepo workspace for reliable execution
+COPY --from=installer /app .
+
+USER api_user
+EXPOSE 4002
 ENV PORT=4002
 
-EXPOSE 4002
-
-CMD ["node", "dist/server.js"]
+# Start the specific workspace app
+CMD ["pnpm", "--filter", "@compliance-os/sanctions-service", "start"]
