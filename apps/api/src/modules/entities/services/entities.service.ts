@@ -4,6 +4,32 @@ import { ComplianceOSError } from '../../../shared/errors.js'
 export class EntitiesService {
     constructor(private entitiesRepository: EntitiesRepository) { }
 
+    async createEntity(tenantId: string, userId: string, data: { name: string; entityType: string; cnpj?: string; cpf?: string; sector?: string }) {
+        // Verificar se já existe (Duplicidade)
+        if (data.cnpj || data.cpf) {
+            const taxId = (data.cnpj || data.cpf)!
+            const exists = await this.entitiesRepository.findByTaxId(taxId, tenantId)
+            if (exists) {
+                throw new ComplianceOSError('ENTITY_ALREADY_EXISTS', 'Já existe uma entidade cadastrada com este documento neste inquilino', 409)
+            }
+        }
+
+        const entity = await this.entitiesRepository.create({
+            tenantId,
+            name: data.name,
+            entityType: data.entityType,
+            cnpj: data.cnpj ?? null,
+            cpf: data.cpf ?? null,
+            sector: data.sector ?? null,
+            createdBy: userId,
+            riskLevel: 'UNKNOWN',
+            status: 'ACTIVE',
+            kycStatus: 'PENDING',
+        })
+
+        return entity
+    }
+
     async getEntityDetails(id: string, tenantId: string) {
         const entity = await this.entitiesRepository.findById(id, tenantId)
         if (!entity) throw new ComplianceOSError('ENTITY_NOT_FOUND', 'Entidade não encontrada', 404)
@@ -81,6 +107,10 @@ export class EntitiesService {
                 user_id: userId
             })
         })
+
+        if (!screenRes.ok) {
+            return { success: false, error: 'Erro ao chamar serviço de sanções' }
+        }
 
         const screening = await screenRes.json() as any
 

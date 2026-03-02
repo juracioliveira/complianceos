@@ -15,11 +15,33 @@ const listEntitiesSchema = paginationSchema.extend({
     sort: z.enum(['name:asc', 'name:desc', 'risk_level:asc', 'risk_level:desc', 'created_at:desc', 'created_at:asc']).default('created_at:desc'),
 })
 
+const createEntitySchema = z.object({
+    name: z.string().min(3).max(200),
+    entityType: z.enum(['CLIENTE', 'FORNECEDOR', 'PARCEIRO', 'COLABORADOR']),
+    cnpj: z.string().length(14).optional(),
+    cpf: z.string().length(11).optional(),
+    sector: z.string().max(100).optional(),
+})
+
 // Injeção de Dependência Manual
 const entitiesRepository = new EntitiesRepository()
 const entitiesService = new EntitiesService(entitiesRepository)
 
 export const entitiesRoutes: FastifyPluginAsync = async (fastify) => {
+    // POST /v1/entities
+    fastify.post('/', {
+        preHandler: [authMiddleware],
+        handler: async (request: FastifyRequest, reply: FastifyReply) => {
+            const user = request.user as JwtPayload
+            const body = createEntitySchema.safeParse(request.body)
+            if (!body.success) throw new ValidationError('Dados de entidade inválidos', body.error)
+
+            const entity = await entitiesService.createEntity(user.tenantId, user.sub, body.data as any)
+
+            return reply.status(201).send({ data: entity })
+        }
+    })
+
     // GET /v1/entities
     fastify.get('/', {
         preHandler: [authMiddleware],
