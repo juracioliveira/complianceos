@@ -54,3 +54,8 @@ Thumbs.db
 *.p12
 *.pfx
 secrets/
+EASYPANEL-*.env
+easypanel-keys*.txt
+tmp_key.txt
+install-log.txt
+*.resolved
