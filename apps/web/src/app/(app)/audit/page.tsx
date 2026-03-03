@@ -15,14 +15,8 @@ import {
 } from 'lucide-react'
 import AuditEventDrawer from './components/AuditEventDrawer'
 
-const events = [
-    { id: 'EVT-99281', time: '2024-12-11 14:32:08', actor: 'Maria Silva', actorType: 'CCO', module: 'PLD_FT', action: 'checklist.complete', resource: 'checklist_run', result: 'SUCCESS', detail: 'Alpha Pagamentos — CDD score: 82pts (ALTO)' },
-    { id: 'EVT-99280', time: '2024-12-11 14:28:41', actor: 'Sistema Intelligence', actorType: 'SYSTEM', module: 'PLD_FT', action: 'risk.level_changed', resource: 'entity', result: 'SUCCESS', detail: 'Alpha Pagamentos: MÉDIO → ALTO' },
-    { id: 'EVT-99279', time: '2024-12-11 13:45:12', actor: 'João Costa', actorType: 'USER', module: 'LGPD', action: 'checklist.start', resource: 'checklist_run', result: 'SUCCESS', detail: 'Gama Construções — RAT iniciado' },
-    { id: 'EVT-99278', time: '2024-12-11 11:20:05', actor: 'Engine KYC', actorType: 'SYSTEM', module: 'ENTITIES', action: 'kyb.pep_detected', resource: 'entity', result: 'SUCCESS', detail: 'Delta Energia Corp. — sócio identificado como PEP' },
-    { id: 'EVT-99277', time: '2024-12-11 09:15:33', actor: 'Ruan Geovani', actorType: 'ADMIN', module: 'USERS', action: 'user.invite', resource: 'user', result: 'SUCCESS', detail: 'Convite enviado para joao.auditor@empresa.com' },
-    { id: 'EVT-99276', time: '2024-12-10 18:42:11', actor: 'João Costa', actorType: 'USER', module: 'AUTH', action: 'auth.login', resource: null, result: 'SUCCESS', detail: 'Login via MFA TOTP — IP: 187.12.45.102' },
-]
+import { useApi } from '@/hooks/useApi'
+import { useEffect } from 'react'
 
 const MODULE_ICON: Record<string, any> = {
     AUTH: ShieldCheck, USERS: User, ADMIN: Settings, ENTITIES: Layers,
@@ -40,6 +34,30 @@ const MODULE_COLOR: Record<string, string> = {
 export default function AuditPage() {
     const [selectedEvent, setSelectedEvent] = useState<any | null>(null)
     const [activeFilter, setActiveFilter] = useState('TODOS')
+    const [events, setEvents] = useState<any[]>([])
+    const [isLoading, setIsLoading] = useState(true)
+    const api = useApi()
+
+    useEffect(() => {
+        async function fetchEvents() {
+            try {
+                const res = await api.fetchWithAuth('/v1/audit/events')
+                if (res?.data) {
+                    setEvents(res.data)
+                } else if (res?.events) {
+                    setEvents(res.events)
+                } else if (Array.isArray(res)) {
+                    setEvents(res)
+                }
+            } catch (error) {
+                console.error('Failed to fetch audit events:', error)
+            } finally {
+                setIsLoading(false)
+            }
+        }
+        fetchEvents()
+    }, [])
+
 
     return (
         <div className="flex flex-col gap-6 animate-fade-in max-w-[1200px] mx-auto">
@@ -120,8 +138,21 @@ export default function AuditPage() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-border">
-                            {events.map((e) => {
+                            {isLoading ? (
+                                <tr>
+                                    <td colSpan={5} className="px-6 py-8 text-center text-muted-foreground text-xs animate-pulse">
+                                        Carregando trilha de auditoria criptografada...
+                                    </td>
+                                </tr>
+                            ) : events.length === 0 ? (
+                                <tr>
+                                    <td colSpan={5} className="px-6 py-8 text-center text-muted-foreground text-xs">
+                                        Nenhum evento registrado nesta tenant.
+                                    </td>
+                                </tr>
+                            ) : events.map((e) => {
                                 const Icon = MODULE_ICON[e.module] || Activity
+                                const timeFormatted = e.createdAt ? new Date(e.createdAt).toLocaleString('pt-BR') : e.time;
                                 return (
                                     <tr
                                         key={e.id}
@@ -130,18 +161,18 @@ export default function AuditPage() {
                                     >
                                         <td className="px-6 py-4">
                                             <div className="flex flex-col">
-                                                <span className="font-mono text-[11px] text-muted-foreground">{e.time}</span>
-                                                <span className="text-[10px] font-bold uppercase text-primary/70">{e.id}</span>
+                                                <span className="font-mono text-[11px] text-muted-foreground">{timeFormatted}</span>
+                                                <span className="text-[10px] font-bold uppercase text-primary/70">{e.id.substring(0, 8)}</span>
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-2">
                                                 <div className="w-7 h-7 rounded-lg bg-muted flex items-center justify-center font-bold text-[10px] text-muted-foreground">
-                                                    {e.actor.charAt(0)}
+                                                    {(e.actor || 'S')[0]}
                                                 </div>
                                                 <div className="flex flex-col leading-tight">
-                                                    <span className="font-bold text-foreground">{e.actor}</span>
-                                                    <span className="text-[10px] uppercase font-bold text-muted-foreground/60 tracking-wider font-mono">{e.actorType}</span>
+                                                    <span className="font-bold text-foreground">{e.actorName || e.actor}</span>
+                                                    <span className="text-[10px] uppercase font-bold text-muted-foreground/60 tracking-wider font-mono">{e.actorType || 'SYSTEM'}</span>
                                                 </div>
                                             </div>
                                         </td>
@@ -152,12 +183,12 @@ export default function AuditPage() {
                                                 </div>
                                                 <div className="flex flex-col">
                                                     <span className="font-bold text-foreground">{e.action}</span>
-                                                    <span className="text-[10px] text-muted-foreground truncate max-w-[200px]">{e.detail}</span>
+                                                    <span className="text-[10px] text-muted-foreground truncate max-w-[200px]">{e.detail || e.resourceId}</span>
                                                 </div>
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <span className="badge badge-green text-[9px]">Sucedido</span>
+                                            <span className={`badge text-[9px] ${e.result === 'SUCCESS' ? 'badge-green' : 'badge-red'}`}>{e.result === 'SUCCESS' ? 'Sucedido' : 'Falhou'}</span>
                                         </td>
                                         <td className="px-6 py-4 text-right">
                                             <button className="p-2 hover:bg-muted rounded-lg text-muted-foreground transition-all group-hover:translate-x-1">

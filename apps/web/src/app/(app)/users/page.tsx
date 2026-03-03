@@ -12,55 +12,39 @@ import {
     CheckCircle2,
     AlertCircle
 } from 'lucide-react'
+import { useApi } from '@/hooks/useApi'
+import { useEffect } from 'react'
 import InviteModal from './components/InviteModal'
 import RoleBadge from './components/RoleBadge'
 
 export default function UsersPage() {
     const [isInviteModalOpen, setIsInviteModalOpen] = useState(false)
     const [searchTerm, setSearchTerm] = useState('')
+    const [users, setUsers] = useState<any[]>([])
+    const [isLoading, setIsLoading] = useState(true)
+    const api = useApi()
 
-    const users = [
-        {
-            id: '1',
-            name: 'Ruan Geovani',
-            email: 'ruan@complianceos.com',
-            role: 'ADMIN',
-            status: 'ACTIVE',
-            lastLogin: '2h atrás',
-            avatar: 'RG'
-        },
-        {
-            id: '2',
-            name: 'Maria Silva',
-            email: 'maria.silva@grupoguinle.com.br',
-            role: 'CCO',
-            status: 'ACTIVE',
-            lastLogin: 'Hoje, 10:45',
-            avatar: 'MS'
-        },
-        {
-            id: '3',
-            name: 'João Costa',
-            email: 'joao.analista@grupoguinle.com.br',
-            role: 'ANALYST',
-            status: 'PENDING',
-            lastLogin: 'Convite enviado',
-            avatar: 'JC'
-        },
-        {
-            id: '4',
-            name: 'Ana Pereira',
-            email: 'ana.audit@consultoria.com.br',
-            role: 'AUDITOR',
-            status: 'ACTIVE',
-            lastLogin: 'Ontem',
-            avatar: 'AP'
+    useEffect(() => {
+        async function fetchUsers() {
+            try {
+                const res = await api.fetchWithAuth('/v1/users')
+                if (res?.data) {
+                    setUsers(res.data)
+                } else if (Array.isArray(res)) {
+                    setUsers(res)
+                }
+            } catch (error) {
+                console.error("Failed to fetch users", error)
+            } finally {
+                setIsLoading(false)
+            }
         }
-    ]
+        fetchUsers()
+    }, [])
 
     const filteredUsers = users.filter(user =>
-        user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.email.toLowerCase().includes(searchTerm.toLowerCase())
+        user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.email?.toLowerCase().includes(searchTerm.toLowerCase())
     )
 
     return (
@@ -115,12 +99,24 @@ export default function UsersPage() {
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-border">
-                                {filteredUsers.map((user) => (
+                                {isLoading ? (
+                                    <tr>
+                                        <td colSpan={5} className="px-6 py-8 text-center text-muted-foreground text-xs animate-pulse">
+                                            Carregando usuários...
+                                        </td>
+                                    </tr>
+                                ) : filteredUsers.length === 0 ? (
+                                    <tr>
+                                        <td colSpan={5} className="px-6 py-8 text-center text-muted-foreground text-xs">
+                                            Nenhum usuário encontrado.
+                                        </td>
+                                    </tr>
+                                ) : filteredUsers.map((user) => (
                                     <tr key={user.id} className="hover:bg-muted/20 transition-colors group">
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xs border border-primary/20">
-                                                    {user.avatar}
+                                                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xs border border-primary/20 uppercase">
+                                                    {user.name ? user.name.substring(0, 2) : 'U'}
                                                 </div>
                                                 <div className="flex flex-col">
                                                     <span className="text-sm font-bold text-foreground">{user.name}</span>
@@ -143,7 +139,7 @@ export default function UsersPage() {
                                             )}
                                         </td>
                                         <td className="px-6 py-4 text-xs font-medium text-muted-foreground">
-                                            {user.lastLogin}
+                                            {user.lastLogin ? new Date(user.lastLogin).toLocaleDateString('pt-BR') : 'Nunca acessou'}
                                         </td>
                                         <td className="px-6 py-4 text-right">
                                             <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">

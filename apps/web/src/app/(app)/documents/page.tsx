@@ -28,17 +28,37 @@ const docCategories = [
     { type: 'OUTROS', label: 'Legado / Arquivo', count: 42, icon: <Archive className="w-5 h-5" />, color: 'from-slate-500/10 to-slate-600/5 border-slate-200/50' },
 ]
 
-const documents = [
-    { id: 'd1', type: 'RAT', title: 'Registro de Atividades de Tratamento — Dezembro 2024', status: 'READY', size: '284 KB', generated: '2024-12-10', by: 'Maria Silva', validUntil: '2025-12-10', hash: 'e3b0c44298fc1c149afbf4c8...' },
-    { id: 'd2', type: 'POLITICA', title: 'Política PLD/FT — Revisão Anual 2024', status: 'READY', size: '512 KB', generated: '2024-11-01', by: 'Maria Silva', validUntil: '2025-11-01', hash: 'a7ffd3c2e1b0c44298fc1c14...' },
-    { id: 'd3', type: 'RELATORIO', title: 'Relatório de Risco Consolidado — Q4 2024', status: 'READY', size: '1.2 MB', generated: '2024-12-01', by: 'João Costa', validUntil: null, hash: 'b3e8a1d2f8e12d...' },
-    { id: 'd4', type: 'DPIA', title: 'DPIA — Sistema de Onboarding Digital 2024', status: 'GENERATING', size: null, generated: '2024-12-11', by: 'Ana Auditora', validUntil: null, hash: null },
-    { id: 'd5', type: 'RAT', title: 'Programa de Integridade — Lei 12.846/13', status: 'READY', size: '890 KB', generated: '2024-10-15', by: 'Admin', validUntil: '2025-10-15', hash: 'c9d2f1e8a1...' },
-    { id: 'd6', type: 'OUTROS', title: 'Termos de Uso App — v2.4.1', status: 'FAILED', size: null, generated: '2024-12-10', by: 'Sistema', validUntil: null, hash: null },
-]
+import { useApi } from '@/hooks/useApi'
+import { useEffect } from 'react'
 
 export default function DocumentsPage() {
     const [searchTerm, setSearchTerm] = useState('')
+    const [documents, setDocuments] = useState<any[]>([])
+    const [isLoading, setIsLoading] = useState(true)
+    const api = useApi()
+
+    useEffect(() => {
+        async function fetchDocs() {
+            try {
+                const res = await api.fetchWithAuth('/v1/documents')
+                if (res?.data) {
+                    setDocuments(res.data)
+                } else if (Array.isArray(res)) {
+                    setDocuments(res)
+                }
+            } catch (error) {
+                console.error("Failed to fetch documents", error)
+            } finally {
+                setIsLoading(false)
+            }
+        }
+        fetchDocs()
+    }, [])
+
+    const filteredDocs = documents.filter(doc =>
+        doc.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        doc.type?.toLowerCase().includes(searchTerm.toLowerCase())
+    )
 
     return (
         <div className="flex flex-col gap-8 animate-fade-in max-w-[1200px] mx-auto">
@@ -126,7 +146,19 @@ export default function DocumentsPage() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-border">
-                            {documents.map((doc) => (
+                            {isLoading ? (
+                                <tr>
+                                    <td colSpan={5} className="px-6 py-8 text-center text-muted-foreground text-xs animate-pulse">
+                                        Carregando cofre de documentos...
+                                    </td>
+                                </tr>
+                            ) : filteredDocs.length === 0 ? (
+                                <tr>
+                                    <td colSpan={5} className="px-6 py-8 text-center text-muted-foreground text-xs">
+                                        Nenhum documento encontrado.
+                                    </td>
+                                </tr>
+                            ) : filteredDocs.map((doc) => (
                                 <tr key={doc.id} className="hover:bg-muted/20 transition-colors group">
                                     <td className="px-6 py-5">
                                         <div className="flex items-start gap-3">
@@ -134,11 +166,11 @@ export default function DocumentsPage() {
                                                 <FileText className="w-5 h-5" />
                                             </div>
                                             <div className="flex flex-col">
-                                                <span className="text-sm font-bold text-foreground leading-snug max-w-[320px]">{doc.title}</span>
+                                                <span className="text-sm font-bold text-foreground leading-snug max-w-[320px]">{doc.title || doc.filename || `Documento ${doc.id}`}</span>
                                                 <div className="flex items-center gap-2 mt-1">
-                                                    <span className="text-[10px] font-bold uppercase py-0.5 px-1.5 rounded bg-muted text-muted-foreground tracking-wider">{doc.type}</span>
+                                                    <span className="text-[10px] font-bold uppercase py-0.5 px-1.5 rounded bg-muted text-muted-foreground tracking-wider">{doc.type || 'DOCUMENT'}</span>
                                                     <span className="text-[10px] text-muted-foreground font-medium">
-                                                        {formatDate(doc.generated)} {doc.size ? `· ${doc.size}` : ''}
+                                                        {formatDate(doc.createdAt || doc.generated)} {doc.size ? `· ${doc.size}` : ''}
                                                     </span>
                                                 </div>
                                             </div>
@@ -146,7 +178,7 @@ export default function DocumentsPage() {
                                     </td>
                                     <td className="px-6 py-5">
                                         <div className="flex flex-col gap-2">
-                                            {doc.status === 'READY' ? (
+                                            {doc.status === 'READY' || doc.status === 'COMPLETED' ? (
                                                 <div className="flex flex-col gap-1.5">
                                                     <div className="flex items-center gap-1.5 text-emerald-600 font-bold text-[10px] uppercase tracking-wider">
                                                         <CheckCircle2 className="w-3.5 h-3.5" /> Disponível
@@ -160,7 +192,7 @@ export default function DocumentsPage() {
                                                         </div>
                                                     )}
                                                 </div>
-                                            ) : doc.status === 'GENERATING' ? (
+                                            ) : doc.status === 'GENERATING' || doc.status === 'PENDING' ? (
                                                 <div className="flex flex-col gap-2 w-full max-w-[120px]">
                                                     <div className="flex items-center gap-1.5 text-blue-500 font-bold text-[10px] uppercase tracking-wider">
                                                         <Loader2 className="w-3.5 h-3.5 animate-spin" /> Gerando
@@ -171,7 +203,7 @@ export default function DocumentsPage() {
                                                 </div>
                                             ) : (
                                                 <div className="flex items-center gap-1.5 text-red-500 font-bold text-[10px] uppercase tracking-wider">
-                                                    <AlertCircle className="w-3.5 h-3.5" /> Falha no Job
+                                                    <AlertCircle className="w-3.5 h-3.5" /> {doc.status === 'FAILED' ? 'Falha no Job' : doc.status}
                                                 </div>
                                             )}
                                         </div>
@@ -187,7 +219,7 @@ export default function DocumentsPage() {
                                         )}
                                     </td>
                                     <td className="px-6 py-5">
-                                        <span className="text-xs font-medium text-muted-foreground">{doc.by}</span>
+                                        <span className="text-xs font-medium text-muted-foreground">{doc.generatedBy ? doc.generatedBy : doc.by || 'Sistema'}</span>
                                     </td>
                                     <td className="px-6 py-5 text-right">
                                         <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -195,9 +227,16 @@ export default function DocumentsPage() {
                                                 <ExternalLink className="w-4 h-4" />
                                             </button>
                                             <button
-                                                className={`p-2 rounded-lg transition-colors ${doc.status === 'READY' ? 'hover:bg-primary/10 text-primary' : 'text-muted-foreground/30 cursor-not-allowed'}`}
-                                                disabled={doc.status !== 'READY'}
+                                                className={`p-2 rounded-lg transition-colors ${(doc.status === 'READY' || doc.status === 'COMPLETED') ? 'hover:bg-primary/10 text-primary' : 'text-muted-foreground/30 cursor-not-allowed'}`}
+                                                disabled={doc.status !== 'READY' && doc.status !== 'COMPLETED'}
                                                 title="Baixar PDF Assinado"
+                                                onClick={() => {
+                                                    if (doc.downloadUrl && (doc.status === 'READY' || doc.status === 'COMPLETED')) {
+                                                        const token = sessionStorage.getItem('access_token');
+                                                        // In a real app we'd fetch the blob with auth and trigger download
+                                                        alert(`Download request to: ${doc.downloadUrl}`);
+                                                    }
+                                                }}
                                             >
                                                 <Download className="w-4 h-4" />
                                             </button>

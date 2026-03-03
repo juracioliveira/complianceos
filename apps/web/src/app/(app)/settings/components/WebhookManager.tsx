@@ -3,27 +3,32 @@
 import { useState } from 'react'
 import { Zap, Plus, ShieldCheck, History, Trash2, Key, Link2, Copy, Check } from 'lucide-react'
 
+import { useApi } from '@/hooks/useApi'
+import { useEffect } from 'react'
+
 export default function WebhookManager() {
     const [copied, setCopied] = useState<string | null>(null)
+    const [webhooks, setWebhooks] = useState<any[]>([])
+    const [isLoading, setIsLoading] = useState(true)
+    const api = useApi()
 
-    const webhooks = [
-        {
-            id: 'wh_1',
-            url: 'https://api.empresa.com.br/v1/compliance-callback',
-            status: 'ACTIVE',
-            events: ['checklist.completed', 'risk.critical_hit'],
-            lastSuccess: '5m atrás',
-            secret: 'whsec_9b2e...7d1f'
-        },
-        {
-            id: 'wh_2',
-            url: 'https://webhook.site/test-1234',
-            status: 'FAILED',
-            events: ['entity.created'],
-            lastSuccess: 'Há 2 dias',
-            secret: 'whsec_1a2b...3c4d'
+    useEffect(() => {
+        async function fetchWebhooks() {
+            try {
+                const res = await api.fetchWithAuth('/v1/webhooks')
+                if (res?.data) {
+                    setWebhooks(res.data)
+                } else if (Array.isArray(res)) {
+                    setWebhooks(res)
+                }
+            } catch (error) {
+                console.error("Failed to fetch webhooks", error)
+            } finally {
+                setIsLoading(false)
+            }
         }
-    ]
+        fetchWebhooks()
+    }, [])
 
     const handleCopy = (id: string, secret: string) => {
         navigator.clipboard.writeText(secret)
@@ -46,7 +51,15 @@ export default function WebhookManager() {
                 </div>
 
                 <div className="divide-y divide-border">
-                    {webhooks.map((wh) => (
+                    {isLoading ? (
+                        <div className="p-6 text-center text-muted-foreground text-xs animate-pulse">
+                            Carregando webhooks...
+                        </div>
+                    ) : webhooks.length === 0 ? (
+                        <div className="p-6 text-center text-muted-foreground text-xs">
+                            Nenhum webhook configurado.
+                        </div>
+                    ) : webhooks.map((wh) => (
                         <div key={wh.id} className="p-6 hover:bg-muted/30 transition-colors group">
                             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                                 <div className="flex flex-col gap-2 flex-1">
@@ -55,22 +68,26 @@ export default function WebhookManager() {
                                         <span className="font-bold text-foreground truncate max-w-md">{wh.url}</span>
                                     </div>
                                     <div className="flex flex-wrap items-center gap-3">
-                                        {wh.events.map(ev => (
+                                        {Array.isArray(wh.events) ? wh.events.map((ev: string) => (
                                             <span key={ev} className="text-[10px] font-bold uppercase tracking-wider bg-primary/10 text-primary px-2 py-0.5 rounded-md">
                                                 {ev}
                                             </span>
-                                        ))}
+                                        )) : (
+                                            <span className="text-[10px] font-bold uppercase tracking-wider bg-primary/10 text-primary px-2 py-0.5 rounded-md">
+                                                {wh.events || 'ALL'}
+                                            </span>
+                                        )}
                                         <span className="w-1 h-1 rounded-full bg-border" />
                                         <span className="text-[11px] text-muted-foreground font-medium flex items-center gap-1">
                                             <History className="w-3 h-3" />
-                                            Último sucesso: {wh.lastSuccess}
+                                            Último sucesso: {wh.lastSuccess ? new Date(wh.lastSuccess).toLocaleString() : 'Nunca'}
                                         </span>
                                     </div>
                                 </div>
 
                                 <div className="flex items-center gap-2">
                                     <div className="flex items-center gap-2 bg-muted/50 p-1.5 rounded-lg border border-border">
-                                        <code className="text-[10px] font-mono text-muted-foreground px-1">{wh.secret}</code>
+                                        <code className="text-[10px] font-mono text-muted-foreground px-1">{wh.secret.substring(0, 10)}...</code>
                                         <button
                                             onClick={() => handleCopy(wh.id, wh.secret)}
                                             className="p-1 hover:text-primary transition-colors"

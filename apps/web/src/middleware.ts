@@ -6,7 +6,7 @@ export function middleware(request: NextRequest) {
     const isAuthRoute = request.nextUrl.pathname.startsWith('/login')
 
     // Configurações de rotas públicas
-    const publicRoutes = ['/login']
+    const publicRoutes = ['/', '/login']
     const isPublicRoute = publicRoutes.includes(request.nextUrl.pathname)
 
     if (!token && !isPublicRoute) {

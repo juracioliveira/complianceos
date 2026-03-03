@@ -25,6 +25,13 @@ const config: Config = {
                     900: 'hsl(220, 84%, 18%)',
                     950: 'hsl(220, 90%, 10%)',
                 },
+                // Design System Harmonization
+                accent: {
+                    DEFAULT: 'hsl(var(--accent))',
+                    foreground: 'hsl(var(--accent-foreground))',
+                    primary: '#00E5FF',
+                    secondary: '#F5A623',
+                },
                 // Risk levels
                 risk: {
                     low: 'hsl(142, 71%, 45%)',
@@ -43,7 +50,6 @@ const config: Config = {
                 primary: { DEFAULT: 'hsl(var(--primary))', foreground: 'hsl(var(--primary-foreground))' },
                 secondary: { DEFAULT: 'hsl(var(--secondary))', foreground: 'hsl(var(--secondary-foreground))' },
                 muted: { DEFAULT: 'hsl(var(--muted))', foreground: 'hsl(var(--muted-foreground))' },
-                accent: { DEFAULT: 'hsl(var(--accent))', foreground: 'hsl(var(--accent-foreground))' },
                 destructive: { DEFAULT: 'hsl(var(--destructive))', foreground: 'hsl(var(--destructive-foreground))' },
                 border: 'hsl(var(--border))',
                 input: 'hsl(var(--input))',
@@ -56,6 +62,9 @@ const config: Config = {
             },
             fontFamily: {
                 sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
+                display: ['var(--font-dm-serif)', 'serif'],
+                ui: ['var(--font-ibm-plex)', 'sans-serif'],
+                mono: ['var(--font-jetbrains-mono)', 'monospace'],
             },
             keyframes: {
                 'accordion-down': { from: { height: '0' }, to: { height: 'var(--radix-accordion-content-height)' } },

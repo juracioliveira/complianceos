@@ -1,5 +1,6 @@
 import { EntitiesRepository } from '../repositories/entities.repository.js'
 import { ComplianceOSError } from '../../../shared/errors.js'
+import { sanctionsScreeningQueue } from '../../../infra/queue.js'
 
 export class EntitiesService {
     constructor(private entitiesRepository: EntitiesRepository) { }
@@ -64,14 +65,14 @@ export class EntitiesService {
             throw new ComplianceOSError('ENTITY_INVALID_FOR_SYNC', 'Entidade não encontrada ou sem CNPJ para sincronização', 400)
         }
 
-        // Chamar CNPJ Service local
+        // Chamar CNPJ Service local (Banco próprio RFB)
         const cnpjServiceUrl = process.env['CNPJ_SERVICE_URL'] || 'http://localhost:4001'
         const response = await fetch(`${cnpjServiceUrl}/cnpj/${entity.cnpj}`, {
             headers: { 'x-api-key': process.env['INTERNAL_API_KEY'] || 'dev-key' }
         })
 
         if (!response.ok) {
-            throw new ComplianceOSError('CNPJ_SERVICE_ERROR', 'Erro ao consultar serviço de CNPJ', 502)
+            throw new ComplianceOSError('CNPJ_SERVICE_ERROR', 'Erro ao consultar serviço de CNPJ interno da RFB', 502)
         }
 
         const externalData = await response.json() as any
@@ -91,42 +92,25 @@ export class EntitiesService {
         // 1. Sincronizar dados cadastrais
         await this.syncKybData(id, tenantId)
 
-        // 2. Chamar Sanctions Service para screening instantâneo
+        // 2. Enviar para a fila de Sanções Assíncrona via BullMQ
         const entity = await this.entitiesRepository.findById(id, tenantId)
         if (!entity) return
 
-        const sanctionsUrl = process.env['SANCTIONS_SERVICE_URL'] || 'http://localhost:4002'
-        const screenRes = await fetch(`${sanctionsUrl}/screen`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                name: entity.name,
-                document: entity.cnpj || entity.cpf,
-                sources: ['OFAC', 'UN', 'EU', 'INTERPOL', 'CEIS', 'CNEP'],
-                tenant_id: tenantId,
-                user_id: userId
-            })
+        await sanctionsScreeningQueue.add('screen-entity', {
+            tenantId,
+            entityId: id,
+            document: entity.cnpj || entity.cpf,
+            name: entity.name,
+            userId
         })
 
-        if (!screenRes.ok) {
-            return { success: false, error: 'Erro ao chamar serviço de sanções' }
-        }
-
-        const screening = await screenRes.json() as any
-
-        // 3. Atualizar status de KYC baseado no risco encontrado
-        let kycStatus = 'IN_PROGRESS'
-        if (screening.risk_level === 'clear') kycStatus = 'APPROVED'
-        if (screening.risk_level === 'confirmed') kycStatus = 'REJECTED'
-
+        // 3. Atualizar status de KYC temporário para PENDING já que a fila processará
         await this.entitiesRepository.update(id, tenantId, {
-            riskLevel: screening.risk_level === 'confirmed' ? 'CRITICAL' : screening.risk_level === 'potential' ? 'HIGH' : 'LOW',
-            riskScore: screening.highest_score,
-            kycStatus: kycStatus as any,
+            kycStatus: 'PENDING',
             lastAssessedAt: new Date(),
             lastRiskUpdateBy: userId
         })
 
-        return { success: true, screeningId: screening.screening_id, riskLevel: screening.risk_level }
+        return { success: true, queued: true, message: 'Screening enviado para processamento assíncrono.' }
     }
 }

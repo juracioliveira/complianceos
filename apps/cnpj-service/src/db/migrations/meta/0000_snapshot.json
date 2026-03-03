@@ -1,0 +1,634 @@
+{
+  "id": "c0dae44c-1c96-4e86-a3b7-cad7c82cc4dd",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "5",
+  "dialect": "pg",
+  "tables": {
+    "rfb_cnaes": {
+      "name": "rfb_cnaes",
+      "schema": "",
+      "columns": {
+        "codigo": {
+          "name": "codigo",
+          "type": "char(7)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "descricao": {
+          "name": "descricao",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "rfb_empresas": {
+      "name": "rfb_empresas",
+      "schema": "",
+      "columns": {
+        "cnpj_basico": {
+          "name": "cnpj_basico",
+          "type": "char(8)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "razao_social": {
+          "name": "razao_social",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "natureza_juridica": {
+          "name": "natureza_juridica",
+          "type": "char(4)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "qualif_responsavel": {
+          "name": "qualif_responsavel",
+          "type": "char(2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "capital_social": {
+          "name": "capital_social",
+          "type": "numeric(18, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "porte": {
+          "name": "porte",
+          "type": "char(2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ente_federativo": {
+          "name": "ente_federativo",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "atualizado_em": {
+          "name": "atualizado_em",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "idx_rfb_empresas_rs_gin": {
+          "name": "idx_rfb_empresas_rs_gin",
+          "columns": [
+            "razao_social"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "rfb_estabelecimentos": {
+      "name": "rfb_estabelecimentos",
+      "schema": "",
+      "columns": {
+        "cnpj_basico": {
+          "name": "cnpj_basico",
+          "type": "char(8)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "cnpj_ordem": {
+          "name": "cnpj_ordem",
+          "type": "char(4)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "cnpj_dv": {
+          "name": "cnpj_dv",
+          "type": "char(2)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "matriz_filial": {
+          "name": "matriz_filial",
+          "type": "char(1)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "nome_fantasia": {
+          "name": "nome_fantasia",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "situacao_cadastral": {
+          "name": "situacao_cadastral",
+          "type": "char(2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "data_situacao": {
+          "name": "data_situacao",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "motivo_situacao": {
+          "name": "motivo_situacao",
+          "type": "char(2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cnae_fiscal": {
+          "name": "cnae_fiscal",
+          "type": "char(7)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cnae_secundarios": {
+          "name": "cnae_secundarios",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "tipo_logradouro": {
+          "name": "tipo_logradouro",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "logradouro": {
+          "name": "logradouro",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "numero": {
+          "name": "numero",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "complemento": {
+          "name": "complemento",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "bairro": {
+          "name": "bairro",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cep": {
+          "name": "cep",
+          "type": "char(8)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "uf": {
+          "name": "uf",
+          "type": "char(2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "municipio": {
+          "name": "municipio",
+          "type": "char(4)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ddd1": {
+          "name": "ddd1",
+          "type": "char(4)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "telefone1": {
+          "name": "telefone1",
+          "type": "char(9)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ddd2": {
+          "name": "ddd2",
+          "type": "char(4)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "telefone2": {
+          "name": "telefone2",
+          "type": "char(9)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ddd_fax": {
+          "name": "ddd_fax",
+          "type": "char(4)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "fax": {
+          "name": "fax",
+          "type": "char(9)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "situacao_especial": {
+          "name": "situacao_especial",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "data_situacao_esp": {
+          "name": "data_situacao_esp",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "data_inicio": {
+          "name": "data_inicio",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "idx_rfb_estabelecimentos_basico": {
+          "name": "idx_rfb_estabelecimentos_basico",
+          "columns": [
+            "cnpj_basico"
+          ],
+          "isUnique": false
+        },
+        "idx_rfb_estabelecimentos_situacao": {
+          "name": "idx_rfb_estabelecimentos_situacao",
+          "columns": [
+            "situacao_cadastral"
+          ],
+          "isUnique": false
+        },
+        "idx_rfb_estabelecimentos_cnae": {
+          "name": "idx_rfb_estabelecimentos_cnae",
+          "columns": [
+            "cnae_fiscal"
+          ],
+          "isUnique": false
+        },
+        "idx_rfb_estabelecimentos_uf_mun": {
+          "name": "idx_rfb_estabelecimentos_uf_mun",
+          "columns": [
+            "uf",
+            "municipio"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "rfb_estabelecimentos_cnpj_basico_cnpj_ordem_cnpj_dv_pk": {
+          "name": "rfb_estabelecimentos_cnpj_basico_cnpj_ordem_cnpj_dv_pk",
+          "columns": [
+            "cnpj_basico",
+            "cnpj_ordem",
+            "cnpj_dv"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    },
+    "rfb_motivos": {
+      "name": "rfb_motivos",
+      "schema": "",
+      "columns": {
+        "codigo": {
+          "name": "codigo",
+          "type": "char(2)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "descricao": {
+          "name": "descricao",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "rfb_municipios": {
+      "name": "rfb_municipios",
+      "schema": "",
+      "columns": {
+        "codigo": {
+          "name": "codigo",
+          "type": "char(4)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "descricao": {
+          "name": "descricao",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "rfb_naturezas": {
+      "name": "rfb_naturezas",
+      "schema": "",
+      "columns": {
+        "codigo": {
+          "name": "codigo",
+          "type": "char(4)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "descricao": {
+          "name": "descricao",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "rfb_paises": {
+      "name": "rfb_paises",
+      "schema": "",
+      "columns": {
+        "codigo": {
+          "name": "codigo",
+          "type": "char(3)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "descricao": {
+          "name": "descricao",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "rfb_qualificacoes": {
+      "name": "rfb_qualificacoes",
+      "schema": "",
+      "columns": {
+        "codigo": {
+          "name": "codigo",
+          "type": "char(2)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "descricao": {
+          "name": "descricao",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "rfb_simples": {
+      "name": "rfb_simples",
+      "schema": "",
+      "columns": {
+        "cnpj_basico": {
+          "name": "cnpj_basico",
+          "type": "char(8)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "opcao_simples": {
+          "name": "opcao_simples",
+          "type": "char(1)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "data_opcao_simples": {
+          "name": "data_opcao_simples",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "data_exc_simples": {
+          "name": "data_exc_simples",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "opcao_mei": {
+          "name": "opcao_mei",
+          "type": "char(1)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "data_opcao_mei": {
+          "name": "data_opcao_mei",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "data_exc_mei": {
+          "name": "data_exc_mei",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "rfb_socios": {
+      "name": "rfb_socios",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "bigserial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "cnpj_basico": {
+          "name": "cnpj_basico",
+          "type": "char(8)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tipo_socio": {
+          "name": "tipo_socio",
+          "type": "char(1)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "nome_socio": {
+          "name": "nome_socio",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cnpj_cpf_socio": {
+          "name": "cnpj_cpf_socio",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "qualif_socio": {
+          "name": "qualif_socio",
+          "type": "char(2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "data_entrada": {
+          "name": "data_entrada",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pais": {
+          "name": "pais",
+          "type": "char(3)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "repr_legal": {
+          "name": "repr_legal",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "nome_repr": {
+          "name": "nome_repr",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "qualif_repr": {
+          "name": "qualif_repr",
+          "type": "char(2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "faixa_etaria": {
+          "name": "faixa_etaria",
+          "type": "char(1)",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "idx_rfb_socios_basico": {
+          "name": "idx_rfb_socios_basico",
+          "columns": [
+            "cnpj_basico"
+          ],
+          "isUnique": false
+        },
+        "idx_rfb_socios_nome_gin": {
+          "name": "idx_rfb_socios_nome_gin",
+          "columns": [
+            "nome_socio"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "rfb_sync_log": {
+      "name": "rfb_sync_log",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "bigserial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "competencia": {
+          "name": "competencia",
+          "type": "char(7)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "iniciado_em": {
+          "name": "iniciado_em",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "concluido_em": {
+          "name": "concluido_em",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "arquivos_ok": {
+          "name": "arquivos_ok",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "erro_msg": {
+          "name": "erro_msg",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}
