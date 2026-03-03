@@ -4,33 +4,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ComplianceOS | Plataforma de Compliance &amp; Governança</title>
-    <meta name="description"
-        content="O ComplianceOS automatiza PLD-FT, LGPD e Anticorrupção para fintechs e PMEs brasileiras — do KYC ao relatório COAF.">
+    <title>ComplianceOS — Plataforma de Compliance Regulatório</title>
+    <meta name="description" content="Automatize PLD-FT, LGPD e Anticorrupção com infraestrutura de nível bancário.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap"
         rel="stylesheet">
     <style>
         :root {
-            --bg-base: #0A0C10;
-            --bg-surface: #111318;
-            --bg-surface-2: #14171d;
-            --accent: #00E5FF;
-            --accent-glow: rgba(0, 229, 255, 0.15);
-            --accent-hover: rgba(0, 229, 255, 0.85);
-            --amber: #F5A623;
-            --amber-glow: rgba(245, 166, 35, 0.15);
-            --text-primary: #F0F2F5;
-            --text-secondary: #8892A4;
-            --border: rgba(255, 255, 255, 0.07);
-            --border-hover: rgba(0, 229, 255, 0.3);
-            --font-display: 'DM Serif Display', serif;
-            --font-ui: 'IBM Plex Sans', sans-serif;
-            --font-mono: 'JetBrains Mono', monospace;
-            --max-w: 1280px;
-            --section-pad: 8rem 2rem;
+            --ink: #0A0C10;
+            --surface: #111318;
+            --surface-2: #16191f;
+            --line: rgba(255, 255, 255, 0.08);
+            --line-strong: rgba(255, 255, 255, 0.14);
+            --cyan: #00C8E0;
+            --amber: #E8941A;
+            --text: #EDF0F4;
+            --muted: #7A8494;
+            --dim: #3A4152;
+            --max: 1200px;
         }
 
         *,
@@ -44,155 +36,172 @@
 
         html {
             scroll-behavior: smooth;
+            font-size: 16px;
         }
 
         body {
-            font-family: var(--font-ui);
-            background: var(--bg-base);
-            color: var(--text-primary);
-            line-height: 1.6;
+            font-family: 'IBM Plex Sans', sans-serif;
+            background: var(--ink);
+            color: var(--text);
+            line-height: 1.65;
             overflow-x: hidden;
         }
 
         a {
             color: inherit;
             text-decoration: none;
-            transition: color 0.2s;
         }
 
         h1,
         h2,
-        h3 {
-            font-family: var(--font-display);
-            font-weight: normal;
+        h3,
+        h4 {
+            font-family: 'DM Serif Display', serif;
+            font-weight: 400;
             line-height: 1.1;
         }
 
-        /* ── Scroll progress ── */
-        #scroll-bar {
+        p {
+            color: var(--muted);
+            line-height: 1.75;
+        }
+
+        code,
+        samp,
+        .mono {
+            font-family: 'IBM Plex Mono', monospace;
+        }
+
+        /* ─── Layout ─────────────────────────────────── */
+        .wrap {
+            max-width: var(--max);
+            margin: 0 auto;
+            padding: 0 3rem;
+        }
+
+        .divider {
+            height: 1px;
+            background: var(--line);
+        }
+
+        section {
+            border-top: 1px solid var(--line);
+        }
+
+        /* ─── Scroll bar ──────────────────────────────── */
+        #sb {
             position: fixed;
             top: 0;
             left: 0;
-            width: 0%;
-            height: 2px;
-            background: var(--accent);
-            z-index: 1001;
-            box-shadow: 0 0 10px var(--accent);
-            transition: width 0.1s ease-out;
+            height: 1px;
+            width: 0;
+            background: var(--cyan);
+            z-index: 999;
+            transition: width .1s;
         }
 
-        /* ── Container ── */
-        .container {
-            max-width: var(--max-w);
-            margin: 0 auto;
-            padding: 0 2rem;
-            position: relative;
-        }
-
-        /* ── Reveal animation ── */
-        .reveal {
+        /* ─── Reveal ──────────────────────────────────── */
+        .r {
             opacity: 0;
-            transform: translateY(32px);
-            transition: opacity 0.7s ease, transform 0.7s ease;
+            transform: translateY(20px);
+            transition: opacity .6s ease, transform .6s ease;
         }
 
-        .reveal.visible {
+        .r.v {
             opacity: 1;
-            transform: translateY(0);
+            transform: none;
         }
 
-        /* ── Buttons ── */
+        /* ─── Buttons ─────────────────────────────────── */
         .btn {
             display: inline-flex;
             align-items: center;
-            gap: 0.5rem;
-            padding: 0.75rem 1.5rem;
-            border-radius: 4px;
-            font-family: var(--font-ui);
-            font-weight: 600;
-            font-size: 0.875rem;
+            gap: .5rem;
+            padding: .625rem 1.25rem;
+            font-family: 'IBM Plex Sans', sans-serif;
+            font-size: .8125rem;
+            font-weight: 500;
+            letter-spacing: .04em;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
             border: 1px solid transparent;
+            transition: all .18s;
             cursor: pointer;
-            transition: all 0.2s ease;
             white-space: nowrap;
         }
 
-        .btn-primary {
-            background: var(--accent);
-            color: var(--bg-base);
-            box-shadow: 0 0 20px var(--accent-glow);
+        .btn-fill {
+            background: var(--cyan);
+            color: var(--ink);
+            border-color: var(--cyan);
         }
 
-        .btn-primary:hover {
-            background: var(--accent-hover);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 25px rgba(0, 229, 255, 0.3);
-        }
-
-        .btn-outline {
+        .btn-fill:hover {
             background: transparent;
-            border-color: var(--accent);
-            color: var(--accent);
+            color: var(--cyan);
         }
 
-        .btn-outline:hover {
-            background: rgba(0, 229, 255, 0.06);
-            transform: translateY(-2px);
-        }
-
-        .btn-ghost {
+        .btn-line {
             background: transparent;
-            color: var(--text-primary);
-            text-transform: none;
-            letter-spacing: 0;
+            color: var(--text);
+            border-color: var(--line-strong);
         }
 
-        .btn-ghost:hover {
-            color: var(--accent);
+        .btn-line:hover {
+            border-color: var(--cyan);
+            color: var(--cyan);
         }
 
-        /* ══════════════════════════════════════════════════
-   1. NAVBAR
-══════════════════════════════════════════════════ */
-        .navbar {
+        /* ─── 1. NAVBAR ───────────────────────────────── */
+        #nav {
             position: fixed;
             top: 0;
             width: 100%;
             z-index: 100;
-            padding: 1.25rem 2rem;
+            transition: background .25s, border-color .25s;
             border-bottom: 1px solid transparent;
-            transition: all 0.3s ease;
         }
 
-        .navbar.scrolled {
-            background: rgba(10, 12, 16, 0.88);
-            backdrop-filter: blur(14px);
-            border-bottom-color: var(--border);
+        #nav.s {
+            background: rgba(10, 12, 16, .92);
+            backdrop-filter: blur(16px);
+            border-bottom-color: var(--line);
         }
 
-        .nav-inner {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: var(--max-w);
+        .nav-w {
+            max-width: var(--max);
             margin: 0 auto;
+            padding: 0 3rem;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
 
         .logo {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
-            font-size: 1.5rem;
-            font-weight: 700;
-            letter-spacing: -0.5px;
+            gap: .625rem;
+            font-size: 1rem;
+            font-weight: 600;
+            letter-spacing: -.02em;
+            color: var(--text);
         }
 
-        .logo svg {
-            width: 28px;
-            height: 28px;
-            flex-shrink: 0;
+        .logo-mark {
+            width: 26px;
+            height: 26px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-mark svg {
+            width: full;
+            height: full;
+        }
+
+        .logo span {
+            color: var(--cyan);
         }
 
         .nav-links {
@@ -200,116 +209,91 @@
             gap: 2.5rem;
         }
 
-        .nav-link {
-            font-size: 0.9rem;
-            font-weight: 500;
-            color: var(--text-secondary);
+        .nav-links a {
+            font-size: .8125rem;
+            font-weight: 400;
+            color: var(--muted);
+            letter-spacing: .01em;
+            transition: color .15s;
         }
 
-        .nav-link:hover {
-            color: var(--text-primary);
+        .nav-links a:hover {
+            color: var(--text);
         }
 
-        .nav-actions {
+        .nav-cta {
             display: flex;
+            gap: .75rem;
             align-items: center;
-            gap: 1rem;
         }
 
-        /* ══════════════════════════════════════════════════
-   2. HERO
-══════════════════════════════════════════════════ */
-        .hero {
-            position: relative;
+        /* ─── 2. HERO ─────────────────────────────────── */
+        #hero {
             min-height: 100vh;
-            padding: 10rem 2rem 6rem;
+            padding: 120px 0 80px;
             display: flex;
             align-items: center;
-            background-image:
-                linear-gradient(45deg, var(--border) 1px, transparent 1px),
-                linear-gradient(-45deg, var(--border) 1px, transparent 1px);
-            background-size: 60px 60px;
+            border-top: none;
+            position: relative;
             overflow: hidden;
         }
 
-        .hero::before {
+        #hero::before {
             content: '';
             position: absolute;
-            top: -40%;
-            right: -20%;
-            width: 75vw;
-            height: 75vw;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(0, 229, 255, 0.09) 0%, transparent 60%);
+            inset: 0;
+            background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px);
+            background-size: 80px 80px;
+            opacity: .5;
             pointer-events: none;
         }
 
-        .hero-content {
-            max-width: 560px;
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6rem;
+            align-items: center;
+            position: relative;
             z-index: 2;
         }
 
-        /* Hero inner = 2-col grid */
-        .hero .container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 4rem;
-            align-items: center;
-        }
-
-        .hero-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            background: rgba(17, 19, 24, 0.9);
-            border: 1px solid var(--border);
-            border-radius: 50px;
-            font-family: var(--font-mono);
-            font-size: 0.78rem;
-            color: var(--text-secondary);
+        .hero-eyebrow {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: .75rem;
+            color: var(--muted);
+            letter-spacing: .1em;
+            text-transform: uppercase;
             margin-bottom: 2rem;
-            animation: float 6s ease-in-out infinite;
+            display: flex;
+            align-items: center;
+            gap: .75rem;
         }
 
-        .badge-dot {
-            width: 7px;
-            height: 7px;
-            border-radius: 50%;
-            background: var(--accent);
-            box-shadow: 0 0 8px var(--accent);
-            animation: pulse-dot 2s infinite;
-        }
-
-        @keyframes pulse-dot {
-
-            0%,
-            100% {
-                opacity: 1
-            }
-
-            50% {
-                opacity: 0.5
-            }
+        .hero-eyebrow::before {
+            content: '';
+            display: block;
+            width: 24px;
+            height: 1px;
+            background: var(--cyan);
         }
 
         .hero h1 {
-            font-size: clamp(2.8rem, 6vw, 5rem);
-            margin-bottom: 1.5rem;
-            color: var(--text-primary);
+            font-size: clamp(2.5rem, 4.5vw, 4rem);
+            color: var(--text);
+            margin-bottom: 1.75rem;
+            max-width: 560px;
         }
 
         .hero h1 em {
+            color: var(--cyan);
             font-style: italic;
-            color: var(--accent);
         }
 
         .hero-sub {
-            font-size: 1.2rem;
-            color: var(--text-secondary);
+            font-size: 1.0625rem;
+            max-width: 480px;
             margin-bottom: 2.5rem;
-            max-width: 560px;
-            line-height: 1.7;
+            line-height: 1.75;
         }
 
         .hero-ctas {
@@ -318,834 +302,774 @@
             flex-wrap: wrap;
         }
 
-        /* ── Dashboard mock (CSS art) — right column ── */
-        .hero-mock {
-            background: var(--bg-surface);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px var(--border);
+        /* ─── Entity table (right col hero) ─────── */
+        .entity-panel {
+            background: var(--surface);
+            border: 1px solid var(--line-strong);
             overflow: hidden;
-            animation: slideUpFade 1s 0.3s both cubic-bezier(0.16, 1, 0.3, 1);
-            z-index: 2;
         }
 
-        @keyframes slideUpFade {
-            from {
-                opacity: 0;
-                transform: translateY(60px)
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0)
-            }
+        .ep-header {
+            padding: .875rem 1.25rem;
+            border-bottom: 1px solid var(--line);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .mock-header {
-            height: 38px;
-            border-bottom: 1px solid var(--border);
+        .ep-title {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: .7rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: .08em;
+        }
+
+        .ep-live {
             display: flex;
             align-items: center;
-            padding: 0 1rem;
-            gap: 0.5rem;
-            background: rgba(255, 255, 255, 0.02);
+            gap: .375rem;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: .65rem;
+            color: var(--cyan);
         }
 
-        .mock-dot {
-            width: 9px;
-            height: 9px;
+        .ep-live::before {
+            content: '';
+            width: 5px;
+            height: 5px;
             border-radius: 50%;
+            background: var(--cyan);
         }
 
-        .mock-body {
-            padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
+        .ep-cols {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            padding: .5rem 1.25rem;
+            border-bottom: 1px solid var(--line);
         }
 
-        .mock-row {
-            display: flex;
-            gap: 1rem;
-        }
-
-        .mock-stat {
-            flex: 1;
-            padding: 1rem;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-        }
-
-        .mock-stat-val {
-            font-family: var(--font-mono);
-            font-size: 1.6rem;
-            color: var(--accent);
-            margin-bottom: 0.25rem;
-        }
-
-        .mock-stat-lbl {
-            font-size: 0.7rem;
-            color: var(--text-secondary);
+        .ep-col {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: .65rem;
+            color: var(--dim);
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: .06em;
         }
 
-        .mock-line {
-            height: 7px;
-            background: var(--border);
-            border-radius: 4px;
+        .ep-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            padding: .75rem 1.25rem;
+            border-bottom: 1px solid var(--line);
+            align-items: center;
+            transition: background .15s;
         }
 
-        .mock-line.accent {
-            background: rgba(0, 229, 255, 0.3);
-            width: 60%;
+        .ep-row:last-child {
+            border-bottom: none;
         }
 
-        .mock-line.short {
-            width: 40%;
+        .ep-row:hover {
+            background: var(--surface-2);
         }
 
-        .mock-alert {
-            padding: 0.75rem 1rem;
-            background: rgba(245, 166, 35, 0.08);
-            border: 1px solid rgba(245, 166, 35, 0.25);
-            border-radius: 4px;
-            font-family: var(--font-mono);
-            font-size: 0.72rem;
+        .ep-name {
+            font-size: .8125rem;
+            color: var(--text);
+        }
+
+        .ep-cnpj {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: .65rem;
+            color: var(--muted);
+        }
+
+        .risk {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: .75rem;
+            font-weight: 500;
+        }
+
+        .risk.low {
+            color: #34d399;
+        }
+
+        .risk.med {
             color: var(--amber);
         }
 
-        @keyframes float {
-
-            0%,
-            100% {
-                transform: translateY(0)
-            }
-
-            50% {
-                transform: translateY(-8px)
-            }
+        .risk.high {
+            color: #f87171;
         }
 
-        /* ══════════════════════════════════════════════════
-   3. SOCIAL PROOF
-══════════════════════════════════════════════════ */
-        .social-proof {
-            padding: 3.5rem 0;
-            background: var(--bg-surface);
-            border-top: 1px solid var(--border);
-            border-bottom: 1px solid var(--border);
-            overflow: hidden;
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
         }
 
-        .proof-label {
-            text-align: center;
-            font-family: var(--font-mono);
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 0.12em;
-            margin-bottom: 2rem;
+        .status-dot.ok {
+            background: #34d399;
         }
 
-        .marquee-wrap {
+        .status-dot.warn {
+            background: var(--amber);
+        }
+
+        .status-dot.crit {
+            background: #f87171;
+        }
+
+        .ep-footer {
+            padding: .75rem 1.25rem;
             display: flex;
-            width: 200%;
-            animation: marquee 28s linear infinite;
-        }
-
-        .marquee-track {
-            display: flex;
-            width: 50%;
-            justify-content: space-around;
+            justify-content: space-between;
             align-items: center;
         }
 
-        .partner {
-            font-family: var(--font-display);
-            font-size: 1.4rem;
-            color: var(--text-secondary);
-            opacity: 0.45;
-            transition: opacity 0.3s;
-            cursor: default;
+        .ep-footer-txt {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: .65rem;
+            color: var(--dim);
         }
 
-        .partner:hover {
-            opacity: 0.9;
+        .ep-footer-btn {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: .65rem;
+            color: var(--cyan);
+            transition: opacity .15s;
         }
 
-        @keyframes marquee {
-            0% {
-                transform: translateX(0)
-            }
-
-            100% {
-                transform: translateX(-50%)
-            }
+        .ep-footer-btn:hover {
+            opacity: .7;
         }
 
-        /* ══════════════════════════════════════════════════
-   4. PROBLEM → SOLUTION
-══════════════════════════════════════════════════ */
-        .solutions {
-            padding: var(--section-pad);
+        /* ─── 3. STATS STRIP ──────────────────────────── */
+        #stats {
+            padding: 4rem 0;
         }
 
-        .section-label {
-            font-family: var(--font-mono);
-            font-size: 0.8rem;
-            color: var(--accent);
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            margin-bottom: 1rem;
-        }
-
-        .section-header {
-            text-align: center;
-            max-width: 760px;
-            margin: 0 auto 5rem;
-        }
-
-        .section-header h2 {
-            font-size: clamp(2rem, 4vw, 3rem);
-            margin-bottom: 1rem;
-        }
-
-        .section-header p {
-            color: var(--text-secondary);
-            font-size: 1.05rem;
-        }
-
-        .cards-grid {
+        .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2rem;
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        .stat-item {
+            padding: 2.5rem 2rem;
+            border-right: 1px solid var(--line);
+        }
+
+        .stat-item:last-child {
+            border-right: none;
+        }
+
+        .stat-num {
+            font-family: 'DM Serif Display', serif;
+            font-size: 3rem;
+            color: var(--text);
+            line-height: 1;
+            margin-bottom: .5rem;
+        }
+
+        .stat-num sup {
+            font-family: 'IBM Plex Sans', sans-serif;
+            font-size: 1rem;
+            color: var(--muted);
+            font-weight: 300;
+            vertical-align: super;
+        }
+
+        .stat-label {
+            font-size: .8125rem;
+            color: var(--muted);
+            max-width: 160px;
+            line-height: 1.5;
+        }
+
+        /* ─── 4. SOLUTIONS ────────────────────────────── */
+        #solutions {
+            padding: 7rem 0;
+        }
+
+        .section-pre {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: .7rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: .12em;
+            margin-bottom: 1.25rem;
+        }
+
+        .section-h {
+            font-size: clamp(1.75rem, 3vw, 2.75rem);
+            color: var(--text);
+            margin-bottom: 1rem;
+            max-width: 680px;
+        }
+
+        .section-p {
+            font-size: 1rem;
+            max-width: 600px;
+            margin-bottom: 4rem;
+        }
+
+        .sol-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0;
+            border: 1px solid var(--line);
         }
 
         .sol-card {
-            background: var(--bg-surface);
-            border: 1px solid var(--border);
-            padding: 2.5rem 2rem;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
+            padding: 2.5rem;
+            border-right: 1px solid var(--line);
+            transition: background .2s;
         }
 
-        .sol-card::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: 8px;
-            box-shadow: inset 0 0 0 1px var(--accent);
-            opacity: 0;
-            transition: opacity 0.3s;
-            pointer-events: none;
+        .sol-card:last-child {
+            border-right: none;
         }
 
         .sol-card:hover {
-            transform: translateY(-5px);
-            background: var(--bg-surface-2);
-            box-shadow: inset 0 20px 40px -20px rgba(0, 229, 255, 0.1);
+            background: var(--surface-2);
         }
 
-        .sol-card:hover::after {
-            opacity: 1;
+        .sol-card:hover .sol-top-line {
+            background: var(--cyan);
         }
 
-        .card-icon-box {
-            width: 48px;
-            height: 48px;
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .sol-top-line {
+            height: 1px;
+            background: var(--line);
+            margin-bottom: 2rem;
+            transition: background .2s;
+        }
+
+        .sol-num {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: .65rem;
+            color: var(--dim);
+            letter-spacing: .08em;
+            margin-bottom: 1.5rem;
+            display: block;
+        }
+
+        .sol-h {
+            font-family: 'IBM Plex Sans', sans-serif;
+            font-size: 1.0625rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: .875rem;
+        }
+
+        .sol-p {
+            font-size: .9rem;
+            line-height: 1.7;
             margin-bottom: 1.75rem;
         }
 
-        .card-icon-box svg {
-            width: 22px;
-            height: 22px;
-            fill: none;
-            stroke-width: 1.5;
+        .sol-tags {
+            display: flex;
+            flex-direction: column;
+            gap: .375rem;
         }
 
-        .sol-card h3 {
-            font-family: var(--font-ui);
-            font-weight: 600;
-            font-size: 1.2rem;
-            margin-bottom: 0.75rem;
+        .sol-tag {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: .7rem;
+            color: var(--dim);
+            padding-left: .875rem;
+            position: relative;
         }
 
-        .sol-card p {
-            color: var(--text-secondary);
-            font-size: 0.95rem;
-            line-height: 1.6;
+        .sol-tag::before {
+            content: '—';
+            position: absolute;
+            left: 0;
+            color: var(--dim);
         }
 
-        /* ══════════════════════════════════════════════════
-   5. FEATURES DETAILED
-══════════════════════════════════════════════════ */
-        .features {
-            padding: var(--section-pad);
-            background: var(--bg-surface);
+        /* ─── 5. FEATURE BLOCKS ───────────────────────── */
+        #features {
+            padding: 7rem 0;
         }
 
-        .feature-block {
+        .feat-block {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 6rem;
-            align-items: center;
-            margin-bottom: 8rem;
+            gap: 8rem;
+            align-items: start;
+            padding: 5rem 0;
+            border-top: 1px solid var(--line);
         }
 
-        .feature-block:last-child {
-            margin-bottom: 0;
+        .feat-block:first-child {
+            border-top: none;
         }
 
-        .feature-block.reverse {
+        .feat-block.flip {
             direction: rtl;
         }
 
-        .feature-block.reverse>* {
+        .feat-block.flip>* {
             direction: ltr;
         }
 
-        .feat-label {
-            font-family: var(--font-mono);
-            font-size: 0.75rem;
-            color: var(--accent);
+        .feat-kicker {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: .7rem;
+            color: var(--muted);
             text-transform: uppercase;
-            letter-spacing: 0.1em;
-            margin-bottom: 1rem;
+            letter-spacing: .1em;
+            margin-bottom: 1.5rem;
         }
 
-        .feat-content h3 {
-            font-size: clamp(1.8rem, 3vw, 2.5rem);
-            margin-bottom: 1rem;
+        .feat-h {
+            font-size: clamp(1.5rem, 2.5vw, 2.25rem);
+            color: var(--text);
+            margin-bottom: 1.25rem;
         }
 
-        .feat-content p {
-            color: var(--text-secondary);
-            font-size: 1rem;
-            line-height: 1.7;
+        .feat-p {
+            font-size: .9375rem;
+            line-height: 1.8;
+            margin-bottom: 2rem;
         }
 
         .feat-list {
             list-style: none;
-            margin-top: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: .875rem;
         }
 
         .feat-list li {
-            display: flex;
-            align-items: flex-start;
-            gap: 0.875rem;
-            margin-bottom: 1rem;
-            color: var(--text-secondary);
-            font-size: 0.95rem;
+            font-size: .875rem;
+            color: var(--muted);
+            padding-left: 1.25rem;
+            position: relative;
+            line-height: 1.6;
         }
 
         .feat-list li::before {
             content: '';
-            display: inline-block;
+            position: absolute;
+            left: 0;
+            top: .55rem;
             width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: var(--accent);
-            box-shadow: 0 0 8px var(--accent);
-            margin-top: 0.5rem;
-            flex-shrink: 0;
-        }
-
-        /* ── Feature visuals (CSS art) ── */
-        .feat-visual {
-            aspect-ratio: 4/3;
-            background: var(--bg-base);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
-
-        /* Mock A — entity form */
-        .mock-entity {
-            width: 75%;
-            height: 80%;
-            display: flex;
-            flex-direction: column;
-            gap: 0.875rem;
-        }
-
-        .mock-field {
-            height: 34px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            padding: 0 0.75rem;
-            display: flex;
-            align-items: center;
-        }
-
-        .mock-field-label {
-            font-family: var(--font-mono);
-            font-size: 0.65rem;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 0.25rem;
-        }
-
-        .mock-badge {
-            align-self: flex-start;
-            padding: 0.35rem 0.875rem;
-            background: rgba(0, 229, 255, 0.1);
-            border: 1px solid var(--accent);
-            color: var(--accent);
-            font-family: var(--font-mono);
-            border-radius: 4px;
-            font-size: 0.72rem;
-        }
-
-        /* Mock B — timeline */
-        .mock-timeline {
-            width: 85%;
-            height: 85%;
-            padding-left: 1.5rem;
-            border-left: 2px solid var(--border);
-            display: flex;
-            flex-direction: column;
-            gap: 0.875rem;
-            margin-left: 2rem;
-        }
-
-        .mock-event {
-            position: relative;
-            padding: 0.75rem 1rem;
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid var(--border);
-            border-radius: 4px;
-        }
-
-        .mock-event::before {
-            content: '';
-            position: absolute;
-            left: -1.6rem;
-            top: 1rem;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: var(--text-secondary);
-            border: 2px solid var(--bg-base);
-        }
-
-        .mock-event.active::before {
-            background: var(--amber);
-            box-shadow: 0 0 8px var(--amber);
-        }
-
-        .mock-event-time {
-            font-family: var(--font-mono);
-            font-size: 0.65rem;
-            color: var(--text-secondary);
-            margin-bottom: 0.25rem;
-        }
-
-        .mock-event-text {
-            font-size: 0.78rem;
-            color: var(--text-primary);
-        }
-
-        /* Mock C — alert */
-        .mock-alert-card {
-            width: 70%;
-            padding: 1.5rem;
-            background: var(--bg-surface);
-            border: 1px solid rgba(245, 166, 35, 0.35);
-            border-radius: 6px;
-            background: linear-gradient(180deg, rgba(245, 166, 35, 0.06) 0%, transparent 100%);
-        }
-
-        .mock-alert-head {
-            display: flex;
-            gap: 0.875rem;
-            align-items: center;
-            margin-bottom: 1.25rem;
-        }
-
-        .mock-alert-icon {
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            background: rgba(245, 166, 35, 0.12);
-            color: var(--amber);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            font-size: 1.1rem;
-        }
-
-        .mock-alert-title {
-            font-family: var(--font-ui);
-            font-weight: 600;
-            font-size: 0.9rem;
-            margin-bottom: 0.2rem;
-        }
-
-        .mock-alert-sub {
-            font-family: var(--font-mono);
-            font-size: 0.68rem;
-            color: var(--amber);
-        }
-
-        .mock-actions {
-            display: flex;
-            gap: 0.75rem;
-            margin-top: 1.25rem;
-        }
-
-        .mock-action-btn {
-            padding: 0.375rem 0.875rem;
-            font-family: var(--font-ui);
-            font-size: 0.72rem;
-            background: var(--bg-surface);
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            color: var(--text-secondary);
-        }
-
-        .mock-action-btn.amber {
-            border-color: rgba(245, 166, 35, 0.4);
-            color: var(--amber);
-        }
-
-        /* ══════════════════════════════════════════════════
-   6. REGULATIONS
-══════════════════════════════════════════════════ */
-        .regulations {
-            padding: var(--section-pad);
-            border-bottom: 1px solid var(--border);
-        }
-
-        .regs-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.875rem;
-            justify-content: center;
-            max-width: 900px;
-            margin: 0 auto 1.5rem;
-        }
-
-        .reg-pill {
-            padding: 0.625rem 1.25rem;
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            font-family: var(--font-mono);
-            font-size: 0.8rem;
-            color: var(--text-primary);
-            background: rgba(255, 255, 255, 0.02);
-            transition: all 0.2s;
-            cursor: default;
-        }
-
-        .reg-pill:hover {
-            border-color: var(--text-secondary);
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        .regs-note {
-            text-align: center;
-            color: var(--text-secondary);
-            font-size: 0.88rem;
-        }
-
-        /* ══════════════════════════════════════════════════
-   7. STACK
-══════════════════════════════════════════════════ */
-        .stack-section {
-            padding: var(--section-pad);
-            background: var(--bg-surface);
-        }
-
-        .stack-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 2rem;
-            margin-top: 4rem;
-        }
-
-        .stack-item {
-            padding: 2rem;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            background: var(--bg-base);
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            transition: border-color 0.3s;
-        }
-
-        .stack-item:hover {
-            border-color: rgba(0, 229, 255, 0.2);
-        }
-
-        .stack-icon {
-            font-size: 1.75rem;
-        }
-
-        .stack-name {
-            font-family: var(--font-ui);
-            font-weight: 600;
-            font-size: 0.95rem;
-            color: var(--text-primary);
-        }
-
-        .stack-desc {
-            font-family: var(--font-mono);
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            line-height: 1.5;
-        }
-
-        /* ══════════════════════════════════════════════════
-   8. PRICING
-══════════════════════════════════════════════════ */
-        .pricing {
-            padding: var(--section-pad);
-        }
-
-        .pricing-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2rem;
-            align-items: center;
-            margin-top: 4rem;
-        }
-
-        .plan-card {
-            background: var(--bg-surface);
-            border: 1px solid var(--border);
-            padding: 2.5rem 2rem;
-            border-radius: 8px;
-            display: flex;
-            flex-direction: column;
-            gap: 1.25rem;
-        }
-
-        .plan-card.featured {
-            border-color: var(--accent);
-            background: var(--bg-surface-2);
-            box-shadow: 0 0 40px rgba(0, 229, 255, 0.08);
-            transform: scale(1.03);
-        }
-
-        .plan-badge {
-            display: inline-block;
-            padding: 0.3rem 0.75rem;
-            background: rgba(0, 229, 255, 0.1);
-            color: var(--accent);
-            font-family: var(--font-mono);
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            border-radius: 4px;
-            border: 1px solid rgba(0, 229, 255, 0.2);
-        }
-
-        .plan-name {
-            font-family: var(--font-ui);
-            font-weight: 700;
-            font-size: 1.2rem;
-        }
-
-        .plan-price {
-            font-family: var(--font-display);
-            font-size: 2.5rem;
-            color: var(--text-primary);
-        }
-
-        .plan-price span {
-            font-family: var(--font-ui);
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-        }
-
-        .plan-desc {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            line-height: 1.5;
-        }
-
-        .plan-divider {
             height: 1px;
-            background: var(--border);
+            background: var(--cyan);
         }
 
-        .plan-features {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-        }
-
-        .plan-features li {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            font-size: 0.88rem;
-            color: var(--text-secondary);
-        }
-
-        .plan-features li::before {
-            content: '✓';
-            color: var(--accent);
-            font-weight: 700;
-            flex-shrink: 0;
-        }
-
-        .plan-cta {
-            margin-top: auto;
-        }
-
-        .pricing-note {
-            text-align: center;
-            color: var(--text-secondary);
-            font-size: 0.85rem;
-            margin-top: 2.5rem;
-        }
-
-        /* ══════════════════════════════════════════════════
-   9. TESTIMONIAL + CTA FINAL
-══════════════════════════════════════════════════ */
-        .testimonial {
-            padding: var(--section-pad);
-            background: var(--bg-surface);
-            position: relative;
+        /* Audit timeline */
+        .audit-block {
+            background: var(--surface);
+            border: 1px solid var(--line);
             overflow: hidden;
         }
 
-        .testimonial::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 60vw;
-            height: 60vw;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(0, 229, 255, 0.05) 0%, transparent 60%);
-            pointer-events: none;
-        }
-
-        .quote-block {
-            max-width: 720px;
-            margin: 0 auto;
-            text-align: center;
-            position: relative;
-            z-index: 2;
-        }
-
-        .quote-mark {
-            font-family: var(--font-display);
-            font-size: 6rem;
-            color: rgba(0, 229, 255, 0.15);
-            line-height: 0.5;
-            margin-bottom: 1rem;
-            display: block;
-        }
-
-        .quote-text {
-            font-family: var(--font-display);
-            font-size: clamp(1.3rem, 2.5vw, 1.8rem);
-            color: var(--text-primary);
-            font-style: italic;
-            margin-bottom: 2rem;
-            line-height: 1.4;
-        }
-
-        .quote-author {
-            font-family: var(--font-mono);
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            margin-bottom: 4rem;
-        }
-
-        .quote-author strong {
-            color: var(--accent);
-        }
-
-        .cta-headline {
-            font-family: var(--font-display);
-            font-size: clamp(2rem, 4vw, 3rem);
-            color: var(--text-primary);
-            margin-bottom: 1.5rem;
-            max-width: 640px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .cta-buttons {
+        .audit-header {
+            padding: .875rem 1.25rem;
+            border-bottom: 1px solid var(--line);
             display: flex;
-            justify-content: center;
-            gap: 1rem;
-            flex-wrap: wrap;
+            gap: .875rem;
+            align-items: center;
         }
 
-        /* ══════════════════════════════════════════════════
-   10. FOOTER
-══════════════════════════════════════════════════ */
-        .footer {
-            background: var(--bg-base);
-            border-top: 1px solid var(--border);
-            padding: 3.5rem 2rem;
+        .audit-h-label {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: .7rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: .06em;
         }
 
-        .footer-inner {
-            max-width: var(--max-w);
-            margin: 0 auto;
+        .audit-entry {
             display: grid;
-            grid-template-columns: 1fr auto auto;
-            gap: 3rem;
+            grid-template-columns: auto 1fr auto;
+            gap: 1rem;
+            align-items: center;
+            padding: .875rem 1.25rem;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .audit-entry:last-child {
+            border-bottom: none;
+        }
+
+        .audit-entry:hover {
+            background: var(--surface-2);
+        }
+
+        .audit-time {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: .65rem;
+            color: var(--dim);
+            white-space: nowrap;
+        }
+
+        .audit-action {
+            font-size: .8125rem;
+            color: var(--text);
+        }
+
+        .audit-action small {
+            display: block;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: .65rem;
+            color: var(--muted);
+            margin-top: .15rem;
+        }
+
+        .audit-badge {
+            padding: .2rem .5rem;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: .6rem;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            border: 1px solid;
+        }
+
+        .audit-badge.ok {
+            color: #34d399;
+            border-color: rgba(52, 211, 153, .25);
+            background: rgba(52, 211, 153, .05);
+        }
+
+        .audit-badge.warn {
+            color: var(--amber);
+            border-color: rgba(232, 148, 26, .25);
+            background: rgba(232, 148, 26, .05);
+        }
+
+        /* Score panel */
+        .score-panel {
+            background: var(--surface);
+            border: 1px solid var(--line);
+            overflow: hidden;
+        }
+
+        .score-header {
+            padding: .875rem 1.25rem;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .score-entity {
+            padding: 1.25rem;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .score-entity-name {
+            font-size: .9375rem;
+            font-weight: 500;
+            color: var(--text);
+            margin-bottom: .25rem;
+        }
+
+        .score-entity-id {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: .65rem;
+            color: var(--muted);
+        }
+
+        .score-meters {
+            display: flex;
+            flex-direction: column;
+            gap: .875rem;
+            padding: 1.25rem;
+        }
+
+        .meter-row {
+            display: flex;
+            flex-direction: column;
+            gap: .35rem;
+        }
+
+        .meter-label {
+            display: flex;
+            justify-content: space-between;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: .65rem;
+            color: var(--muted);
+        }
+
+        .meter-track {
+            height: 2px;
+            background: var(--line-strong);
+        }
+
+        .meter-fill {
+            height: 100%;
+            transition: width .4s ease;
+        }
+
+        .meter-fill.green {
+            background: #34d399;
+        }
+
+        .meter-fill.amber {
+            background: var(--amber);
+        }
+
+        .meter-fill.red {
+            background: #f87171;
+        }
+
+        /* ─── 6. REGULATIONS ──────────────────────────── */
+        #regs {
+            padding: 7rem 0;
+        }
+
+        .regs-inner {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 6rem;
             align-items: start;
         }
 
-        .footer-brand .logo {
-            font-size: 1.2rem;
-            margin-bottom: 0.75rem;
+        .regs-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .5rem;
         }
 
-        .footer-tagline {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            max-width: 260px;
-            line-height: 1.5;
+        .reg-pill {
+            padding: .5rem 1rem;
+            border: 1px solid var(--line);
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: .7rem;
+            color: var(--muted);
+            transition: all .15s;
         }
 
-        .footer-nav {
+        .reg-pill:hover {
+            border-color: var(--line-strong);
+            color: var(--text);
+        }
+
+        .regs-note {
+            margin-top: 2rem;
+            font-size: .8125rem;
+            color: var(--dim);
+            font-style: italic;
+        }
+
+        /* ─── 7. PRICING ──────────────────────────────── */
+        #pricing {
+            padding: 7rem 0;
+        }
+
+        .price-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            border: 1px solid var(--line);
+            margin-top: 4rem;
+        }
+
+        .price-col {
+            padding: 2.5rem;
+            border-right: 1px solid var(--line);
             display: flex;
             flex-direction: column;
-            gap: 0.625rem;
         }
 
-        .footer-nav a {
-            font-size: 0.875rem;
-            color: var(--text-secondary);
+        .price-col:last-child {
+            border-right: none;
         }
 
-        .footer-nav a:hover {
-            color: var(--text-primary);
+        .price-col.featured {
+            background: var(--surface-2);
+        }
+
+        .price-tier {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: .7rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: .1em;
+            margin-bottom: 1.25rem;
+        }
+
+        .price-value {
+            font-family: 'DM Serif Display', serif;
+            font-size: 2.5rem;
+            color: var(--text);
+            margin-bottom: .25rem;
+            line-height: 1;
+        }
+
+        .price-sub {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: .7rem;
+            color: var(--dim);
+            margin-bottom: 1.5rem;
+        }
+
+        .price-divider {
+            height: 1px;
+            background: var(--line);
+            margin-bottom: 1.5rem;
+        }
+
+        .price-desc {
+            font-size: .875rem;
+            color: var(--muted);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .price-features {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: .625rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .price-features li {
+            font-size: .8125rem;
+            color: var(--muted);
+            display: flex;
+            gap: .625rem;
+            align-items: flex-start;
+        }
+
+        .price-features li::before {
+            content: '✓';
+            color: var(--cyan);
+            flex-shrink: 0;
+            font-size: .75rem;
+            margin-top: .1rem;
+        }
+
+        .price-cta {
+            margin-top: auto;
+        }
+
+        .price-note {
+            text-align: center;
+            font-size: .8125rem;
+            color: var(--dim);
+            margin-top: 2rem;
+        }
+
+        /* ─── 8. QUOTE ────────────────────────────────── */
+        #quote {
+            padding: 8rem 0;
+        }
+
+        .quote-inner {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 8rem;
+            align-items: start;
+        }
+
+        .quote-text {
+            font-family: 'DM Serif Display', serif;
+            font-size: clamp(1.5rem, 2.5vw, 2.25rem);
+            color: var(--text);
+            line-height: 1.4;
+            margin-bottom: 2rem;
+        }
+
+        .quote-text::before {
+            content: '\201C';
+            display: block;
+            font-size: 5rem;
+            color: var(--line-strong);
+            line-height: .5;
+            margin-bottom: 1.5rem;
+        }
+
+        .quote-attr {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: .7rem;
+            color: var(--muted);
+            letter-spacing: .04em;
+        }
+
+        .quote-attr strong {
+            color: var(--text);
+            display: block;
+            margin-bottom: .25rem;
+        }
+
+        .cta-box {
+            padding: 2.5rem;
+            border: 1px solid var(--line);
+        }
+
+        .cta-box h3 {
+            font-size: 1.375rem;
+            color: var(--text);
+            margin-bottom: .875rem;
+        }
+
+        .cta-box p {
+            font-size: .875rem;
+            line-height: 1.65;
+            margin-bottom: 2rem;
+        }
+
+        /* ─── 9. FOOTER ───────────────────────────────── */
+        footer {
+            border-top: 1px solid var(--line);
+            padding: 3rem 0;
+        }
+
+        .footer-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-brand {
+            font-size: .875rem;
+            color: var(--muted);
+            max-width: 260px;
+            line-height: 1.6;
+        }
+
+        .footer-brand strong {
+            display: block;
+            color: var(--text);
+            font-weight: 500;
+            margin-bottom: .5rem;
+        }
+
+        .footer-nav-group {
+            display: flex;
+            flex-direction: column;
+            gap: .5rem;
+        }
+
+        .footer-nav-label {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: .65rem;
+            text-transform: uppercase;
+            letter-spacing: .1em;
+            color: var(--dim);
+            margin-bottom: .75rem;
+        }
+
+        .footer-nav-group a {
+            font-size: .8125rem;
+            color: var(--muted);
+            transition: color .15s;
+        }
+
+        .footer-nav-group a:hover {
+            color: var(--text);
         }
 
         .footer-bottom {
-            border-top: 1px solid var(--border);
             margin-top: 3rem;
             padding-top: 1.5rem;
+            border-top: 1px solid var(--line);
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -1154,66 +1078,73 @@
         }
 
         .footer-copy {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
+            font-size: .75rem;
+            color: var(--dim);
         }
 
         .footer-badges {
             display: flex;
-            gap: 0.75rem;
+            gap: .75rem;
         }
 
-        .footer-badge {
-            padding: 0.35rem 0.75rem;
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            font-family: var(--font-mono);
-            font-size: 0.68rem;
-            color: var(--text-secondary);
-            background: rgba(255, 255, 255, 0.02);
+        .f-badge {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: .65rem;
+            color: var(--dim);
+            border: 1px solid var(--line);
+            padding: .25rem .625rem;
         }
 
-        /* ── Responsive ── */
-        @media (max-width:1024px) {
-            .hero .container {
-                grid-template-columns: 1fr;
-            }
+        /* ─── Responsive ──────────────────────────────── */
+        @media(max-width:1024px) {
 
-            .hero-mock {
-                display: none;
-            }
-
-            .hero-content {
-                max-width: 100%;
-            }
-
-            .feature-block,
-            .feature-block.reverse {
+            .hero-grid,
+            .feat-block,
+            .feat-block.flip,
+            .quote-inner,
+            .regs-inner {
                 grid-template-columns: 1fr;
                 gap: 3rem;
                 direction: ltr;
             }
 
-            .footer-inner {
+            .stats-grid {
                 grid-template-columns: 1fr 1fr;
+            }
+
+            .stat-item {
+                border-bottom: 1px solid var(--line);
+            }
+
+            .entity-panel,
+            .score-panel,
+            .audit-block {
+                display: none;
+            }
+
+            .sol-grid,
+            .price-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .sol-card,
+            .price-col {
+                border-right: none;
+                border-bottom: 1px solid var(--line);
             }
         }
 
-        @media (max-width:768px) {
+        @media(max-width:768px) {
+            .wrap {
+                padding: 0 1.5rem;
+            }
+
             .nav-links {
                 display: none;
             }
 
-            .hero {
-                padding: 10rem 1.5rem 5rem;
-            }
-
-            .hero h1 {
-                font-size: 2.5rem;
-            }
-
-            .footer-inner {
-                grid-template-columns: 1fr;
+            h1 {
+                font-size: 2.25rem !important;
             }
         }
     </style>
@@ -1221,507 +1152,506 @@
 
 <body>
 
-    <!-- Scroll progress -->
-    <div id="scroll-bar"></div>
+    <div id="sb"></div>
 
-    <!-- ══════════════ 1. NAVBAR ══════════════ -->
-    <nav class="navbar" id="navbar">
-        <div class="nav-inner">
+    <!-- ═══════════════════════════════════════════
+     NAVBAR
+═══════════════════════════════════════════ -->
+    <nav id="nav">
+        <div class="nav-w">
             <a href="#" class="logo">
-                <svg viewBox="0 0 24 24" fill="none" stroke="#00E5FF" stroke-width="2">
-                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                </svg>
-                Compliance<span style="color:#00E5FF">OS</span>
+                <span class="logo-mark">
+                    <svg width="20" height="22" viewBox="0 0 20 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M10 1L1 4.8V10.2C1 15.08 4.96 19.64 10 21C15.04 19.64 19 15.08 19 10.2V4.8L10 1Z"
+                            stroke="#00C8E0" stroke-width="1.5" stroke-linejoin="round" />
+                        <path d="M6.5 10.5L9 13L14 8" stroke="#00C8E0" stroke-width="1.5" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                    </svg>
+                </span>
+                Compliance<span>OS</span>
             </a>
             <div class="nav-links">
-                <a href="#solutions" class="nav-link">Produto</a>
-                <a href="#regulations" class="nav-link">Regulações</a>
-                <a href="#pricing" class="nav-link">Preços</a>
-                <a href="#stack" class="nav-link">Docs</a>
+                <a href="#solutions">Produto</a>
+                <a href="#regs">Regulações</a>
+                <a href="#pricing">Preços</a>
+                <a href="#features">Plataforma</a>
             </div>
-            <div class="nav-actions">
-                <a href="/login" class="btn btn-ghost">Entrar</a>
-                <a href="/dashboard" class="btn btn-outline">Agendar Demo</a>
+            <div class="nav-cta">
+                <a href="/login" class="btn btn-line">Entrar</a>
+                <a href="/dashboard" class="btn btn-fill">Agendar Demo →</a>
             </div>
         </div>
     </nav>
 
-    <!-- ══════════════ 2. HERO ══════════════ -->
-    <section class="hero">
-        <div class="container">
-            <div class="hero-content">
-                <div class="hero-badge reveal">
-                    <span class="badge-dot"></span>
-                    ✓ Aprovado por especialistas EY &amp; PwC
+    <!-- ═══════════════════════════════════════════
+     HERO
+═══════════════════════════════════════════ -->
+    <section id="hero">
+        <div class="wrap">
+            <div class="hero-grid">
+                <div class="r">
+                    <div class="hero-eyebrow">Plataforma regulatória · BACEN / COAF / ANPD</div>
+                    <h1>Conformidade regulatória.<br><em>Sem travar<br>sua operação.</em></h1>
+                    <p class="hero-sub">O ComplianceOS automatiza PLD-FT, LGPD e Anticorrupção para fintechs e PMEs
+                        brasileiras — do KYC ao relatório COAF, com trilha de auditoria imutável.</p>
+                    <div class="hero-ctas">
+                        <a href="/dashboard" class="btn btn-fill">Começar Grátis →</a>
+                        <a href="#solutions" class="btn btn-line">Ver a Plataforma</a>
+                    </div>
                 </div>
-                <h1 class="reveal" style="transition-delay:0.1s">
-                    Conformidade regulatória.<br>
-                    <em>Sem travar sua operação.</em>
-                </h1>
-                <p class="hero-sub reveal" style="transition-delay:0.2s">
-                    O ComplianceOS automatiza PLD-FT, LGPD e Anticorrupção para fintechs e PMEs brasileiras — do KYC ao
-                    relatório COAF.
-                </p>
-                <div class="hero-ctas reveal" style="transition-delay:0.3s">
-                    <a href="/dashboard" class="btn btn-primary">Começar Grátis →</a>
-                    <a href="#features" class="btn btn-outline">Ver Demo</a>
-                </div>
-            </div>
 
-            <!-- CSS Art Dashboard Mock -->
-            <div class="hero-mock">
-                <div class="mock-header">
-                    <div class="mock-dot" style="background:#ff5f57"></div>
-                    <div class="mock-dot" style="background:#febc2e"></div>
-                    <div class="mock-dot" style="background:#28c840"></div>
-                    <span
-                        style="margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:#8892A4">ComplianceOS
-                        · Dashboard</span>
-                </div>
-                <div class="mock-body">
-                    <div class="mock-row">
-                        <div class="mock-stat">
-                            <div class="mock-stat-val">847</div>
-                            <div class="mock-stat-lbl">Entidades KYB</div>
-                        </div>
-                        <div class="mock-stat">
-                            <div class="mock-stat-val" style="color:#F5A623">3</div>
-                            <div class="mock-stat-lbl">Alertas Ativos</div>
-                        </div>
-                        <div class="mock-stat">
-                            <div class="mock-stat-val" style="color:#34d399">99,2%</div>
-                            <div class="mock-stat-lbl">Score Médio</div>
-                        </div>
+                <!-- Entity table — right column -->
+                <div class="entity-panel r" style="transition-delay:.15s">
+                    <div class="ep-header">
+                        <span class="ep-title">Entidades Monitoradas</span>
+                        <span class="ep-live">Tempo real</span>
                     </div>
-                    <div style="display:flex;flex-direction:column;gap:0.5rem">
-                        <div class="mock-line accent"></div>
-                        <div class="mock-line" style="width:80%"></div>
-                        <div class="mock-line short"></div>
+                    <div class="ep-cols">
+                        <span class="ep-col">Entidade</span>
+                        <span class="ep-col">Score</span>
+                        <span class="ep-col">PEP</span>
+                        <span class="ep-col">Status</span>
                     </div>
-                    <div class="mock-alert">⚠ OFAC Match — Entidade #8842 · LATAM Holdings — Revisar</div>
-                    <div style="display:flex;flex-direction:column;gap:0.5rem">
-                        <div class="mock-line" style="width:70%"></div>
-                        <div class="mock-line short"></div>
+                    <div class="ep-row">
+                        <div>
+                            <div class="ep-name">Acme Fintech Ltda.</div>
+                            <div class="ep-cnpj">35.123.456/0001-78</div>
+                        </div>
+                        <div class="risk low">91</div>
+                        <div class="mono" style="font-size:.7rem;color:var(--dim)">Não</div>
+                        <div class="status-dot ok"></div>
+                    </div>
+                    <div class="ep-row">
+                        <div>
+                            <div class="ep-name">Beta Holdings S.A.</div>
+                            <div class="ep-cnpj">12.987.654/0001-22</div>
+                        </div>
+                        <div class="risk med">64</div>
+                        <div class="mono" style="font-size:.7rem;color:var(--amber)">PEP</div>
+                        <div class="status-dot warn"></div>
+                    </div>
+                    <div class="ep-row">
+                        <div>
+                            <div class="ep-name">LATAM Holdings Int.</div>
+                            <div class="ep-cnpj">98.765.432/0001-01</div>
+                        </div>
+                        <div class="risk high">23</div>
+                        <div class="mono" style="font-size:.7rem;color:var(--dim)">Não</div>
+                        <div class="status-dot crit"></div>
+                    </div>
+                    <div class="ep-row">
+                        <div>
+                            <div class="ep-name">NovaPay Serviços</div>
+                            <div class="ep-cnpj">55.443.221/0001-90</div>
+                        </div>
+                        <div class="risk low">88</div>
+                        <div class="mono" style="font-size:.7rem;color:var(--dim)">Não</div>
+                        <div class="status-dot ok"></div>
+                    </div>
+                    <div class="ep-footer">
+                        <span class="ep-footer-txt">847 entidades · 3 alertas ativos</span>
+                        <a href="/dashboard" class="ep-footer-btn">Ver todas →</a>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- ══════════════ 3. SOCIAL PROOF ══════════════ -->
-    <div class="social-proof">
-        <p class="proof-label">Usado por equipes de compliance em →</p>
-        <div class="marquee-wrap">
-            <div class="marquee-track">
-                <span class="partner">Acme Fintech</span>
-                <span class="partner">Beta Corp</span>
-                <span class="partner">RiverTrust</span>
-                <span class="partner">NovaPay</span>
-                <span class="partner">CapitalBridge</span>
-            </div>
-            <div class="marquee-track" aria-hidden="true">
-                <span class="partner">Acme Fintech</span>
-                <span class="partner">Beta Corp</span>
-                <span class="partner">RiverTrust</span>
-                <span class="partner">NovaPay</span>
-                <span class="partner">CapitalBridge</span>
-            </div>
-        </div>
-    </div>
-
-    <!-- ══════════════ 4. PROBLEMA → SOLUÇÃO ══════════════ -->
-    <section class="solutions" id="solutions">
-        <div class="container">
-            <div class="section-header reveal">
-                <p class="section-label">O cenário regulatório</p>
-                <h2>O cenário regulatório brasileiro é complexo.<br>Nós simplificamos.</h2>
-                <p>Três pilares de conformidade, geridos em um único centro de comando.</p>
-            </div>
-            <div class="cards-grid">
-                <div class="sol-card reveal">
-                    <div class="card-icon-box">
-                        <svg viewBox="0 0 24 24" stroke="#00E5FF">
-                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                        </svg>
-                    </div>
-                    <h3>PLD-FT &amp; Sanções</h3>
-                    <p>Monitoramento contínuo, listas restritivas OFAC/ONU/COAF e screening de sanções em tempo real com
-                        alertas automáticos.</p>
+    <!-- ═══════════════════════════════════════════
+     STATS
+═══════════════════════════════════════════ -->
+    <section id="stats">
+        <div class="wrap">
+            <div class="stats-grid">
+                <div class="stat-item r">
+                    <div class="stat-num">70<sup>%</sup></div>
+                    <div class="stat-label">Redução no tempo de onboarding KYC/KYB</div>
                 </div>
-                <div class="sol-card reveal" style="transition-delay:0.1s">
-                    <div class="card-icon-box">
-                        <svg viewBox="0 0 24 24" stroke="#00E5FF">
-                            <rect x="3" y="11" width="18" height="11" rx="2" />
-                            <path d="M7 11V7a5 5 0 0110 0v4" />
-                        </svg>
-                    </div>
-                    <h3>Privacidade LGPD</h3>
-                    <p>Registro de operações de tratamento, gestão de consentimento e fluxo completo de resposta a
-                        titulares — ANPD ready.</p>
+                <div class="stat-item r" style="transition-delay:.08s">
+                    <div class="stat-num">12<sup>+</sup></div>
+                    <div class="stat-label">Frameworks regulatórios cobertos</div>
                 </div>
-                <div class="sol-card reveal" style="transition-delay:0.2s">
-                    <div class="card-icon-box">
-                        <svg viewBox="0 0 24 24" stroke="#F5A623">
-                            <path d="M12 3L3 6v6c0 5.25 3.75 10.15 9 11.25C18.25 22.15 22 17.25 22 12V6L12 3z" />
-                            <path d="M9 12l2 2 4-4" />
-                        </svg>
-                    </div>
-                    <h3>Anticorrupção &amp; Governança</h3>
-                    <p>Due diligence de fornecedores, scoring de risco automatizado e trilha de auditoria imutável para
-                        Lei 12.846/13.</p>
+                <div class="stat-item r" style="transition-delay:.16s">
+                    <div class="stat-num">99<sup>.9%</sup></div>
+                    <div class="stat-label">Disponibilidade SLA com infra AWS</div>
+                </div>
+                <div class="stat-item r" style="transition-delay:.24s">
+                    <div class="stat-num">0</div>
+                    <div class="stat-label">Planilhas manuais no processo de PLD</div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- ══════════════ 5. FEATURES ══════════════ -->
-    <section class="features" id="features">
-        <div class="container">
-
-            <!-- Block A: KYC/KYB -->
-            <div class="feature-block reveal">
-                <div class="feat-content">
-                    <p class="feat-label">Módulo 01 — Entidades</p>
-                    <h3>KYC/KYB automatizado</h3>
-                    <p>Consulta automática à Receita Federal, checklists dinâmicos por tipo de entidade e score de risco
-                        calculado em tempo real.</p>
-                    <ul class="feat-list">
-                        <li>Consulta automática CNPJ (Receita Federal)</li>
-                        <li>Checklists regulatórios dinâmicos por tipo de entidade</li>
-                        <li>Score de risco calculado em tempo real</li>
-                        <li>Alertas de vencimento de documentos</li>
-                    </ul>
+    <!-- ═══════════════════════════════════════════
+     SOLUTIONS
+═══════════════════════════════════════════ -->
+    <section id="solutions">
+        <div class="wrap">
+            <div class="r">
+                <p class="section-pre">Três módulos. Um centro de controle.</p>
+                <h2 class="section-h">O cenário regulatório brasileiro é complexo.<br>Nós tornamos gerenciável.</h2>
+                <p class="section-p">Conformidade não é opcional para fintechs e PMEs sob escrutínio do BACEN, COAF e
+                    ANPD. O ComplianceOS entrega controle sem overhead operacional.</p>
+            </div>
+            <div class="sol-grid r">
+                <div class="sol-card">
+                    <div class="sol-top-line"></div>
+                    <span class="sol-num">01</span>
+                    <div class="sol-h">PLD-FT &amp; Sanções</div>
+                    <p class="sol-p">Monitoramento contínuo de listas restritivas, identificação de PEPs e cálculo de
+                        risco automatizado — alinhado à Lei 9.613/98 e Res. BCB 50.</p>
+                    <div class="sol-tags">
+                        <span class="sol-tag">Screening OFAC / ONU / COAF</span>
+                        <span class="sol-tag">Detecção PEP nacional e internacional</span>
+                        <span class="sol-tag">Score de risco calculado em tempo real</span>
+                        <span class="sol-tag">Workflow de investigação integrado</span>
+                    </div>
                 </div>
-                <div class="feat-visual">
-                    <div class="mock-entity">
-                        <div>
-                            <div class="mock-field-label">CNPJ / Razão Social</div>
-                            <div class="mock-field"><span
-                                    style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:#8892A4">35.123.456/0001-78
-                                    · Acme Fintech Ltda.</span></div>
-                        </div>
-                        <div>
-                            <div class="mock-field-label">Tipo de Entidade</div>
-                            <div class="mock-field"><span style="font-size:0.78rem;color:#8892A4">Instituição de
-                                    Pagamento — Emissor de Moeda</span></div>
-                        </div>
-                        <div>
-                            <div class="mock-field-label">Risco Calculado</div>
-                            <div class="mock-badge">● RISCO BAIXO — Score 91/100</div>
-                        </div>
-                        <div style="display:flex;flex-direction:column;gap:0.4rem">
-                            <div class="mock-line accent"></div>
-                            <div class="mock-line" style="width:72%"></div>
-                            <div class="mock-line short"></div>
-                        </div>
+                <div class="sol-card">
+                    <div class="sol-top-line"></div>
+                    <span class="sol-num">02</span>
+                    <div class="sol-h">Privacidade LGPD</div>
+                    <p class="sol-p">Registro de operações de tratamento, gestão de consentimento, resposta a titulares
+                        e adequação para multas ANPD — conforme Lei 13.709/18.</p>
+                    <div class="sol-tags">
+                        <span class="sol-tag">RAT — Registro de Atividades de Tratamento</span>
+                        <span class="sol-tag">Relatórios de Impacto (RIPD)</span>
+                        <span class="sol-tag">Fluxo de exclusão de dados</span>
+                        <span class="sol-tag">Logs imutáveis por titular</span>
+                    </div>
+                </div>
+                <div class="sol-card">
+                    <div class="sol-top-line"></div>
+                    <span class="sol-num">03</span>
+                    <div class="sol-h">Governança &amp; Anticorrupção</div>
+                    <p class="sol-p">Due diligence de fornecedores B2B, scoring de risco e trilha de auditoria imutável
+                        — exigida pela Lei Anticorrupção 12.846/13.</p>
+                    <div class="sol-tags">
+                        <span class="sol-tag">Due diligence estruturada de fornecedores</span>
+                        <span class="sol-tag">Exportação PDF certificada para auditores</span>
+                        <span class="sol-tag">Checklists personalizados por setor</span>
+                        <span class="sol-tag">Audit Trail criptograficamente seguro</span>
                     </div>
                 </div>
             </div>
+        </div>
+    </section>
 
-            <!-- Block B: Audit Trail -->
-            <div class="feature-block reverse reveal">
-                <div class="feat-content">
-                    <p class="feat-label">Módulo 02 — Auditoria</p>
-                    <h3>Audit Trail imutável</h3>
-                    <p>Cada ação registrada com timestamp, usuário e tenant. Exportação para auditores com um clique.
-                        Prova de conformidade para BACEN e COAF.</p>
+    <!-- ═══════════════════════════════════════════
+     FEATURES
+═══════════════════════════════════════════ -->
+    <section id="features">
+        <div class="wrap">
+
+            <div class="feat-block r">
+                <div>
+                    <p class="feat-kicker">Módulo 01 — KYC/KYB</p>
+                    <h3 class="feat-h">Onboarding regulatório automatizado</h3>
+                    <p class="feat-p">Consulta automática à Receita Federal, enriquecimento de dados e checklists
+                        adaptativos ao tipo de entidade. Score de risco calculado no ato da inclusão.</p>
                     <ul class="feat-list">
-                        <li>Cada ação registrada com timestamp, usuário e tenant</li>
-                        <li>Exportação para auditores externos com um clique</li>
-                        <li>Prova de conformidade para BACEN e COAF</li>
-                        <li>Integridade criptográfica dos registros</li>
+                        <li>Consulta CNPJ via integração com Receita Federal</li>
+                        <li>Checklists dinâmicos por tipo societário e setor</li>
+                        <li>Score de risco atualizado a cada mudança de status</li>
+                        <li>Alertas automatizados de vencimento documental</li>
+                        <li>Relatório de diligência exportável em um clique</li>
                     </ul>
                 </div>
-                <div class="feat-visual">
-                    <div class="mock-timeline">
-                        <div class="mock-event active">
-                            <div class="mock-event-time">2026-03-03 14:23:11 UTC · admin@acme.com</div>
-                            <div class="mock-event-text">⚠ OFAC Match detectado — Entidade #8842 criado alerta</div>
-                        </div>
-                        <div class="mock-event">
-                            <div class="mock-event-time">2026-03-03 14:20:05 UTC · analyst@acme.com</div>
-                            <div class="mock-event-text">✓ KYB aprovado — CNPJ 35.123.456/0001-78</div>
-                        </div>
-                        <div class="mock-event">
-                            <div class="mock-event-time">2026-03-03 13:58:42 UTC · sys@compliance-os</div>
-                            <div class="mock-event-text">↻ Sync RFB concluído — 847 entidades atualizadas</div>
+                <div class="score-panel">
+                    <div class="score-header">
+                        <div class="ep-cols">
+                            <span class="ep-col">Entidade</span>
+                            <span class="ep-col" style="grid-column:2/5">Perfil de Risco</span>
                         </div>
                     </div>
-                </div>
-            </div>
-
-            <!-- Block C: Screening -->
-            <div class="feature-block reveal">
-                <div class="feat-content">
-                    <p class="feat-label">Módulo 03 — Sanções &amp; PEP</p>
-                    <h3>Screening de Sanções &amp; PEP</h3>
-                    <p>Listas OFAC, ONU, COAF, Interpol e PEP nacional. Alertas em tempo real com workflow de
-                        investigação e case management integrado.</p>
-                    <ul class="feat-list">
-                        <li>Listas OFAC, ONU, COAF, Interpol e PEP nacional</li>
-                        <li>Alertas em tempo real com workflow de investigação</li>
-                        <li>Case Management integrado para analistas</li>
-                        <li>Re-screening automático ao atualizar listas</li>
-                    </ul>
-                </div>
-                <div class="feat-visual">
-                    <div class="mock-alert-card">
-                        <div class="mock-alert-head">
-                            <div class="mock-alert-icon">⚠</div>
-                            <div>
-                                <div class="mock-alert-title">Match Confirmado — OFAC SDN</div>
-                                <div class="mock-alert-sub">LATAM Holdings S.A · Score de risco: CRÍTICO</div>
+                    <div class="score-entity">
+                        <div class="score-entity-name">Acme Fintech Ltda.</div>
+                        <div class="score-entity-id mono">CNPJ 35.123.456/0001-78 · IP — Crédito</div>
+                    </div>
+                    <div class="score-meters">
+                        <div class="meter-row">
+                            <div class="meter-label"><span>Sanções</span><span style="color:#34d399">Limpo</span></div>
+                            <div class="meter-track">
+                                <div class="meter-fill green" style="width:96%"></div>
                             </div>
                         </div>
-                        <div
-                            style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:#8892A4;line-height:1.5">
-                            Lista: OFAC_SDN_2026-03-01<br>
-                            Tipo: Entidade · Motivo: SDN Match 98.3%
+                        <div class="meter-row">
+                            <div class="meter-label"><span>PEP / Exposição política</span><span
+                                    style="color:#34d399">Baixo</span></div>
+                            <div class="meter-track">
+                                <div class="meter-fill green" style="width:90%"></div>
+                            </div>
                         </div>
-                        <div class="mock-actions">
-                            <div class="mock-action-btn amber">Investigar →</div>
-                            <div class="mock-action-btn">Dispensar</div>
-                            <div class="mock-action-btn">Escalar</div>
+                        <div class="meter-row">
+                            <div class="meter-label"><span>Documentação</span><span style="color:var(--amber)">88%
+                                    completo</span></div>
+                            <div class="meter-track">
+                                <div class="meter-fill amber" style="width:88%"></div>
+                            </div>
+                        </div>
+                        <div class="meter-row">
+                            <div class="meter-label"><span>Score geral</span><span style="color:#34d399">91 / 100</span>
+                            </div>
+                            <div class="meter-track">
+                                <div class="meter-fill green" style="width:91%"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-        </div>
-    </section>
-
-    <!-- ══════════════ 6. REGULAÇÕES ══════════════ -->
-    <section class="regulations" id="regulations">
-        <div class="container">
-            <div class="section-header reveal">
-                <p class="section-label">Cobertura regulatória</p>
-                <h2>Projetado para o framework regulatório brasileiro</h2>
-                <p>Atualizado conforme novas resoluções do BACEN e ANPD.</p>
-            </div>
-            <div class="regs-grid reveal">
-                <span class="reg-pill">Lei 9.613/98</span>
-                <span class="reg-pill">Res. BACEN 4.753</span>
-                <span class="reg-pill">Res. BCB 50/2021</span>
-                <span class="reg-pill">LGPD (Lei 13.709/18)</span>
-                <span class="reg-pill">Lei Anticorrupção 12.846/13</span>
-                <span class="reg-pill">ANPD CD/ANPD 02/2022</span>
-                <span class="reg-pill">Decreto 11.129/22</span>
-                <span class="reg-pill">OFAC SDN</span>
-                <span class="reg-pill">ONU Sanctions</span>
-                <span class="reg-pill">CVM 50/2021</span>
-                <span class="reg-pill">ISO 27001</span>
-                <span class="reg-pill">ISO 27701</span>
-            </div>
-            <p class="regs-note reveal">Atualizado conforme novas resoluções do BACEN, ANPD e COAF.</p>
-        </div>
-    </section>
-
-    <!-- ══════════════ 7. STACK ══════════════ -->
-    <section class="stack-section" id="stack">
-        <div class="container">
-            <div class="section-header reveal">
-                <p class="section-label">Infraestrutura</p>
-                <h2>Enterprise-grade, sem overhead enterprise.</h2>
-                <p>Tecnologia de ponta construída para operar com máxima segurança e disponibilidade.</p>
-            </div>
-            <div class="stack-grid">
-                <div class="stack-item reveal">
-                    <div class="stack-icon">🔒</div>
-                    <div class="stack-name">Isolamento de Dados</div>
-                    <div class="stack-desc">Multi-tenant isolado com RLS no PostgreSQL. Seus dados nunca se misturam com
-                        os de outros clientes.</div>
+            <div class="feat-block flip r">
+                <div>
+                    <p class="feat-kicker">Módulo 02 — Audit Trail</p>
+                    <h3 class="feat-h">Trilha de auditoria imutável</h3>
+                    <p class="feat-p">Cada ação registrada com timestamp, usuário, tenant e hash. Exportação para
+                        auditores externos com um clique. Prova de conformidade aceita por BACEN e COAF.</p>
+                    <ul class="feat-list">
+                        <li>Registro imutável de toda ação no sistema</li>
+                        <li>Hash criptográfico por registro (SHA-256)</li>
+                        <li>Exportação para auditores em PDF assinado ou JSON</li>
+                        <li>Filtros por usuário, período, módulo e evento</li>
+                        <li>Retenção configurável conforme política regulatória</li>
+                    </ul>
                 </div>
-                <div class="stack-item reveal" style="transition-delay:0.1s">
-                    <div class="stack-icon">⚡</div>
-                    <div class="stack-name">Alta Disponibilidade</div>
-                    <div class="stack-desc">SLA 99,9% · AWS ECS Fargate · Multi-AZ · Auto-scaling em picos de carga.
+                <div class="audit-block">
+                    <div class="audit-header">
+                        <span class="audit-h-label">Log de Auditoria</span>
+                        <span class="ep-footer-txt" style="margin-left:auto">SHA-256 · Imutável</span>
                     </div>
-                </div>
-                <div class="stack-item reveal" style="transition-delay:0.2s">
-                    <div class="stack-icon">🛡️</div>
-                    <div class="stack-name">Segurança Zero-Trust</div>
-                    <div class="stack-desc">JWT RS256 · MFA TOTP · WAF + Shield · Criptografia em trânsito e em repouso.
+                    <div class="audit-entry">
+                        <span class="audit-time">2026-03-03<br>14:23:11</span>
+                        <div class="audit-action">Match OFAC detectado — Entidade #8842<small>analyst@acme.com · Módulo
+                                Sanções</small></div>
+                        <span class="audit-badge warn">Alerta</span>
                     </div>
-                </div>
-                <div class="stack-item reveal" style="transition-delay:0.3s">
-                    <div class="stack-icon">📊</div>
-                    <div class="stack-name">Observabilidade</div>
-                    <div class="stack-desc">Datadog APM · Audit logs imutáveis · SOC 2 ready · Alertas em tempo real.
+                    <div class="audit-entry">
+                        <span class="audit-time">2026-03-03<br>14:20:05</span>
+                        <div class="audit-action">KYB aprovado — CNPJ 35.123.456/0001-78<small>compliance@acme.com ·
+                                Módulo KYB</small></div>
+                        <span class="audit-badge ok">Aprovado</span>
+                    </div>
+                    <div class="audit-entry">
+                        <span class="audit-time">2026-03-03<br>13:58:42</span>
+                        <div class="audit-action">Sync Receita Federal concluído<small>sys@compliance-os · 847
+                                entidades</small></div>
+                        <span class="audit-badge ok">Sistema</span>
+                    </div>
+                    <div class="audit-entry">
+                        <span class="audit-time">2026-03-03<br>13:10:00</span>
+                        <div class="audit-action">Relatório COAF exportado — Período Q1/2026<small>director@acme.com ·
+                                Módulo Relatórios</small></div>
+                        <span class="audit-badge ok">Exportado</span>
                     </div>
                 </div>
             </div>
+
         </div>
     </section>
 
-    <!-- ══════════════ 8. PRICING ══════════════ -->
-    <section class="pricing" id="pricing">
-        <div class="container">
-            <div class="section-header reveal">
-                <p class="section-label">Preços</p>
-                <h2>Transparente. Sem surpresas.</h2>
-                <p>Escolha o plano ideal para o tamanho da sua operação de compliance.</p>
+    <!-- ═══════════════════════════════════════════
+     REGULATIONS
+═══════════════════════════════════════════ -->
+    <section id="regs">
+        <div class="wrap">
+            <div class="regs-inner">
+                <div class="r">
+                    <p class="section-pre">Cobertura</p>
+                    <h2 class="section-h" style="font-size:clamp(1.5rem,2.5vw,2.25rem)">Framework regulatório brasileiro
+                        completo</h2>
+                    <p class="feat-p">Atualizado conforme novas resoluções do BACEN, ANPD e COAF. O ComplianceOS
+                        acompanha cada mudança normativa automaticamente.</p>
+                    <a href="#pricing" class="btn btn-line" style="margin-top:1.5rem">Ver planos →</a>
+                </div>
+                <div class="r" style="transition-delay:.1s">
+                    <div class="regs-pills">
+                        <span class="reg-pill">Lei 9.613/98 · PLD-FT</span>
+                        <span class="reg-pill">Res. BCB 50/2021</span>
+                        <span class="reg-pill">Res. BACEN 4.753</span>
+                        <span class="reg-pill">LGPD · Lei 13.709/18</span>
+                        <span class="reg-pill">ANPD CD/ANPD 02/2022</span>
+                        <span class="reg-pill">Lei 12.846/13 · Anticorrupção</span>
+                        <span class="reg-pill">Decreto 11.129/22</span>
+                        <span class="reg-pill">CVM 50/2021</span>
+                        <span class="reg-pill">OFAC SDN List</span>
+                        <span class="reg-pill">ONU Consolidated List</span>
+                        <span class="reg-pill">ISO 27001</span>
+                        <span class="reg-pill">ISO 27701</span>
+                        <span class="reg-pill">SOC 2 Type II</span>
+                    </div>
+                    <p class="regs-note">Atualizações automáticas conforme revisões normativas.</p>
+                </div>
             </div>
-            <div class="pricing-grid">
+        </div>
+    </section>
 
-                <div class="plan-card reveal">
-                    <div class="plan-name">Starter</div>
-                    <div class="plan-price">R$ 890<span>/mês</span></div>
-                    <div class="plan-desc">Ideal para PMEs iniciando a jornada de compliance regulatório.</div>
-                    <div class="plan-divider"></div>
-                    <ul class="plan-features">
+    <!-- ═══════════════════════════════════════════
+     PRICING
+═══════════════════════════════════════════ -->
+    <section id="pricing">
+        <div class="wrap">
+            <div class="r">
+                <p class="section-pre">Preços</p>
+                <h2 class="section-h">Transparente. Sem surpresas.</h2>
+            </div>
+            <div class="price-grid r">
+                <div class="price-col">
+                    <div class="price-tier">Starter</div>
+                    <div class="price-value">R$ 890</div>
+                    <div class="price-sub">/ mês · cobrado mensalmente</div>
+                    <div class="price-divider"></div>
+                    <p class="price-desc">Para PMEs iniciando a jornada de conformidade regulatória.</p>
+                    <ul class="price-features">
                         <li>Até 100 entidades monitoradas</li>
                         <li>Módulos PLD-FT e LGPD</li>
-                        <li>Screening básico de sanções</li>
+                        <li>Screening básico OFAC/ONU</li>
                         <li>Audit Trail padrão</li>
+                        <li>Exportação PDF</li>
                         <li>Suporte por e-mail</li>
                     </ul>
-                    <div class="plan-cta">
-                        <a href="/dashboard" class="btn btn-outline" style="width:100%;justify-content:center">Começar
-                            Agora</a>
-                    </div>
+                    <div class="price-cta"><a href="/dashboard" class="btn btn-line"
+                            style="width:100%;justify-content:center">Começar Agora</a></div>
                 </div>
-
-                <div class="plan-card featured reveal" style="transition-delay:0.1s">
-                    <div class="plan-badge">Mais Popular</div>
-                    <div class="plan-name">Growth</div>
-                    <div class="plan-price">R$ 2.490<span>/mês</span></div>
-                    <div class="plan-desc">Para fintechs e empresas com operação regulatória madura.</div>
-                    <div class="plan-divider"></div>
-                    <ul class="plan-features">
+                <div class="price-col featured">
+                    <div class="price-tier">Growth <span style="color:var(--cyan);margin-left:.5rem">▲ Mais
+                            Popular</span></div>
+                    <div class="price-value">R$ 2.490</div>
+                    <div class="price-sub">/ mês · cobrado mensalmente</div>
+                    <div class="price-divider"></div>
+                    <p class="price-desc">Para fintechs e empresas com operação regulatória madura e times dedicados.
+                    </p>
+                    <ul class="price-features">
                         <li>Até 1.000 entidades + API pública</li>
                         <li>Todos os módulos regulatórios</li>
-                        <li>Screening OFAC/ONU/COAF completo</li>
+                        <li>Screening completo + PEP nacional</li>
                         <li>Case Management de investigações</li>
-                        <li>Exportação para BACEN/COAF</li>
+                        <li>Exportação BACEN/COAF</li>
+                        <li>Webhooks e integrações</li>
                         <li>Suporte prioritário</li>
                     </ul>
-                    <div class="plan-cta">
-                        <a href="/dashboard" class="btn btn-primary" style="width:100%;justify-content:center">Começar
-                            Agora →</a>
-                    </div>
+                    <div class="price-cta"><a href="/dashboard" class="btn btn-fill"
+                            style="width:100%;justify-content:center">Começar Agora →</a></div>
                 </div>
-
-                <div class="plan-card reveal" style="transition-delay:0.2s">
-                    <div class="plan-name">Enterprise</div>
-                    <div class="plan-price" style="font-size:1.8rem">Sob consulta</div>
-                    <div class="plan-desc">Para grupos financeiros e conglomerados com necessidades avançadas.</div>
-                    <div class="plan-divider"></div>
-                    <ul class="plan-features">
+                <div class="price-col">
+                    <div class="price-tier">Enterprise</div>
+                    <div class="price-value" style="font-size:1.75rem;padding:.375rem 0">Sob consulta</div>
+                    <div class="price-sub">&nbsp;</div>
+                    <div class="price-divider"></div>
+                    <p class="price-desc">Para grupos financeiros e conglomerados com exigências avançadas de segurança
+                        e escala.</p>
+                    <ul class="price-features">
                         <li>Entidades ilimitadas</li>
                         <li>SLA dedicado + suporte 24/7</li>
                         <li>SAML SSO + SCIM provisioning</li>
                         <li>Deploy on-premise disponível</li>
-                        <li>Integrações customizadas</li>
-                        <li>Treinamento da equipe</li>
+                        <li>Integrações customizadas via API</li>
+                        <li>Treinamento da equipe de compliance</li>
                     </ul>
-                    <div class="plan-cta">
-                        <a href="/dashboard" class="btn btn-outline" style="width:100%;justify-content:center">Falar com
-                            Equipe</a>
+                    <div class="price-cta"><a href="/dashboard" class="btn btn-line"
+                            style="width:100%;justify-content:center">Falar com a Equipe</a></div>
+                </div>
+            </div>
+            <p class="price-note r">Preços em BRL. Cancelamento a qualquer momento. Sem taxa de setup. Migração
+                assistida inclusa.</p>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+     QUOTE + CTA
+═══════════════════════════════════════════ -->
+    <section id="quote">
+        <div class="wrap">
+            <div class="quote-inner">
+                <div class="r">
+                    <p class="quote-text">Reduzimos em 70% o tempo de onboarding KYC/KYB e eliminamos planilhas do
+                        processo de PLD. O ComplianceOS virou infraestrutura crítica para nós.</p>
+                    <div class="quote-attr">
+                        <strong>Rafael M.</strong>
+                        CCO · Acme Fintech &ensp;|&ensp; São Paulo, SP
                     </div>
                 </div>
-
-            </div>
-            <p class="pricing-note reveal">Preços em BRL. Cancelamento a qualquer momento. Sem taxa de setup.</p>
-        </div>
-    </section>
-
-    <!-- ══════════════ 9. TESTIMONIAL + CTA ══════════════ -->
-    <section class="testimonial">
-        <div class="container">
-            <div class="quote-block reveal">
-                <span class="quote-mark">"</span>
-                <p class="quote-text">
-                    Reduzimos em 70% o tempo de onboarding KYC/KYB e eliminamos planilhas do processo de PLD. O
-                    ComplianceOS virou infraestrutura crítica para nós.
-                </p>
-                <p class="quote-author">— Rafael M., CCO · <strong>Acme Fintech</strong></p>
-                <h2 class="cta-headline">Sua equipe merece uma plataforma à altura do desafio regulatório.</h2>
-                <div class="cta-buttons">
-                    <a href="/dashboard" class="btn btn-primary">Agendar demonstração gratuita →</a>
-                    <a href="/login" class="btn btn-ghost">Já tenho conta</a>
+                <div class="cta-box r" style="transition-delay:.1s">
+                    <h3>Pronto para automatizar seu compliance?</h3>
+                    <p>Agende uma demonstração com nossa equipe e veja como o ComplianceOS se adapta ao seu contexto
+                        regulatório.</p>
+                    <a href="/dashboard" class="btn btn-fill" style="width:100%;justify-content:center">Agendar
+                        Demonstração Gratuita →</a>
+                    <p style="margin-top:1rem;font-size:.75rem;color:var(--dim);text-align:center">Sem compromisso.
+                        Resposta em até 24h úteis.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- ══════════════ 10. FOOTER ══════════════ -->
-    <footer class="footer">
-        <div class="container">
+    <!-- ═══════════════════════════════════════════
+     FOOTER
+═══════════════════════════════════════════ -->
+    <footer>
+        <div class="wrap">
             <div class="footer-inner">
                 <div class="footer-brand">
-                    <a href="#" class="logo">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="#8892A4" stroke-width="2" width="22" height="22">
-                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                        </svg>
-                        ComplianceOS
-                    </a>
-                    <p class="footer-tagline">Plataforma de Compliance &amp; Governança para fintechs e PMEs
-                        brasileiras.</p>
-                    <p style="font-size:0.8rem;color:#8892A4;margin-top:0.5rem">Desenvolvido por <strong
-                            style="color:#F0F2F5">Chuangxin</strong> · Grupo Guinle</p>
+                    <strong>ComplianceOS</strong>
+                    Plataforma de Compliance &amp; Governança para fintechs e PMEs brasileiras.<br><br>
+                    Desenvolvido por <strong style="color:var(--muted)">Chuangxin</strong> · Grupo Guinle
                 </div>
-                <div>
-                    <p
-                        style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:#8892A4;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:1rem">
-                        Produto</p>
-                    <nav class="footer-nav">
-                        <a href="#solutions">Produto</a>
-                        <a href="#features">Features</a>
-                        <a href="#pricing">Preços</a>
-                        <a href="#stack">Docs</a>
-                        <a href="#">API Reference</a>
-                        <a href="#">Status</a>
-                    </nav>
+                <div class="footer-nav-group">
+                    <span class="footer-nav-label">Produto</span>
+                    <a href="#solutions">Módulos</a>
+                    <a href="#features">Plataforma</a>
+                    <a href="#pricing">Preços</a>
+                    <a href="#">API Reference</a>
+                    <a href="#">Status</a>
                 </div>
-                <div>
-                    <p
-                        style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:#8892A4;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:1rem">
-                        Legal</p>
-                    <nav class="footer-nav">
-                        <a href="#">Privacidade</a>
-                        <a href="#">Termos de Uso</a>
-                        <a href="#">LGPD</a>
-                        <a href="#">Segurança</a>
-                    </nav>
+                <div class="footer-nav-group">
+                    <span class="footer-nav-label">Regulatório</span>
+                    <a href="#regs">Cobertura</a>
+                    <a href="#">Documentação</a>
+                    <a href="#">LGPD</a>
+                    <a href="#">Segurança</a>
+                </div>
+                <div class="footer-nav-group">
+                    <span class="footer-nav-label">Legal</span>
+                    <a href="#">Privacidade</a>
+                    <a href="#">Termos de Uso</a>
+                    <a href="#">Cookies</a>
+                    <a href="#">Contato</a>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p class="footer-copy">© 2026 Chuangxin Tecnologia da Informação Ltda. Todos os direitos reservados.</p>
+                <span class="footer-copy">© 2026 Chuangxin Tecnologia da Informação Ltda. Todos os direitos
+                    reservados.</span>
                 <div class="footer-badges">
-                    <span class="footer-badge">LGPD Compliant</span>
-                    <span class="footer-badge">AWS Partner</span>
-                    <span class="footer-badge">ISO 27001 Ready</span>
+                    <span class="f-badge">LGPD</span>
+                    <span class="f-badge">ISO 27001 Ready</span>
+                    <span class="f-badge">AWS Partner</span>
+                    <span class="f-badge">SOC 2</span>
                 </div>
             </div>
         </div>
     </footer>
 
     <script>
-        // ── Scroll progress bar
-        const bar = document.getElementById('scroll-bar');
+        // Scroll progress
+        const sb = document.getElementById('sb');
+        const nav = document.getElementById('nav');
         window.addEventListener('scroll', () => {
             const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
-            bar.style.width = (scrollTop / (scrollHeight - clientHeight) * 100) + '%';
+            sb.style.width = (scrollTop / (scrollHeight - clientHeight) * 100) + '%';
+            nav.classList.toggle('s', scrollTop > 20);
         });
 
-        // ── Navbar scroll state
-        const nav = document.getElementById('navbar');
-        window.addEventListener('scroll', () => {
-            nav.classList.toggle('scrolled', window.scrollY > 30);
-        });
+        // Reveal on scroll
+        const obs = new IntersectionObserver(entries => {
+            entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('v'); obs.unobserve(e.target); } });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.r').forEach(el => obs.observe(el));
 
-        // ── Reveal on scroll (IntersectionObserver)
-        const reveals = document.querySelectorAll('.reveal');
-        const obs = new IntersectionObserver((entries) => {
-            entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
-        }, { threshold: 0.12 });
-        reveals.forEach(el => obs.observe(el));
-
-        // ── Smooth anchor scroll
+        // Smooth anchor
         document.querySelectorAll('a[href^="#"]').forEach(a => {
             a.addEventListener('click', e => {
-                const target = document.querySelector(a.getAttribute('href'));
-                if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+                const t = document.querySelector(a.getAttribute('href'));
+                if (t) { e.preventDefault(); t.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
             });
         });
     </script>
