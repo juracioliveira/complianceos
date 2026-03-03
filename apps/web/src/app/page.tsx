@@ -1,460 +1,412 @@
-'use client'
-
 import Link from 'next/link'
-import { useEffect, useRef, useState } from 'react'
-import {
-    ShieldCheck, Lock, FileText, ArrowRight,
-    CheckCircle, Activity, Zap, Globe
-} from 'lucide-react'
+import { ShieldCheck, Lock, FileText, BarChart3, ArrowRight, CheckCircle, Server, Key, Activity } from 'lucide-react'
 
-/* ─── Design Tokens (from complianceos-landing.html) ────── */
-const C = {
-    bgBase: '#0A0C10',
-    bgSurface: '#111318',
-    accent: '#00E5FF',
-    accentGlow: 'rgba(0,229,255,0.15)',
-    accentHover: 'rgba(0,229,255,0.8)',
-    amber: '#F5A623',
-    textPrimary: '#F0F2F5',
-    textSecondary: '#8892A4',
-    border: 'rgba(255,255,255,0.07)',
-    borderHover: 'rgba(0,229,255,0.3)',
+/* ─── Design tokens ─────────────────────────────── */
+const BG = '#0A0C10'
+const SURFACE = '#111318'
+const SURFACE2 = '#16191f'
+const CYAN = '#00C8E0'
+const AMBER = '#E8941A'
+const TEXT = '#EDF0F4'
+const MUTED = '#7A8494'
+const LINE = 'rgba(255,255,255,0.08)'
+const LINE_STRONG = 'rgba(255,255,255,0.14)'
+const MONO = "'IBM Plex Mono', monospace"
+const SERIF = "'DM Serif Display', serif"
+const UI = "'IBM Plex Sans', sans-serif"
+
+/* ─── Shared styles ──────────────────────────────── */
+const S = {
+    section: { borderTop: `1px solid ${LINE}`, padding: '7rem 0' } as React.CSSProperties,
+    wrap: { maxWidth: 1200, margin: '0 auto', padding: '0 3rem' } as React.CSSProperties,
+    pre: { fontFamily: MONO, fontSize: '.7rem', color: MUTED, textTransform: 'uppercase' as const, letterSpacing: '.12em', marginBottom: '1.25rem' },
+    h2: { fontFamily: SERIF, fontSize: 'clamp(1.75rem,3vw,2.75rem)', color: TEXT, marginBottom: '1rem', fontWeight: 'normal' as const, lineHeight: 1.15 },
+    p: { color: MUTED, fontSize: '.9375rem', lineHeight: 1.75 },
+    btnFill: {
+        display: 'inline-flex' as const, alignItems: 'center' as const, gap: '.5rem',
+        padding: '.625rem 1.25rem', background: CYAN, color: BG,
+        border: `1px solid ${CYAN}`, fontFamily: UI, fontWeight: 500,
+        fontSize: '.8125rem', letterSpacing: '.04em', textTransform: 'uppercase' as const,
+        textDecoration: 'none', transition: 'all .18s',
+    },
+    btnLine: {
+        display: 'inline-flex' as const, alignItems: 'center' as const, gap: '.5rem',
+        padding: '.625rem 1.25rem', background: 'transparent', color: TEXT,
+        border: `1px solid ${LINE_STRONG}`, fontFamily: UI, fontWeight: 500,
+        fontSize: '.8125rem', letterSpacing: '.04em', textTransform: 'uppercase' as const,
+        textDecoration: 'none', transition: 'all .18s',
+    },
 }
 
-/* ─── Scroll Progress Bar ────────────────────────────────── */
-function ScrollProgress() {
-    const [progress, setProgress] = useState(0)
-    useEffect(() => {
-        const update = () => {
-            const { scrollTop, scrollHeight, clientHeight } = document.documentElement
-            setProgress((scrollTop / (scrollHeight - clientHeight)) * 100)
-        }
-        window.addEventListener('scroll', update)
-        return () => window.removeEventListener('scroll', update)
-    }, [])
+/* ─── SVG icon helpers ───────────────────────────── */
+function IconBox({ icon, color = CYAN }: { icon: React.ReactNode; color?: string }) {
     return (
         <div style={{
-            position: 'fixed', top: 0, left: 0, zIndex: 1000,
-            width: `${progress}%`, height: 2,
-            background: C.accent,
-            boxShadow: `0 0 10px ${C.accent}`,
-            transition: 'width 0.1s ease-out',
-        }} />
-    )
-}
-
-/* ─── Navbar ─────────────────────────────────────────────── */
-function Navbar() {
-    const [scrolled, setScrolled] = useState(false)
-    useEffect(() => {
-        const update = () => setScrolled(window.scrollY > 20)
-        window.addEventListener('scroll', update)
-        return () => window.removeEventListener('scroll', update)
-    }, [])
-
-    return (
-        <nav style={{
-            position: 'fixed', top: 0, width: '100%', zIndex: 100,
-            padding: '1.25rem 2rem',
-            transition: 'all 0.3s',
-            borderBottom: scrolled ? `1px solid ${C.border}` : '1px solid transparent',
-            background: scrolled ? 'rgba(10,12,16,0.85)' : 'transparent',
-            backdropFilter: scrolled ? 'blur(12px)' : 'none',
+            width: 44, height: 44, border: `1px solid ${LINE_STRONG}`,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            marginBottom: '1.5rem', color,
         }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', maxWidth: 1280, margin: '0 auto' }}>
-                {/* Logo */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke={C.accent} strokeWidth="2">
-                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                    </svg>
-                    <span style={{ fontFamily: "'IBM Plex Sans', sans-serif", fontSize: '1.5rem', fontWeight: 700, letterSpacing: '-0.5px', color: C.textPrimary }}>
-                        Compliance<span style={{ color: C.accent }}>OS</span>
-                    </span>
-                </div>
-
-                {/* Actions */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
-                    <Link href="/login" style={{ fontSize: '0.9rem', fontWeight: 500, color: C.textSecondary, textDecoration: 'none', transition: 'color 0.2s' }}
-                        onMouseEnter={e => (e.currentTarget.style.color = C.textPrimary)}
-                        onMouseLeave={e => (e.currentTarget.style.color = C.textSecondary)}>
-                        Entrar
-                    </Link>
-                    <Link href="/dashboard" style={{
-                        display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
-                        padding: '0.625rem 1.25rem',
-                        background: C.accent, color: C.bgBase,
-                        border: '1px solid transparent', borderRadius: 4,
-                        fontFamily: "'IBM Plex Sans', sans-serif",
-                        fontWeight: 600, fontSize: '0.875rem',
-                        textTransform: 'uppercase', letterSpacing: '0.5px',
-                        textDecoration: 'none',
-                        boxShadow: `0 0 20px ${C.accentGlow}`,
-                        transition: 'all 0.2s ease',
-                    }}
-                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = C.accentHover; (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)' }}
-                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = C.accent; (e.currentTarget as HTMLElement).style.transform = 'translateY(0)' }}>
-                        Acessar Plataforma
-                    </Link>
-                </div>
-            </div>
-        </nav>
+            {icon}
+        </div>
     )
 }
 
-/* ─── Hero Section ───────────────────────────────────────── */
+/* ─── HERO ───────────────────────────────────────── */
 function Hero() {
     return (
         <section style={{
-            position: 'relative', minHeight: '100vh',
-            padding: '12rem 2rem 8rem',
-            display: 'flex', alignItems: 'center',
-            backgroundImage: `linear-gradient(45deg, ${C.border} 1px, transparent 1px), linear-gradient(-45deg, ${C.border} 1px, transparent 1px)`,
-            backgroundSize: '60px 60px',
-            overflow: 'hidden',
+            minHeight: '100vh', padding: '10rem 0 6rem',
+            display: 'flex', alignItems: 'center', position: 'relative', overflow: 'hidden',
+            backgroundImage: `linear-gradient(${LINE} 1px,transparent 1px),linear-gradient(90deg,${LINE} 1px,transparent 1px)`,
+            backgroundSize: '80px 80px',
         }}>
-            {/* Radial glow – top right */}
-            <div style={{
-                position: 'absolute', top: '-50%', right: '-25%',
-                width: '80vw', height: '80vw', borderRadius: '50%',
-                background: `radial-gradient(circle, rgba(0,229,255,0.1) 0%, transparent 60%)`,
-                pointerEvents: 'none',
-            }} />
+            <div style={S.wrap}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6rem', alignItems: 'center' }}>
+                    <div>
+                        <p style={{ ...S.pre, display: 'flex', alignItems: 'center', gap: '.75rem', marginBottom: '2rem' }}>
+                            <span style={{ display: 'block', width: 24, height: 1, background: CYAN }} />
+                            Plataforma regulatória · BACEN / COAF / ANPD
+                        </p>
+                        <h1 style={{ fontFamily: SERIF, fontSize: 'clamp(2.5rem,4.5vw,4rem)', color: TEXT, marginBottom: '1.75rem', fontWeight: 'normal', lineHeight: 1.1 }}>
+                            Conformidade regulatória.<br />
+                            <em style={{ color: CYAN, fontStyle: 'italic' }}>Sem travar<br />sua operação.</em>
+                        </h1>
+                        <p style={{ ...S.p, maxWidth: 480, marginBottom: '2.5rem' }}>
+                            O ComplianceOS automatiza PLD-FT, LGPD e Anticorrupção para fintechs e PMEs brasileiras — do KYC ao relatório COAF, com trilha de auditoria imutável.
+                        </p>
+                        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                            <Link href="/dashboard" style={S.btnFill}>Começar Grátis <ArrowRight size={14} /></Link>
+                            <Link href="#solutions" style={S.btnLine}>Ver a Plataforma</Link>
+                        </div>
+                    </div>
 
-            <div style={{ maxWidth: 1280, margin: '0 auto', width: '100%', textAlign: 'center', position: 'relative', zIndex: 2 }}>
-                {/* Badge */}
-                <div style={{
-                    display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
-                    padding: '0.5rem 1rem',
-                    background: 'rgba(17,19,24,0.8)', border: `1px solid ${C.border}`,
-                    borderRadius: 50, marginBottom: '2rem',
-                    fontFamily: "'JetBrains Mono', monospace", fontSize: '0.8rem', color: C.textSecondary,
-                    animation: 'float 6s ease-in-out infinite',
-                }}>
-                    <span style={{ color: C.accent }}>◉</span>
-                    Sistema de Nível Regulatório Bancário (BACEN/COAF)
-                </div>
-
-                {/* Headline */}
-                <h1 style={{
-                    fontFamily: "'DM Serif Display', serif",
-                    fontSize: 'clamp(3rem, 7vw, 5rem)',
-                    fontWeight: 'normal', lineHeight: 1.1,
-                    color: C.textPrimary, marginBottom: '1.5rem',
-                }}>
-                    Compliance Completo,<br />
-                    <span style={{ color: C.accent }}>Totalmente Automatizado.</span>
-                </h1>
-
-                <p style={{
-                    fontSize: '1.25rem', color: C.textSecondary, lineHeight: 1.6,
-                    maxWidth: 640, margin: '0 auto 2.5rem',
-                    fontFamily: "'IBM Plex Sans', sans-serif",
-                }}>
-                    A plataforma definitiva para PLD/FT, LGPD e Anticorrupção. Rastreie entidades, automatize due diligence e gere trilhas de auditoria imutáveis com um clique.
-                </p>
-
-                {/* CTAs */}
-                <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>
-                    <Link href="/dashboard" style={{
-                        display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
-                        padding: '0.75rem 1.5rem',
-                        background: C.accent, color: C.bgBase,
-                        borderRadius: 4, border: '1px solid transparent',
-                        fontFamily: "'IBM Plex Sans', sans-serif",
-                        fontWeight: 600, fontSize: '0.875rem',
-                        textTransform: 'uppercase', letterSpacing: '0.5px',
-                        textDecoration: 'none',
-                        boxShadow: `0 0 20px ${C.accentGlow}`,
-                        transition: 'all 0.2s ease',
-                    }}
-                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = C.accentHover; (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)'; (e.currentTarget as HTMLElement).style.boxShadow = '0 4px 25px rgba(0,229,255,0.25)' }}
-                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = C.accent; (e.currentTarget as HTMLElement).style.transform = ''; (e.currentTarget as HTMLElement).style.boxShadow = `0 0 20px ${C.accentGlow}` }}>
-                        Experimentar Agora <ArrowRight size={16} />
-                    </Link>
-                    <Link href="/dashboard" style={{
-                        display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
-                        padding: '0.75rem 1.5rem',
-                        background: 'transparent', color: C.accent,
-                        borderRadius: 4, border: `1px solid ${C.accent}`,
-                        fontFamily: "'IBM Plex Sans', sans-serif",
-                        fontWeight: 600, fontSize: '0.875rem',
-                        textTransform: 'uppercase', letterSpacing: '0.5px',
-                        textDecoration: 'none', transition: 'all 0.2s ease',
-                    }}
-                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(0,229,255,0.05)'; (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)' }}
-                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; (e.currentTarget as HTMLElement).style.transform = '' }}>
-                        Agendar Demonstração
-                    </Link>
+                    {/* Entity table */}
+                    <div style={{ background: SURFACE, border: `1px solid ${LINE_STRONG}`, overflow: 'hidden' }}>
+                        <div style={{ padding: '.875rem 1.25rem', borderBottom: `1px solid ${LINE}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <span style={{ fontFamily: MONO, fontSize: '.7rem', color: MUTED, textTransform: 'uppercase', letterSpacing: '.06em' }}>Entidades Monitoradas</span>
+                            <span style={{ fontFamily: MONO, fontSize: '.65rem', color: CYAN, display: 'flex', alignItems: 'center', gap: '.375rem' }}>
+                                <span style={{ width: 5, height: 5, borderRadius: '50%', background: CYAN, display: 'inline-block' }} />
+                                Tempo real
+                            </span>
+                        </div>
+                        {/* Column headers */}
+                        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', padding: '.5rem 1.25rem', borderBottom: `1px solid ${LINE}` }}>
+                            {['Entidade', 'Score', 'PEP', 'Status'].map(c => (
+                                <span key={c} style={{ fontFamily: MONO, fontSize: '.65rem', color: '#3A4152', textTransform: 'uppercase', letterSpacing: '.06em' }}>{c}</span>
+                            ))}
+                        </div>
+                        {/* Rows */}
+                        {[
+                            { name: 'Acme Fintech Ltda.', cnpj: '35.123.456/0001-78', score: 91, pep: false, status: 'ok' },
+                            { name: 'Beta Holdings S.A.', cnpj: '12.987.654/0001-22', score: 64, pep: true, status: 'warn' },
+                            { name: 'LATAM Holdings Int.', cnpj: '98.765.432/0001-01', score: 23, pep: false, status: 'crit' },
+                            { name: 'NovaPay Serviços', cnpj: '55.443.221/0001-90', score: 88, pep: false, status: 'ok' },
+                        ].map(row => (
+                            <div key={row.cnpj} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', padding: '.75rem 1.25rem', borderBottom: `1px solid ${LINE}`, alignItems: 'center' }}>
+                                <div>
+                                    <div style={{ fontSize: '.8125rem', color: TEXT }}>{row.name}</div>
+                                    <div style={{ fontFamily: MONO, fontSize: '.65rem', color: MUTED }}>{row.cnpj}</div>
+                                </div>
+                                <span style={{ fontFamily: MONO, fontSize: '.75rem', fontWeight: 500, color: row.score >= 80 ? '#34d399' : row.score >= 50 ? AMBER : '#f87171' }}>{row.score}</span>
+                                <span style={{ fontFamily: MONO, fontSize: '.7rem', color: row.pep ? AMBER : '#3A4152' }}>{row.pep ? 'PEP' : 'Não'}</span>
+                                <span style={{ width: 8, height: 8, borderRadius: '50%', background: row.status === 'ok' ? '#34d399' : row.status === 'warn' ? AMBER : '#f87171', display: 'inline-block' }} />
+                            </div>
+                        ))}
+                        <div style={{ padding: '.75rem 1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <span style={{ fontFamily: MONO, fontSize: '.65rem', color: '#3A4152' }}>847 entidades · 3 alertas ativos</span>
+                            <Link href="/dashboard" style={{ fontFamily: MONO, fontSize: '.65rem', color: CYAN, textDecoration: 'none' }}>Ver todas →</Link>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
     )
 }
 
-/* ─── Solution Cards ─────────────────────────────────────── */
-const SOLUTIONS = [
-    {
-        icon: <ShieldCheck size={24} style={{ stroke: C.accent }} />,
-        title: 'PLD/FT e Sanções',
-        desc: 'Monitoramento contínuo de listas restritivas (OFAC, ONU), identificação de PEPs e cálculos de risco em tempo real.',
-        items: ['Screening Dinâmico', 'Detecção PEP', 'Listas OFAC/ONU', 'Score de Risco'],
-    },
-    {
-        icon: <Lock size={24} style={{ stroke: C.accent }} />,
-        title: 'Privacidade LGPD',
-        desc: 'Automação do Registro de Atividades de Tratamento (RAT), fluxos de exclusão de dados e adequação imediata.',
-        items: ['Relatórios de Impacto (RIPD)', 'Logs Imutáveis', 'Fluxo de Exclusão', 'Adequação ANPD'],
-    },
-    {
-        icon: <FileText size={24} style={{ stroke: C.amber }} />,
-        title: 'Governança (Anticorrupção)',
-        desc: 'Estruture a Due Diligence de fornecedores B2B e gere relatórios exigidos pela Lei 12.846/13 com um único clique.',
-        items: ['Exportação PDF Certificada', 'Checklists Personalizados', 'Audit Trail', 'Lei 12.846/13'],
-    },
-]
-
-function SolutionCard({ icon, title, desc, items }: typeof SOLUTIONS[0]) {
-    const [hovered, setHovered] = useState(false)
+/* ─── STATS ──────────────────────────────────────── */
+function Stats() {
+    const items = [
+        { num: '70', sup: '%', label: 'Redução no tempo de onboarding KYC/KYB' },
+        { num: '12', sup: '+', label: 'Frameworks regulatórios cobertos' },
+        { num: '99', sup: '.9%', label: 'Disponibilidade SLA com infra AWS' },
+        { num: '0', sup: '', label: 'Planilhas manuais no processo de PLD' },
+    ]
     return (
-        <div
-            onMouseEnter={() => setHovered(true)}
-            onMouseLeave={() => setHovered(false)}
-            style={{
-                background: hovered ? '#14171d' : C.bgSurface,
-                border: `1px solid ${C.border}`,
-                padding: '3rem 2rem',
-                borderRadius: 8,
-                transition: 'all 0.3s ease',
-                position: 'relative',
-                overflow: 'hidden',
-                transform: hovered ? 'translateY(-5px)' : 'translateY(0)',
-                boxShadow: hovered ? `inset 0 20px 40px -20px rgba(0,229,255,0.1)` : 'none',
-            }}>
-            {/* Inner glow border on hover */}
-            <div style={{
-                position: 'absolute', inset: 0, borderRadius: 8,
-                boxShadow: `inset 0 0 0 1px ${C.accent}`,
-                opacity: hovered ? 1 : 0,
-                transition: 'opacity 0.3s',
-                pointerEvents: 'none',
-            }} />
-
-            {/* Icon */}
-            <div style={{
-                width: 48, height: 48, borderRadius: 8,
-                background: 'rgba(255,255,255,0.03)', border: `1px solid ${C.border}`,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                marginBottom: '2rem',
-            }}>
-                {icon}
+        <section style={{ borderTop: `1px solid ${LINE}`, padding: '4rem 0' }}>
+            <div style={S.wrap}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)' }}>
+                    {items.map((s, i) => (
+                        <div key={i} style={{ padding: '2.5rem 2rem', borderRight: i < 3 ? `1px solid ${LINE}` : undefined }}>
+                            <div style={{ fontFamily: SERIF, fontSize: '3rem', color: TEXT, lineHeight: 1, marginBottom: '.5rem' }}>
+                                {s.num}<sup style={{ fontFamily: UI, fontSize: '1rem', color: MUTED, fontWeight: 300 }}>{s.sup}</sup>
+                            </div>
+                            <div style={{ fontSize: '.8125rem', color: MUTED, maxWidth: 160, lineHeight: 1.5 }}>{s.label}</div>
+                        </div>
+                    ))}
+                </div>
             </div>
-
-            <h3 style={{
-                fontFamily: "'IBM Plex Sans', sans-serif",
-                fontWeight: 600, fontSize: '1.25rem',
-                color: C.textPrimary, marginBottom: '1rem',
-            }}>{title}</h3>
-
-            <p style={{
-                fontFamily: "'IBM Plex Sans', sans-serif",
-                color: C.textSecondary, fontSize: '0.95rem', lineHeight: 1.6,
-                marginBottom: '1.5rem',
-            }}>{desc}</p>
-
-            <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-                {items.map(item => (
-                    <li key={item} style={{
-                        display: 'flex', alignItems: 'center', gap: '0.75rem',
-                        marginBottom: '0.75rem', color: C.textSecondary,
-                        fontFamily: "'IBM Plex Sans', sans-serif", fontSize: '0.9rem',
-                    }}>
-                        <span style={{
-                            display: 'inline-block', width: 6, height: 6, borderRadius: '50%',
-                            background: C.accent, boxShadow: `0 0 8px ${C.accent}`,
-                            flexShrink: 0,
-                        }} />
-                        {item}
-                    </li>
-                ))}
-            </ul>
-        </div>
+        </section>
     )
 }
 
-/* ─── Tech Stack Section ─────────────────────────────────── */
-const STACK = [
-    { icon: '⚡', name: 'Next.js 14', desc: 'App Router + RSC' },
-    { icon: '🔐', name: 'Fastify', desc: 'API de alta performance' },
-    { icon: '🗄️', name: 'PostgreSQL', desc: 'Drizzle ORM + migrations' },
-    { icon: '📡', name: 'Redis', desc: 'Cache + filas de jobs' },
-]
+/* ─── SOLUTIONS ──────────────────────────────────── */
+function Solutions() {
+    const cards = [
+        {
+            num: '01', icon: <ShieldCheck size={18} strokeWidth={1.5} />, title: 'PLD-FT & Sanções',
+            desc: 'Monitoramento contínuo de listas restritivas, identificação de PEPs e cálculo de risco automatizado — alinhado à Lei 9.613/98 e Res. BCB 50.',
+            tags: ['Screening OFAC / ONU / COAF', 'Detecção PEP nacional e internacional', 'Score de risco em tempo real', 'Workflow de investigação integrado'],
+            color: CYAN,
+        },
+        {
+            num: '02', icon: <Lock size={18} strokeWidth={1.5} />, title: 'Privacidade LGPD',
+            desc: 'Registro de operações de tratamento, gestão de consentimento, resposta a titulares e adequação para multas ANPD — conforme Lei 13.709/18.',
+            tags: ['RAT — Registro de Atividades de Tratamento', 'Relatórios de Impacto (RIPD)', 'Fluxo de exclusão de dados', 'Logs imutáveis por titular'],
+            color: CYAN,
+        },
+        {
+            num: '03', icon: <FileText size={18} strokeWidth={1.5} />, title: 'Governança & Anticorrupção',
+            desc: 'Due diligence de fornecedores B2B, scoring de risco e trilha de auditoria imutável — exigida pela Lei Anticorrupção 12.846/13.',
+            tags: ['Due diligence estruturada de fornecedores', 'Exportação PDF certificada para auditores', 'Checklists personalizados por setor', 'Audit Trail criptograficamente seguro'],
+            color: AMBER,
+        },
+    ]
+    return (
+        <section id="solutions" style={S.section}>
+            <div style={S.wrap}>
+                <p style={S.pre}>Três módulos. Um centro de controle.</p>
+                <h2 style={S.h2}>O cenário regulatório brasileiro é complexo.<br />Nós tornamos gerenciável.</h2>
+                <p style={{ ...S.p, maxWidth: 580, marginBottom: '4rem' }}>
+                    Conformidade não é opcional para fintechs e PMEs sob escrutínio do BACEN, COAF e ANPD.
+                </p>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', border: `1px solid ${LINE}` }}>
+                    {cards.map((c, i) => (
+                        <div key={c.num} style={{ padding: '2.5rem', borderRight: i < 2 ? `1px solid ${LINE}` : undefined }}>
+                            <div style={{ height: 1, background: LINE, marginBottom: '2rem', transition: 'background .2s' }} />
+                            <span style={{ fontFamily: MONO, fontSize: '.65rem', color: '#3A4152', letterSpacing: '.08em', marginBottom: '1.5rem', display: 'block' }}>{c.num}</span>
+                            <IconBox icon={c.icon} color={c.color} />
+                            <div style={{ fontFamily: UI, fontWeight: 600, fontSize: '1.0625rem', color: TEXT, marginBottom: '.875rem' }}>{c.title}</div>
+                            <p style={{ ...S.p, fontSize: '.9rem', marginBottom: '1.75rem' }}>{c.desc}</p>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '.375rem' }}>
+                                {c.tags.map(t => (
+                                    <span key={t} style={{ fontFamily: MONO, fontSize: '.7rem', color: '#3A4152', paddingLeft: '.875rem', position: 'relative' }}>
+                                        <span style={{ position: 'absolute', left: 0 }}>—</span>{t}
+                                    </span>
+                                ))}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </section>
+    )
+}
 
-/* ─── Regulation Badges ──────────────────────────────────── */
-const REGS = ['PLD/FT', 'LGPD', 'BACEN 3.909', 'COAF', 'CVM', 'SUSEP', 'Lei 12.846/13', 'OFAC', 'ONU Sanctions', 'ISO 27001', 'ISO 27701', 'SOC 2']
+/* ─── STACK ──────────────────────────────────────── */
+function Stack() {
+    const items = [
+        { icon: <Key size={20} strokeWidth={1.5} />, name: 'Isolamento de Dados', desc: 'Multi-tenant com RLS no PostgreSQL. Sem compartilhamento entre tenants.' },
+        { icon: <Server size={20} strokeWidth={1.5} />, name: 'Alta Disponibilidade', desc: 'SLA 99,9% · AWS ECS Fargate · Multi-AZ · Auto-scaling.' },
+        { icon: <ShieldCheck size={20} strokeWidth={1.5} />, name: 'Segurança Zero-Trust', desc: 'JWT RS256 · MFA TOTP · WAF + Shield · Criptografia end-to-end.' },
+        { icon: <Activity size={20} strokeWidth={1.5} />, name: 'Observabilidade', desc: 'Datadog APM · Audit logs imutáveis · SOC 2 ready.' },
+    ]
+    return (
+        <section style={{ ...S.section, background: SURFACE }}>
+            <div style={S.wrap}>
+                <p style={S.pre}>Infraestrutura</p>
+                <h2 style={S.h2}>Enterprise-grade, sem overhead enterprise.</h2>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: '2rem', marginTop: '4rem' }}>
+                    {items.map(s => (
+                        <div key={s.name} style={{ padding: '2rem', border: `1px solid ${LINE}`, background: BG }}>
+                            <div style={{ color: CYAN, marginBottom: '1rem' }}>{s.icon}</div>
+                            <div style={{ fontFamily: UI, fontWeight: 600, fontSize: '.9375rem', color: TEXT, marginBottom: '.5rem' }}>{s.name}</div>
+                            <div style={{ fontFamily: MONO, fontSize: '.8rem', color: MUTED, lineHeight: 1.5 }}>{s.desc}</div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </section>
+    )
+}
 
-/* ─── Main Page ──────────────────────────────────────────── */
+/* ─── PRICING ────────────────────────────────────── */
+function Pricing() {
+    const plans = [
+        {
+            tier: 'Starter', price: 'R$ 890', period: '/ mês',
+            desc: 'Para PMEs iniciando a jornada de conformidade regulatória.',
+            features: ['Até 100 entidades monitoradas', 'Módulos PLD-FT e LGPD', 'Screening básico OFAC/ONU', 'Audit Trail padrão', 'Exportação PDF', 'Suporte por e-mail'],
+            featured: false,
+        },
+        {
+            tier: 'Growth', price: 'R$ 2.490', period: '/ mês',
+            desc: 'Para fintechs e empresas com operação regulatória madura e times dedicados.',
+            features: ['Até 1.000 entidades + API pública', 'Todos os módulos regulatórios', 'Screening completo + PEP nacional', 'Case Management de investigações', 'Exportação BACEN/COAF', 'Webhooks e integrações', 'Suporte prioritário'],
+            featured: true,
+        },
+        {
+            tier: 'Enterprise', price: 'Sob consulta', period: '',
+            desc: 'Para grupos financeiros com exigências avançadas de segurança e escala.',
+            features: ['Entidades ilimitadas', 'SLA dedicado + suporte 24/7', 'SAML SSO + SCIM provisioning', 'Deploy on-premise disponível', 'Integrações customizadas via API', 'Treinamento da equipe de compliance'],
+            featured: false,
+        },
+    ]
+    return (
+        <section id="pricing" style={S.section}>
+            <div style={S.wrap}>
+                <p style={S.pre}>Preços</p>
+                <h2 style={S.h2}>Transparente. Sem surpresas.</h2>
+                <p style={{ ...S.p, marginBottom: '4rem' }}>Cancelamento a qualquer momento. Sem taxa de setup. Migração assistida inclusa.</p>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', border: `1px solid ${LINE}` }}>
+                    {plans.map((p, i) => (
+                        <div key={p.tier} style={{
+                            padding: '2.5rem', display: 'flex', flexDirection: 'column',
+                            borderRight: i < 2 ? `1px solid ${LINE}` : undefined,
+                            background: p.featured ? SURFACE2 : undefined,
+                        }}>
+                            <div style={{ fontFamily: MONO, fontSize: '.7rem', color: MUTED, textTransform: 'uppercase', letterSpacing: '.1em', marginBottom: '1.25rem' }}>
+                                {p.tier}{p.featured && <span style={{ color: CYAN, marginLeft: '.75rem' }}>▲ Popular</span>}
+                            </div>
+                            <div style={{ fontFamily: SERIF, fontSize: p.price === 'Sob consulta' ? '1.75rem' : '2.5rem', color: TEXT, lineHeight: 1, marginBottom: '.25rem' }}>{p.price}</div>
+                            <div style={{ fontFamily: MONO, fontSize: '.7rem', color: '#3A4152', marginBottom: '1.5rem' }}>{p.period || '\u00a0'}</div>
+                            <div style={{ height: 1, background: LINE, marginBottom: '1.5rem' }} />
+                            <p style={{ ...S.p, fontSize: '.875rem', marginBottom: '2rem', lineHeight: 1.6 }}>{p.desc}</p>
+                            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '.625rem', marginBottom: '2.5rem' }}>
+                                {p.features.map(f => (
+                                    <li key={f} style={{ fontSize: '.8125rem', color: MUTED, display: 'flex', gap: '.625rem', alignItems: 'flex-start' }}>
+                                        <CheckCircle size={13} stroke={CYAN} style={{ flexShrink: 0, marginTop: '.15rem' }} />
+                                        {f}
+                                    </li>
+                                ))}
+                            </ul>
+                            <div style={{ marginTop: 'auto' }}>
+                                <Link href="/dashboard" style={{
+                                    ...p.featured ? S.btnFill : S.btnLine,
+                                    width: '100%', justifyContent: 'center',
+                                }}>
+                                    {p.price === 'Sob consulta' ? 'Falar com a Equipe' : 'Começar Agora'}
+                                </Link>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+                <p style={{ textAlign: 'center', fontSize: '.8125rem', color: '#3A4152', marginTop: '2rem' }}>
+                    Preços em BRL · Cancelamento a qualquer momento · Sem taxa de setup
+                </p>
+            </div>
+        </section>
+    )
+}
+
+/* ─── QUOTE + CTA ────────────────────────────────── */
+function QuoteCTA() {
+    return (
+        <section style={{ ...S.section, padding: '8rem 0' }}>
+            <div style={S.wrap}>
+                <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '8rem', alignItems: 'start' }}>
+                    <div>
+                        <div style={{ fontFamily: SERIF, fontSize: '5rem', color: LINE_STRONG, lineHeight: .5, marginBottom: '1.5rem' }}>"</div>
+                        <p style={{ fontFamily: SERIF, fontSize: 'clamp(1.5rem,2.5vw,2.25rem)', color: TEXT, lineHeight: 1.4, fontStyle: 'italic', marginBottom: '2rem', fontWeight: 'normal' }}>
+                            Reduzimos em 70% o tempo de onboarding KYC/KYB e eliminamos planilhas do processo de PLD. O ComplianceOS virou infraestrutura crítica para nós.
+                        </p>
+                        <div style={{ fontFamily: MONO, fontSize: '.7rem', color: MUTED, letterSpacing: '.04em' }}>
+                            <strong style={{ display: 'block', color: TEXT, marginBottom: '.25rem' }}>Rafael M.</strong>
+                            CCO · Acme Fintech &nbsp;|&nbsp; São Paulo, SP
+                        </div>
+                    </div>
+                    <div style={{ padding: '2.5rem', border: `1px solid ${LINE}` }}>
+                        <h3 style={{ fontFamily: SERIF, fontSize: '1.375rem', color: TEXT, marginBottom: '.875rem', fontWeight: 'normal' }}>Pronto para automatizar seu compliance?</h3>
+                        <p style={{ ...S.p, fontSize: '.875rem', marginBottom: '2rem', lineHeight: 1.65 }}>
+                            Agende uma demonstração com nossa equipe e veja como o ComplianceOS se adapta ao seu contexto regulatório.
+                        </p>
+                        <Link href="/dashboard" style={{ ...S.btnFill, width: '100%', justifyContent: 'center' }}>
+                            Agendar Demonstração Gratuita →
+                        </Link>
+                        <p style={{ marginTop: '1rem', fontSize: '.75rem', color: '#3A4152', textAlign: 'center' }}>
+                            Sem compromisso. Resposta em até 24h úteis.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    )
+}
+
+/* ─── FOOTER ─────────────────────────────────────── */
+function Footer() {
+    return (
+        <footer style={{ borderTop: `1px solid ${LINE}`, padding: '3rem 0', background: BG }}>
+            <div style={S.wrap}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '3rem', flexWrap: 'wrap' }}>
+                    <div style={{ maxWidth: 260 }}>
+                        <strong style={{ display: 'block', color: TEXT, fontFamily: UI, fontWeight: 500, marginBottom: '.5rem' }}>ComplianceOS</strong>
+                        <p style={{ ...S.p, fontSize: '.875rem', lineHeight: 1.6 }}>
+                            Plataforma de Compliance &amp; Governança para fintechs e PMEs brasileiras.
+                        </p>
+                        <p style={{ ...S.p, fontSize: '.825rem', marginTop: '.5rem' }}>Desenvolvido por Chuangxin · Grupo Guinle</p>
+                    </div>
+                    {[
+                        { label: 'Produto', links: ['Módulos', 'Plataforma', 'Preços', 'API Reference', 'Status'] },
+                        { label: 'Regulatório', links: ['Cobertura', 'Documentação', 'LGPD', 'Segurança'] },
+                        { label: 'Legal', links: ['Privacidade', 'Termos de Uso', 'Cookies', 'Contato'] },
+                    ].map(g => (
+                        <div key={g.label}>
+                            <span style={{ fontFamily: MONO, fontSize: '.65rem', textTransform: 'uppercase', letterSpacing: '.1em', color: '#3A4152', display: 'block', marginBottom: '.75rem' }}>{g.label}</span>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '.5rem' }}>
+                                {g.links.map(l => <Link key={l} href="/dashboard" style={{ fontSize: '.8125rem', color: MUTED, textDecoration: 'none' }}>{l}</Link>)}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+                <div style={{ marginTop: '3rem', paddingTop: '1.5rem', borderTop: `1px solid ${LINE}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+                    <span style={{ fontSize: '.75rem', color: '#3A4152' }}>© 2026 Chuangxin Tecnologia da Informação Ltda.</span>
+                    <div style={{ display: 'flex', gap: '.75rem' }}>
+                        {['LGPD', 'ISO 27001 Ready', 'AWS Partner', 'SOC 2'].map(b => (
+                            <span key={b} style={{ fontFamily: MONO, fontSize: '.65rem', color: '#3A4152', border: `1px solid ${LINE}`, padding: '.25rem .625rem' }}>{b}</span>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        </footer>
+    )
+}
+
+/* ─── PAGE ───────────────────────────────────────── */
 export default function LandingPage() {
     return (
-        <div style={{
-            background: C.bgBase, color: C.textPrimary,
-            fontFamily: "'IBM Plex Sans', sans-serif",
-            lineHeight: 1.6, overflowX: 'hidden',
-        }}>
+        <div style={{ background: BG, color: TEXT, fontFamily: UI, overflowX: 'hidden' }}>
             <style>{`
-                @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap');
-                * { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
-                a { color: inherit; text-decoration: none; }
-                @keyframes float {
-                    0%, 100% { transform: translateY(0); }
-                    50% { transform: translateY(-6px); }
-                }
-                @keyframes marquee {
-                    0% { transform: translateX(0); }
-                    100% { transform: translateX(-50%); }
-                }
-            `}</style>
+        @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+        *{margin:0;padding:0;box-sizing:border-box;-webkit-font-smoothing:antialiased;}
+        a{color:inherit;text-decoration:none;}
+      `}</style>
 
-            <ScrollProgress />
-            <Navbar />
-            <Hero />
-
-            {/* ── Solutions Section ── */}
-            <section style={{ padding: '8rem 2rem', background: C.bgSurface }}>
-                <div style={{ maxWidth: 1280, margin: '0 auto' }}>
-                    <div style={{ textAlign: 'center', marginBottom: '5rem' }}>
-                        <h2 style={{ fontFamily: "'DM Serif Display', serif", fontSize: '3rem', color: C.textPrimary, marginBottom: '1rem' }}>
-                            Soluções de Risco e Conformidade
-                        </h2>
-                        <p style={{ color: C.textSecondary, fontSize: '1.1rem', maxWidth: 600, margin: '0 auto' }}>
-                            Três pilares fundamentais, geridos em um único centro de comando criptográfico.
-                        </p>
-                    </div>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
-                        {SOLUTIONS.map(s => <SolutionCard key={s.title} {...s} />)}
-                    </div>
-                </div>
-            </section>
-
-            {/* ── Regulations section ── */}
-            <section style={{ padding: '8rem 2rem', borderBottom: `1px solid ${C.border}` }}>
-                <div style={{ maxWidth: 1280, margin: '0 auto' }}>
-                    <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
-                        <h2 style={{ fontFamily: "'DM Serif Display', serif", fontSize: '3rem', color: C.textPrimary, marginBottom: '1rem' }}>
-                            Cobertura Regulatória Completa
-                        </h2>
-                        <p style={{ color: C.textSecondary }}>
-                            Atenda às principais normas e frameworks internacionais e brasileiros.
-                        </p>
-                    </div>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'center', maxWidth: 900, margin: '0 auto 2rem' }}>
-                        {REGS.map(reg => (
-                            <span key={reg} style={{
-                                padding: '0.75rem 1.5rem',
-                                border: `1px solid ${C.border}`, borderRadius: 4,
-                                fontFamily: "'JetBrains Mono', monospace", fontSize: '0.85rem',
-                                color: C.textPrimary, background: 'rgba(255,255,255,0.02)',
-                                transition: 'all 0.2s', cursor: 'default',
-                            }}
-                                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = C.textSecondary; (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.05)' }}
-                                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = C.border; (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.02)' }}>
-                                {reg}
-                            </span>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* ── Stack Section ── */}
-            <section style={{ padding: '8rem 2rem', background: C.bgSurface }}>
-                <div style={{ maxWidth: 1280, margin: '0 auto' }}>
-                    <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
-                        <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '0.85rem', color: C.textSecondary, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '1rem' }}>
-                            Stack Tecnológico
-                        </p>
-                        <h2 style={{ fontFamily: "'DM Serif Display', serif", fontSize: '3rem', color: C.textPrimary }}>
-                            Construído para Escala e Segurança
-                        </h2>
-                    </div>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '2rem' }}>
-                        {STACK.map(s => (
-                            <div key={s.name} style={{
-                                padding: '2rem', borderRadius: 8,
-                                border: `1px solid ${C.border}`, background: C.bgBase,
-                                display: 'flex', flexDirection: 'column', gap: '1rem',
-                            }}>
-                                <div style={{ fontSize: '2rem' }}>{s.icon}</div>
-                                <div>
-                                    <p style={{ fontFamily: "'IBM Plex Sans', sans-serif", fontWeight: 600, color: C.textPrimary, marginBottom: '0.25rem' }}>{s.name}</p>
-                                    <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '0.85rem', color: C.textSecondary }}>{s.desc}</p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* ── CTA Final ── */}
-            <section style={{ padding: '8rem 2rem', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
-                <div style={{
-                    position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)',
-                    width: '60vw', height: '60vw', borderRadius: '50%',
-                    background: `radial-gradient(circle, rgba(0,229,255,0.07) 0%, transparent 60%)`,
-                    pointerEvents: 'none',
-                }} />
-                <div style={{ maxWidth: 700, margin: '0 auto', position: 'relative', zIndex: 2 }}>
-                    <h2 style={{ fontFamily: "'DM Serif Display', serif", fontSize: 'clamp(2.5rem, 5vw, 4rem)', color: C.textPrimary, marginBottom: '1.5rem' }}>
-                        Pronto para Automatizar o seu Compliance?
-                    </h2>
-                    <p style={{ color: C.textSecondary, fontSize: '1.1rem', marginBottom: '2.5rem' }}>
-                        Comece agora e tenha controle total sobre riscos regulatórios, privacidade e governança.
-                    </p>
-                    <Link href="/dashboard" style={{
-                        display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
-                        padding: '0.875rem 2rem',
-                        background: C.accent, color: C.bgBase,
-                        borderRadius: 4, border: '1px solid transparent',
-                        fontFamily: "'IBM Plex Sans', sans-serif",
-                        fontWeight: 600, fontSize: '0.875rem',
-                        textTransform: 'uppercase', letterSpacing: '0.5px',
-                        textDecoration: 'none',
-                        boxShadow: `0 0 30px ${C.accentGlow}`,
-                        transition: 'all 0.2s ease',
-                    }}>
-                        Acessar Plataforma <ArrowRight size={18} />
+            {/* Navbar */}
+            <nav style={{ position: 'fixed', top: 0, width: '100%', zIndex: 100, borderBottom: `1px solid ${LINE}`, background: `rgba(10,12,16,.92)`, backdropFilter: 'blur(16px)' }}>
+                <div style={{ ...S.wrap, height: 60, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '.625rem', fontSize: '1rem', fontWeight: 600, letterSpacing: '-.02em', color: TEXT, textDecoration: 'none' }}>
+                        <ShieldCheck size={20} stroke={CYAN} strokeWidth={1.5} />
+                        Compliance<span style={{ color: CYAN }}>OS</span>
                     </Link>
-                </div>
-            </section>
-
-            {/* ── Footer ── */}
-            <footer style={{
-                background: C.bgSurface,
-                borderTop: `1px solid ${C.border}`,
-                padding: '3rem 2rem',
-            }}>
-                <div style={{
-                    maxWidth: 1280, margin: '0 auto',
-                    display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem',
-                }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={C.textSecondary} strokeWidth="2">
-                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                        </svg>
-                        <span style={{ fontFamily: "'IBM Plex Sans', sans-serif", fontSize: '1.1rem', fontWeight: 700, color: C.textPrimary }}>ComplianceOS</span>
-                    </div>
-                    <p style={{ fontFamily: "'IBM Plex Sans', sans-serif", fontSize: '0.85rem', color: C.textSecondary }}>
-                        © 2026 Chuangxin Tecnologia da Informação Ltda. Reservados os direitos sob a IP.
-                    </p>
-                    <div style={{ display: 'flex', gap: '1.5rem' }}>
-                        {['Termos', 'Privacidade', 'Contato'].map(l => (
-                            <Link key={l} href="/dashboard" style={{ fontFamily: "'IBM Plex Sans', sans-serif", fontSize: '0.875rem', color: C.textSecondary, transition: 'color 0.2s' }}
-                                onMouseEnter={e => (e.currentTarget.style.color = C.textPrimary)}
-                                onMouseLeave={e => (e.currentTarget.style.color = C.textSecondary)}>
-                                {l}
-                            </Link>
+                    <div style={{ display: 'flex', gap: '2.5rem' }}>
+                        {[['#solutions', 'Produto'], ['#pricing', 'Preços'], ['/dashboard', 'Plataforma']].map(([h, l]) => (
+                            <Link key={l} href={h} style={{ fontSize: '.8125rem', color: MUTED, textDecoration: 'none' }}>{l}</Link>
                         ))}
                     </div>
+                    <div style={{ display: 'flex', gap: '.75rem' }}>
+                        <Link href="/login" style={S.btnLine}>Entrar</Link>
+                        <Link href="/dashboard" style={S.btnFill}>Agendar Demo →</Link>
+                    </div>
                 </div>
-            </footer>
+            </nav>
+
+            <Hero />
+            <Stats />
+            <Solutions />
+            <Stack />
+            <Pricing />
+            <QuoteCTA />
+            <Footer />
         </div>
     )
 }
