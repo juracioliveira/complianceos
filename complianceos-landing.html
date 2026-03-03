@@ -4,51 +4,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ComplianceOS | Plataforma de Compliance & Governança</title>
-
-    <!-- Google Fonts -->
+    <title>ComplianceOS | Plataforma de Compliance &amp; Governança</title>
+    <meta name="description"
+        content="O ComplianceOS automatiza PLD-FT, LGPD e Anticorrupção para fintechs e PMEs brasileiras — do KYC ao relatório COAF.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap"
         rel="stylesheet">
-
     <style>
         :root {
-            /* Palette */
             --bg-base: #0A0C10;
             --bg-surface: #111318;
-            --accent-primary: #00E5FF;
-            --accent-primary-hover: rgba(0, 229, 255, 0.8);
-            --accent-primary-glow: rgba(0, 229, 255, 0.15);
-            --accent-secondary: #F5A623;
+            --bg-surface-2: #14171d;
+            --accent: #00E5FF;
+            --accent-glow: rgba(0, 229, 255, 0.15);
+            --accent-hover: rgba(0, 229, 255, 0.85);
+            --amber: #F5A623;
+            --amber-glow: rgba(245, 166, 35, 0.15);
             --text-primary: #F0F2F5;
             --text-secondary: #8892A4;
-            --border-subtle: rgba(255, 255, 255, 0.07);
+            --border: rgba(255, 255, 255, 0.07);
             --border-hover: rgba(0, 229, 255, 0.3);
-
-            /* Typography */
             --font-display: 'DM Serif Display', serif;
             --font-ui: 'IBM Plex Sans', sans-serif;
             --font-mono: 'JetBrains Mono', monospace;
-
-            /* Spacing & Layout */
-            --max-width: 1280px;
-            --section-padding: 8rem 2rem;
+            --max-w: 1280px;
+            --section-pad: 8rem 2rem;
         }
 
-        /* Reset & BaseStyles */
-        * {
+        *,
+        *::before,
+        *::after {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
+        }
+
+        html {
+            scroll-behavior: smooth;
         }
 
         body {
             font-family: var(--font-ui);
-            background-color: var(--bg-base);
+            background: var(--bg-base);
             color: var(--text-primary);
             line-height: 1.6;
             overflow-x: hidden;
@@ -68,111 +68,115 @@
             line-height: 1.1;
         }
 
-        /* Utility Classes */
-        .container {
-            max-width: var(--max-width);
-            margin: 0 auto;
-            position: relative;
-        }
-
-        .text-accent {
-            color: var(--accent-primary);
-        }
-
-        .text-secondary {
-            color: var(--text-secondary);
-        }
-
-        .font-mono {
-            font-family: var(--font-mono);
-            font-size: 0.9em;
-        }
-
-        /* Buttons */
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0.75rem 1.5rem;
-            border-radius: 4px;
-            /* Slightly sharp for tech feel */
-            font-weight: 600;
-            font-family: var(--font-ui);
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            font-size: 0.875rem;
-            border: 1px solid transparent;
-        }
-
-        .btn-primary {
-            background-color: var(--accent-primary);
-            color: var(--bg-base);
-            box-shadow: 0 0 20px var(--accent-primary-glow);
-        }
-
-        .btn-primary:hover {
-            background-color: var(--accent-primary-hover);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 25px rgba(0, 229, 255, 0.25);
-        }
-
-        .btn-outline {
-            background-color: transparent;
-            border-color: var(--accent-primary);
-            color: var(--accent-primary);
-        }
-
-        .btn-outline:hover {
-            background-color: rgba(0, 229, 255, 0.05);
-            transform: translateY(-2px);
-        }
-
-        .btn-ghost {
-            background-color: transparent;
-            color: var(--text-primary);
-        }
-
-        .btn-ghost:hover {
-            color: var(--accent-primary);
-        }
-
-        /* Progress Bar */
-        .scroll-progress {
+        /* ── Scroll progress ── */
+        #scroll-bar {
             position: fixed;
             top: 0;
             left: 0;
             width: 0%;
             height: 2px;
-            background-color: var(--accent-primary);
-            z-index: 1000;
+            background: var(--accent);
+            z-index: 1001;
+            box-shadow: 0 0 10px var(--accent);
             transition: width 0.1s ease-out;
-            box-shadow: 0 0 10px var(--accent-primary);
         }
 
-        /* 1. Navbar */
+        /* ── Container ── */
+        .container {
+            max-width: var(--max-w);
+            margin: 0 auto;
+            padding: 0 2rem;
+            position: relative;
+        }
+
+        /* ── Reveal animation ── */
+        .reveal {
+            opacity: 0;
+            transform: translateY(32px);
+            transition: opacity 0.7s ease, transform 0.7s ease;
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ── Buttons ── */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            font-family: var(--font-ui);
+            font-weight: 600;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: var(--bg-base);
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 25px rgba(0, 229, 255, 0.3);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .btn-outline:hover {
+            background: rgba(0, 229, 255, 0.06);
+            transform: translateY(-2px);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--text-primary);
+            text-transform: none;
+            letter-spacing: 0;
+        }
+
+        .btn-ghost:hover {
+            color: var(--accent);
+        }
+
+        /* ══════════════════════════════════════════════════
+   1. NAVBAR
+══════════════════════════════════════════════════ */
         .navbar {
             position: fixed;
             top: 0;
             width: 100%;
-            padding: 1.25rem 2rem;
             z-index: 100;
-            transition: all 0.3s;
+            padding: 1.25rem 2rem;
             border-bottom: 1px solid transparent;
+            transition: all 0.3s ease;
         }
 
         .navbar.scrolled {
-            background-color: rgba(10, 12, 16, 0.8);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--border-subtle);
+            background: rgba(10, 12, 16, 0.88);
+            backdrop-filter: blur(14px);
+            border-bottom-color: var(--border);
         }
 
         .nav-inner {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            max-width: var(--max-width);
+            max-width: var(--max-w);
             margin: 0 auto;
         }
 
@@ -188,9 +192,7 @@
         .logo svg {
             width: 28px;
             height: 28px;
-            fill: none;
-            stroke: var(--accent-primary);
-            stroke-width: 2;
+            flex-shrink: 0;
         }
 
         .nav-links {
@@ -208,42 +210,42 @@
             color: var(--text-primary);
         }
 
-        /* 2. Hero */
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        /* ══════════════════════════════════════════════════
+   2. HERO
+══════════════════════════════════════════════════ */
         .hero {
             position: relative;
-            padding: 12rem 2rem 8rem;
             min-height: 100vh;
+            padding: 12rem 2rem 8rem;
             display: flex;
             align-items: center;
             background-image:
-                linear-gradient(45deg, var(--border-subtle) 1px, transparent 1px),
-                linear-gradient(-45deg, var(--border-subtle) 1px, transparent 1px);
+                linear-gradient(45deg, var(--border) 1px, transparent 1px),
+                linear-gradient(-45deg, var(--border) 1px, transparent 1px);
             background-size: 60px 60px;
-            background-position: center top;
             overflow: hidden;
         }
 
         .hero::before {
             content: '';
             position: absolute;
-            top: -50%;
-            right: -25%;
-            width: 80vw;
-            height: 80vw;
-            background: radial-gradient(circle, rgba(0, 229, 255, 0.1) 0%, transparent 60%);
+            top: -40%;
+            right: -20%;
+            width: 75vw;
+            height: 75vw;
             border-radius: 50%;
+            background: radial-gradient(circle, rgba(0, 229, 255, 0.09) 0%, transparent 60%);
             pointer-events: none;
         }
 
-        .hero .container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 4rem;
-            align-items: center;
-        }
-
         .hero-content {
-            max-width: 600px;
+            max-width: 680px;
             z-index: 2;
         }
 
@@ -252,55 +254,92 @@
             align-items: center;
             gap: 0.5rem;
             padding: 0.5rem 1rem;
-            background: rgba(17, 19, 24, 0.8);
-            border: 1px solid var(--border-subtle);
+            background: rgba(17, 19, 24, 0.9);
+            border: 1px solid var(--border);
             border-radius: 50px;
             font-family: var(--font-mono);
-            font-size: 0.8rem;
+            font-size: 0.78rem;
             color: var(--text-secondary);
             margin-bottom: 2rem;
             animation: float 6s ease-in-out infinite;
         }
 
-        .hero-badge .icon {
-            color: var(--accent-primary);
+        .badge-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--accent);
+            box-shadow: 0 0 8px var(--accent);
+            animation: pulse-dot 2s infinite;
+        }
+
+        @keyframes pulse-dot {
+
+            0%,
+            100% {
+                opacity: 1
+            }
+
+            50% {
+                opacity: 0.5
+            }
         }
 
         .hero h1 {
-            font-size: 4.5rem;
+            font-size: clamp(2.8rem, 6vw, 5rem);
             margin-bottom: 1.5rem;
+            color: var(--text-primary);
         }
 
-        .hero p {
-            font-size: 1.25rem;
+        .hero h1 em {
+            font-style: italic;
+            color: var(--accent);
+        }
+
+        .hero-sub {
+            font-size: 1.2rem;
             color: var(--text-secondary);
             margin-bottom: 2.5rem;
-            max-width: 90%;
+            max-width: 560px;
+            line-height: 1.7;
         }
 
         .hero-ctas {
             display: flex;
             gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 4rem;
         }
 
-        /* Hero CSS Art Mock */
+        /* ── Dashboard mock (CSS art) ── */
         .hero-mock {
-            position: relative;
-            width: 100%;
-            height: 450px;
-            border-radius: 8px;
+            position: absolute;
+            right: 4%;
+            bottom: 0;
+            width: 44%;
             background: var(--bg-surface);
-            border: 1px solid var(--border-subtle);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px var(--border-subtle);
+            border: 1px solid var(--border);
+            border-radius: 8px 8px 0 0;
+            box-shadow: 0 -20px 60px -20px rgba(0, 229, 255, 0.06), 0 0 0 1px var(--border);
             overflow: hidden;
-            opacity: 0;
-            transform: translateY(40px);
-            animation: slideUpFade 1s 0.2s forwards cubic-bezier(0.16, 1, 0.3, 1);
+            animation: slideUpFade 1s 0.3s both cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .hero-mock-header {
-            height: 40px;
-            border-bottom: 1px solid var(--border-subtle);
+        @keyframes slideUpFade {
+            from {
+                opacity: 0;
+                transform: translateY(60px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        .mock-header {
+            height: 38px;
+            border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
             padding: 0 1rem;
@@ -309,180 +348,246 @@
         }
 
         .mock-dot {
-            width: 10px;
-            height: 10px;
+            width: 9px;
+            height: 9px;
             border-radius: 50%;
-            background: #333;
         }
 
-        .hero-mock-body {
-            padding: 2rem;
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-        }
-
-        .mock-line {
-            height: 8px;
-            background: var(--border-subtle);
-            border-radius: 4px;
-            width: 100%;
-        }
-
-        .mock-line.short {
-            width: 40%;
-            background: var(--text-secondary);
-            opacity: 0.5;
-        }
-
-        .mock-card {
-            padding: 1rem;
-            border: 1px solid var(--border-subtle);
-            border-radius: 6px;
+        .mock-body {
+            padding: 1.5rem;
             display: flex;
             flex-direction: column;
             gap: 1rem;
         }
 
-        .mock-stat {
-            font-family: var(--font-mono);
-            color: var(--accent-primary);
-            font-size: 2rem;
+        .mock-row {
+            display: flex;
+            gap: 1rem;
         }
 
-        /* 3. Social Proof */
+        .mock-stat {
+            flex: 1;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+        }
+
+        .mock-stat-val {
+            font-family: var(--font-mono);
+            font-size: 1.6rem;
+            color: var(--accent);
+            margin-bottom: 0.25rem;
+        }
+
+        .mock-stat-lbl {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .mock-line {
+            height: 7px;
+            background: var(--border);
+            border-radius: 4px;
+        }
+
+        .mock-line.accent {
+            background: rgba(0, 229, 255, 0.3);
+            width: 60%;
+        }
+
+        .mock-line.short {
+            width: 40%;
+        }
+
+        .mock-alert {
+            padding: 0.75rem 1rem;
+            background: rgba(245, 166, 35, 0.08);
+            border: 1px solid rgba(245, 166, 35, 0.25);
+            border-radius: 4px;
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            color: var(--amber);
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0)
+            }
+
+            50% {
+                transform: translateY(-8px)
+            }
+        }
+
+        /* ══════════════════════════════════════════════════
+   3. SOCIAL PROOF
+══════════════════════════════════════════════════ */
         .social-proof {
-            padding: 4rem 0;
+            padding: 3.5rem 0;
             background: var(--bg-surface);
-            border-top: 1px solid var(--border-subtle);
-            border-bottom: 1px solid var(--border-subtle);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
             overflow: hidden;
         }
 
-        .social-proof-title {
+        .proof-label {
             text-align: center;
             font-family: var(--font-mono);
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: var(--text-secondary);
-            margin-bottom: 2rem;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.12em;
+            margin-bottom: 2rem;
         }
 
-        .marquee-wrapper {
+        .marquee-wrap {
             display: flex;
             width: 200%;
-            animation: marquee 30s linear infinite;
+            animation: marquee 28s linear infinite;
         }
 
-        .marquee-content {
+        .marquee-track {
             display: flex;
-            justify-content: space-around;
             width: 50%;
+            justify-content: space-around;
             align-items: center;
         }
 
-        .partner-logo {
+        .partner {
             font-family: var(--font-display);
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             color: var(--text-secondary);
-            opacity: 0.5;
+            opacity: 0.45;
             transition: opacity 0.3s;
+            cursor: default;
         }
 
-        .partner-logo:hover {
-            opacity: 1;
+        .partner:hover {
+            opacity: 0.9;
         }
 
-        /* 4. Problem -> Solution */
+        @keyframes marquee {
+            0% {
+                transform: translateX(0)
+            }
+
+            100% {
+                transform: translateX(-50%)
+            }
+        }
+
+        /* ══════════════════════════════════════════════════
+   4. PROBLEM → SOLUTION
+══════════════════════════════════════════════════ */
         .solutions {
-            padding: var(--section-padding);
+            padding: var(--section-pad);
+        }
+
+        .section-label {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 1rem;
         }
 
         .section-header {
             text-align: center;
-            max-width: 800px;
+            max-width: 760px;
             margin: 0 auto 5rem;
         }
 
         .section-header h2 {
-            font-size: 3rem;
+            font-size: clamp(2rem, 4vw, 3rem);
+            margin-bottom: 1rem;
+        }
+
+        .section-header p {
+            color: var(--text-secondary);
+            font-size: 1.05rem;
         }
 
         .cards-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 2rem;
         }
 
-        .solution-card {
+        .sol-card {
             background: var(--bg-surface);
-            border: 1px solid var(--border-subtle);
-            padding: 3rem 2rem;
+            border: 1px solid var(--border);
+            padding: 2.5rem 2rem;
             border-radius: 8px;
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
         }
 
-        .solution-card::after {
+        .sol-card::after {
             content: '';
             position: absolute;
             inset: 0;
-            box-shadow: inset 0 0 0 1px var(--accent-primary);
+            border-radius: 8px;
+            box-shadow: inset 0 0 0 1px var(--accent);
             opacity: 0;
             transition: opacity 0.3s;
             pointer-events: none;
-            border-radius: 8px;
         }
 
-        .solution-card:hover {
+        .sol-card:hover {
             transform: translateY(-5px);
-            background: #14171d;
+            background: var(--bg-surface-2);
             box-shadow: inset 0 20px 40px -20px rgba(0, 229, 255, 0.1);
         }
 
-        .solution-card:hover::after {
+        .sol-card:hover::after {
             opacity: 1;
         }
 
-        .card-icon {
+        .card-icon-box {
             width: 48px;
             height: 48px;
             border-radius: 8px;
             background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--border-subtle);
+            border: 1px solid var(--border);
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 2rem;
+            margin-bottom: 1.75rem;
         }
 
-        .card-icon svg {
-            width: 24px;
-            height: 24px;
-            stroke: var(--accent-primary);
-            stroke-width: 1.5;
+        .card-icon-box svg {
+            width: 22px;
+            height: 22px;
             fill: none;
+            stroke-width: 1.5;
         }
 
-        .solution-card h3 {
+        .sol-card h3 {
             font-family: var(--font-ui);
             font-weight: 600;
-            font-size: 1.25rem;
-            margin-bottom: 1rem;
+            font-size: 1.2rem;
+            margin-bottom: 0.75rem;
         }
 
-        .solution-card p {
+        .sol-card p {
             color: var(--text-secondary);
             font-size: 0.95rem;
+            line-height: 1.6;
         }
 
-        /* 5. Features Detailed */
+        /* ══════════════════════════════════════════════════
+   5. FEATURES DETAILED
+══════════════════════════════════════════════════ */
         .features {
-            padding: var(--section-padding);
+            padding: var(--section-pad);
             background: var(--bg-surface);
-            position: relative;
         }
 
         .feature-block {
@@ -493,115 +598,141 @@
             margin-bottom: 8rem;
         }
 
-        .feature-block:nth-child(even) {
-            direction: rtl;
-        }
-
-        .feature-block:nth-child(even)>* {
-            direction: ltr;
-        }
-
         .feature-block:last-child {
             margin-bottom: 0;
         }
 
-        .feature-content h3 {
-            font-size: 2.5rem;
-            margin-bottom: 1.5rem;
-            color: var(--text-primary);
+        .feature-block.reverse {
+            direction: rtl;
         }
 
-        .feature-list {
+        .feature-block.reverse>* {
+            direction: ltr;
+        }
+
+        .feat-label {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 1rem;
+        }
+
+        .feat-content h3 {
+            font-size: clamp(1.8rem, 3vw, 2.5rem);
+            margin-bottom: 1rem;
+        }
+
+        .feat-content p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            line-height: 1.7;
+        }
+
+        .feat-list {
             list-style: none;
-            margin-top: 2rem;
+            margin-top: 1.5rem;
         }
 
-        .feature-list li {
+        .feat-list li {
             display: flex;
             align-items: flex-start;
-            gap: 1rem;
-            margin-bottom: 1.25rem;
+            gap: 0.875rem;
+            margin-bottom: 1rem;
             color: var(--text-secondary);
+            font-size: 0.95rem;
         }
 
-        .feature-list li::before {
+        .feat-list li::before {
             content: '';
             display: inline-block;
             width: 6px;
             height: 6px;
-            background: var(--accent-primary);
             border-radius: 50%;
+            background: var(--accent);
+            box-shadow: 0 0 8px var(--accent);
             margin-top: 0.5rem;
-            box-shadow: 0 0 8px var(--accent-primary);
+            flex-shrink: 0;
         }
 
-        .feature-visual {
-            position: relative;
+        /* ── Feature visuals (CSS art) ── */
+        .feat-visual {
             aspect-ratio: 4/3;
             background: var(--bg-base);
-            border: 1px solid var(--border-subtle);
+            border: 1px solid var(--border);
             border-radius: 8px;
             overflow: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
+            position: relative;
         }
 
-        /* Mock specific classes */
-        .mock-ui-element {
-            position: absolute;
-            background: var(--bg-surface);
-            border: 1px solid var(--border-subtle);
-            border-radius: 6px;
-            padding: 1.5rem;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-        }
-
-        /* Block A Mock */
-        .mock-entity-form {
-            width: 70%;
-            height: 70%;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        .mock-shield-badge {
-            align-self: flex-start;
-            padding: 0.5rem 1rem;
-            background: rgba(0, 229, 255, 0.1);
-            border: 1px solid var(--accent-primary);
-            color: var(--accent-primary);
-            font-family: var(--font-mono);
-            border-radius: 4px;
-            font-size: 0.8rem;
-        }
-
-        /* Block B Mock */
-        .mock-timeline {
-            width: 80%;
+        /* Mock A — entity form */
+        .mock-entity {
+            width: 75%;
             height: 80%;
             display: flex;
             flex-direction: column;
-            gap: 1rem;
-            border-left: 2px solid var(--border-subtle);
-            padding-left: 1rem;
+            gap: 0.875rem;
+        }
+
+        .mock-field {
+            height: 34px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 0 0.75rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .mock-field-label {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.25rem;
+        }
+
+        .mock-badge {
+            align-self: flex-start;
+            padding: 0.35rem 0.875rem;
+            background: rgba(0, 229, 255, 0.1);
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            font-family: var(--font-mono);
+            border-radius: 4px;
+            font-size: 0.72rem;
+        }
+
+        /* Mock B — timeline */
+        .mock-timeline {
+            width: 85%;
+            height: 85%;
+            padding-left: 1.5rem;
+            border-left: 2px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            gap: 0.875rem;
             margin-left: 2rem;
         }
 
         .mock-event {
             position: relative;
-            padding: 1rem;
+            padding: 0.75rem 1rem;
             background: rgba(255, 255, 255, 0.02);
-            border: 1px solid var(--border-subtle);
+            border: 1px solid var(--border);
             border-radius: 4px;
         }
 
         .mock-event::before {
             content: '';
             position: absolute;
-            left: -1.4rem;
-            top: 1.5rem;
+            left: -1.6rem;
+            top: 1rem;
             width: 10px;
             height: 10px;
             border-radius: 50%;
@@ -609,959 +740,977 @@
             border: 2px solid var(--bg-base);
         }
 
-        .mock-event:first-child::before {
-            background: var(--accent-secondary);
+        .mock-event.active::before {
+            background: var(--amber);
+            box-shadow: 0 0 8px var(--amber);
         }
 
-        /* Block C Mock */
+        .mock-event-time {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.25rem;
+        }
+
+        .mock-event-text {
+            font-size: 0.78rem;
+            color: var(--text-primary);
+        }
+
+        /* Mock C — alert */
         .mock-alert-card {
-            width: 65%;
-            padding: 2rem;
-            border-color: rgba(245, 166, 35, 0.3);
-            background: linear-gradient(180deg, rgba(245, 166, 35, 0.05) 0%, transparent 100%);
+            width: 70%;
+            padding: 1.5rem;
+            background: var(--bg-surface);
+            border: 1px solid rgba(245, 166, 35, 0.35);
+            border-radius: 6px;
+            background: linear-gradient(180deg, rgba(245, 166, 35, 0.06) 0%, transparent 100%);
         }
 
-        .mock-alert-header {
+        .mock-alert-head {
             display: flex;
-            gap: 1rem;
+            gap: 0.875rem;
             align-items: center;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.25rem;
         }
 
         .mock-alert-icon {
-            width: 40px;
-            height: 40px;
-            background: rgba(245, 166, 35, 0.1);
-            color: var(--accent-secondary);
+            width: 38px;
+            height: 38px;
             border-radius: 50%;
+            background: rgba(245, 166, 35, 0.12);
+            color: var(--amber);
             display: flex;
             align-items: center;
             justify-content: center;
+            flex-shrink: 0;
+            font-size: 1.1rem;
         }
 
-        .mock-btn-group {
+        .mock-alert-title {
+            font-family: var(--font-ui);
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .mock-alert-sub {
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            color: var(--amber);
+        }
+
+        .mock-actions {
             display: flex;
-            gap: 1rem;
-            margin-top: 1.5rem;
+            gap: 0.75rem;
+            margin-top: 1.25rem;
         }
 
-        .mock-btn-sm {
-            padding: 0.5rem 1rem;
-            font-size: 0.75rem;
+        .mock-action-btn {
+            padding: 0.375rem 0.875rem;
+            font-family: var(--font-ui);
+            font-size: 0.72rem;
             background: var(--bg-surface);
-            border: 1px solid var(--border-subtle);
+            border: 1px solid var(--border);
             border-radius: 4px;
             color: var(--text-secondary);
         }
 
-        .mock-btn-sm.active {
-            border-color: var(--accent-secondary);
-            color: var(--accent-secondary);
+        .mock-action-btn.amber {
+            border-color: rgba(245, 166, 35, 0.4);
+            color: var(--amber);
         }
 
-        /* 6. Regulations */
+        /* ══════════════════════════════════════════════════
+   6. REGULATIONS
+══════════════════════════════════════════════════ */
         .regulations {
-            padding: var(--section-padding);
-            border-bottom: 1px solid var(--border-subtle);
+            padding: var(--section-pad);
+            border-bottom: 1px solid var(--border);
         }
 
         .regs-grid {
             display: flex;
             flex-wrap: wrap;
-            gap: 1rem;
+            gap: 0.875rem;
             justify-content: center;
             max-width: 900px;
-            margin: 0 auto 2rem;
+            margin: 0 auto 1.5rem;
         }
 
-        .reg-badge {
-            padding: 0.75rem 1.5rem;
-            border: 1px solid var(--border-subtle);
+        .reg-pill {
+            padding: 0.625rem 1.25rem;
+            border: 1px solid var(--border);
             border-radius: 4px;
             font-family: var(--font-mono);
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: var(--text-primary);
             background: rgba(255, 255, 255, 0.02);
             transition: all 0.2s;
+            cursor: default;
         }
 
-        .reg-badge:hover {
+        .reg-pill:hover {
             border-color: var(--text-secondary);
             background: rgba(255, 255, 255, 0.05);
         }
 
-        .reg-subtext {
+        .regs-note {
             text-align: center;
             color: var(--text-secondary);
-            font-size: 0.9rem;
+            font-size: 0.88rem;
         }
 
-        /* 7. Stack */
-        .stack {
-            padding: var(--section-padding);
+        /* ══════════════════════════════════════════════════
+   7. STACK
+══════════════════════════════════════════════════ */
+        .stack-section {
+            padding: var(--section-pad);
             background: var(--bg-surface);
         }
 
         .stack-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 2rem;
             margin-top: 4rem;
         }
 
         .stack-item {
+            padding: 2rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg-base);
             display: flex;
             flex-direction: column;
             gap: 1rem;
-            padding: 2rem;
-            border: 1px solid var(--border-subtle);
-            border-radius: 8px;
-            background: var(--bg-base);
+            transition: border-color 0.3s;
+        }
+
+        .stack-item:hover {
+            border-color: rgba(0, 229, 255, 0.2);
         }
 
         .stack-icon {
-            font-size: 2rem;
+            font-size: 1.75rem;
         }
 
-        .stack-text {
+        .stack-name {
+            font-family: var(--font-ui);
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--text-primary);
+        }
+
+        .stack-desc {
             font-family: var(--font-mono);
-            font-size: 0.85rem;
-            line-height: 1.4;
+            font-size: 0.8rem;
             color: var(--text-secondary);
+            line-height: 1.5;
         }
 
-        /* 8. Pricing */
+        /* ══════════════════════════════════════════════════
+   8. PRICING
+══════════════════════════════════════════════════ */
         .pricing {
-            padding: var(--section-padding);
+            padding: var(--section-pad);
         }
 
         .pricing-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 2rem;
             align-items: center;
+            margin-top: 4rem;
         }
 
         .plan-card {
             background: var(--bg-surface);
-            border: 1px solid var(--border-subtle);
-            padding: 3rem 2rem;
+            border: 1px solid var(--border);
+            padding: 2.5rem 2rem;
             border-radius: 8px;
             display: flex;
             flex-direction: column;
+            gap: 1.25rem;
         }
 
         .plan-card.featured {
-            border-color: var(--accent-primary);
-            transform: scale(1.05);
-            background: linear-gradient(180deg, rgba(0, 229, 255, 0.05) 0%, var(--bg-surface) 100%);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            border-color: var(--accent);
+            background: var(--bg-surface-2);
+            box-shadow: 0 0 40px rgba(0, 229, 255, 0.08);
+            transform: scale(1.03);
+        }
+
+        .plan-badge {
+            display: inline-block;
+            padding: 0.3rem 0.75rem;
+            background: rgba(0, 229, 255, 0.1);
+            color: var(--accent);
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            border-radius: 4px;
+            border: 1px solid rgba(0, 229, 255, 0.2);
         }
 
         .plan-name {
+            font-family: var(--font-ui);
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .plan-price {
             font-family: var(--font-display);
-            font-size: 1.5rem;
-            margin-bottom: 0.5rem;
+            font-size: 2.5rem;
+            color: var(--text-primary);
+        }
+
+        .plan-price span {
+            font-family: var(--font-ui);
+            font-size: 0.9rem;
+            color: var(--text-secondary);
         }
 
         .plan-desc {
             color: var(--text-secondary);
             font-size: 0.9rem;
-            margin-bottom: 2rem;
-            min-height: 48px;
+            line-height: 1.5;
         }
 
-        .plan-price {
-            font-family: var(--font-mono);
-            font-size: 2.5rem;
-            color: var(--text-primary);
-            margin-bottom: 2rem;
+        .plan-divider {
+            height: 1px;
+            background: var(--border);
+        }
+
+        .plan-features {
+            list-style: none;
             display: flex;
-            align-items: baseline;
-            gap: 0.5rem;
+            flex-direction: column;
+            gap: 0.75rem;
         }
 
-        .plan-price span {
-            font-size: 1rem;
+        .plan-features li {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.88rem;
             color: var(--text-secondary);
         }
 
-        .plan-card .btn {
-            width: 100%;
+        .plan-features li::before {
+            content: '✓';
+            color: var(--accent);
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .plan-cta {
+            margin-top: auto;
         }
 
         .pricing-note {
             text-align: center;
             color: var(--text-secondary);
             font-size: 0.85rem;
-            margin-top: 3rem;
-            font-family: var(--font-ui);
+            margin-top: 2.5rem;
         }
 
-        /* 9. Testimonial / CTA */
-        .cta-section {
-            padding: 8rem 2rem;
-            background: var(--bg-surface);
-            text-align: center;
-            border-top: 1px solid var(--border-subtle);
-        }
-
+        /* ══════════════════════════════════════════════════
+   9. TESTIMONIAL + CTA FINAL
+══════════════════════════════════════════════════ */
         .testimonial {
-            max-width: 800px;
-            margin: 0 auto 6rem;
+            padding: var(--section-pad);
+            background: var(--bg-surface);
+            position: relative;
+            overflow: hidden;
         }
 
-        .quote {
+        .testimonial::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60vw;
+            height: 60vw;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(0, 229, 255, 0.05) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .quote-block {
+            max-width: 720px;
+            margin: 0 auto;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .quote-mark {
             font-family: var(--font-display);
-            font-size: 2rem;
+            font-size: 6rem;
+            color: rgba(0, 229, 255, 0.15);
+            line-height: 0.5;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .quote-text {
+            font-family: var(--font-display);
+            font-size: clamp(1.3rem, 2.5vw, 1.8rem);
             color: var(--text-primary);
-            line-height: 1.4;
+            font-style: italic;
             margin-bottom: 2rem;
+            line-height: 1.4;
         }
 
-        .quote::before,
-        .quote::after {
-            content: '"';
-            color: var(--accent-primary);
-            opacity: 0.5;
-        }
-
-        .author {
+        .quote-author {
             font-family: var(--font-mono);
+            font-size: 0.8rem;
             color: var(--text-secondary);
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .final-cta h2 {
-            font-size: 3.5rem;
-            max-width: 800px;
-            margin: 0 auto 3rem;
-        }
-
-        /* 10. Footer */
-        .footer {
-            border-top: 1px solid var(--border-subtle);
-            padding: 4rem 2rem;
-            background: var(--bg-base);
-        }
-
-        .footer-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
             margin-bottom: 4rem;
         }
 
-        .footer-links {
-            display: flex;
-            gap: 2rem;
+        .quote-author strong {
+            color: var(--accent);
         }
 
-        .footer-links a {
-            font-size: 0.9rem;
+        .cta-headline {
+            font-family: var(--font-display);
+            font-size: clamp(2rem, 4vw, 3rem);
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+            max-width: 640px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        /* ══════════════════════════════════════════════════
+   10. FOOTER
+══════════════════════════════════════════════════ */
+        .footer {
+            background: var(--bg-base);
+            border-top: 1px solid var(--border);
+            padding: 3.5rem 2rem;
+        }
+
+        .footer-inner {
+            max-width: var(--max-w);
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            gap: 3rem;
+            align-items: start;
+        }
+
+        .footer-brand .logo {
+            font-size: 1.2rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .footer-tagline {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            max-width: 260px;
+            line-height: 1.5;
+        }
+
+        .footer-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 0.625rem;
+        }
+
+        .footer-nav a {
+            font-size: 0.875rem;
             color: var(--text-secondary);
         }
 
-        .footer-links a:hover {
+        .footer-nav a:hover {
             color: var(--text-primary);
         }
 
         .footer-bottom {
+            border-top: 1px solid var(--border);
+            margin-top: 3rem;
+            padding-top: 1.5rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-top: 1px solid var(--border-subtle);
-            padding-top: 2rem;
-            font-family: var(--font-mono);
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .footer-copy {
             font-size: 0.8rem;
             color: var(--text-secondary);
         }
 
         .footer-badges {
             display: flex;
-            gap: 1.5rem;
+            gap: 0.75rem;
         }
 
-        .f-badge {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+        .footer-badge {
+            padding: 0.35rem 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            color: var(--text-secondary);
+            background: rgba(255, 255, 255, 0.02);
         }
 
-        .f-badge::before {
-            content: '';
-            width: 4px;
-            height: 4px;
-            border-radius: 50%;
-            background: var(--accent-primary);
-        }
-
-        /* Animations */
-        @keyframes slideUpFade {
-            from {
-                opacity: 0;
-                transform: translateY(40px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes float {
-
-            0%,
-            100% {
-                transform: translateY(0);
-            }
-
-            50% {
-                transform: translateY(-10px);
-            }
-        }
-
-        @keyframes marquee {
-            0% {
-                transform: translateX(0);
-            }
-
-            100% {
-                transform: translateX(-50%);
-            }
-        }
-
-        .reveal {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .reveal.active {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* Responsive */
-        @media (max-width: 1024px) {
-            .hero h1 {
-                font-size: 3.5rem;
-            }
-
-            .hero .container {
-                grid-template-columns: 1fr;
-                text-align: center;
-            }
-
-            .hero-content {
-                margin: 0 auto;
-            }
-
-            .hero-ctas {
-                justify-content: center;
-            }
-
+        /* ── Responsive ── */
+        @media (max-width:1024px) {
             .hero-mock {
                 display: none;
             }
 
-            .cards-grid,
-            .pricing-grid,
-            .stack-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
             .feature-block,
-            .feature-block:nth-child(even) {
+            .feature-block.reverse {
                 grid-template-columns: 1fr;
                 gap: 3rem;
-                text-align: center;
                 direction: ltr;
             }
 
-            .feature-block:nth-child(even)>* {
-                direction: ltr;
-            }
-
-            .feature-list li {
-                justify-content: center;
+            .footer-inner {
+                grid-template-columns: 1fr 1fr;
             }
         }
 
-        @media (max-width: 768px) {
+        @media (max-width:768px) {
             .nav-links {
                 display: none;
+            }
+
+            .hero {
+                padding: 10rem 1.5rem 5rem;
             }
 
             .hero h1 {
                 font-size: 2.5rem;
             }
 
-            .cards-grid,
-            .pricing-grid,
-            .stack-grid {
+            .footer-inner {
                 grid-template-columns: 1fr;
-            }
-
-            .footer-top,
-            .footer-bottom {
-                flex-direction: column;
-                gap: 2rem;
-                text-align: center;
-            }
-
-            .section-header h2 {
-                font-size: 2.25rem;
-            }
-
-            .hero-badge {
-                font-size: 0.7rem;
             }
         }
     </style>
 </head>
 
 <body>
-    <div class="scroll-progress" id="scroll-progress"></div>
 
-    <!-- 1. NAVBAR -->
+    <!-- Scroll progress -->
+    <div id="scroll-bar"></div>
+
+    <!-- ══════════════ 1. NAVBAR ══════════════ -->
     <nav class="navbar" id="navbar">
         <div class="nav-inner">
             <a href="#" class="logo">
-                <svg viewBox="0 0 24 24">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#00E5FF" stroke-width="2">
                     <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
                 </svg>
-                ComplianceOS
+                Compliance<span style="color:#00E5FF">OS</span>
             </a>
             <div class="nav-links">
-                <a href="#solucoes" class="nav-link">Produto</a>
-                <a href="#regulacoes" class="nav-link">Regulações</a>
-                <a href="#precos" class="nav-link">Preços</a>
-                <a href="#" class="nav-link">Docs</a>
+                <a href="#solutions" class="nav-link">Produto</a>
+                <a href="#regulations" class="nav-link">Regulações</a>
+                <a href="#pricing" class="nav-link">Preços</a>
+                <a href="#stack" class="nav-link">Docs</a>
             </div>
-            <a href="#" class="btn btn-outline" style="padding: 0.5rem 1rem; font-size: 0.75rem;">Agendar Demo</a>
+            <div class="nav-actions">
+                <a href="/login" class="btn btn-ghost">Entrar</a>
+                <a href="/dashboard" class="btn btn-outline">Agendar Demo</a>
+            </div>
         </div>
     </nav>
 
-    <!-- 2. HERO -->
+    <!-- ══════════════ 2. HERO ══════════════ -->
     <section class="hero">
         <div class="container">
             <div class="hero-content">
-                <div class="hero-badge">
-                    <span class="icon">✓</span> Aprovado por especialistas EY & PwC
+                <div class="hero-badge reveal">
+                    <span class="badge-dot"></span>
+                    ✓ Aprovado por especialistas EY &amp; PwC
                 </div>
-                <h1>Conformidade regulatória.<br>Sem travar sua operação.</h1>
-                <p>O ComplianceOS automatiza PLD-FT, LGPD e Anticorrupção para fintechs e PMEs brasileiras — do KYC ao
-                    relatório COAF.</p>
-                <div class="hero-ctas">
-                    <a href="#" class="btn btn-primary">Começar Grátis &rarr;</a>
-                    <a href="#" class="btn btn-ghost">Ver Demo</a>
+                <h1 class="reveal" style="transition-delay:0.1s">
+                    Conformidade regulatória.<br>
+                    <em>Sem travar sua operação.</em>
+                </h1>
+                <p class="hero-sub reveal" style="transition-delay:0.2s">
+                    O ComplianceOS automatiza PLD-FT, LGPD e Anticorrupção para fintechs e PMEs brasileiras — do KYC ao
+                    relatório COAF.
+                </p>
+                <div class="hero-ctas reveal" style="transition-delay:0.3s">
+                    <a href="/dashboard" class="btn btn-primary">Começar Grátis →</a>
+                    <a href="#features" class="btn btn-outline">Ver Demo</a>
                 </div>
             </div>
 
+            <!-- CSS Art Dashboard Mock -->
             <div class="hero-mock">
-                <!-- Mac OS style window header -->
-                <div class="hero-mock-header">
-                    <div class="mock-dot" style="background: #ff5f56"></div>
-                    <div class="mock-dot" style="background: #ffbd2e"></div>
-                    <div class="mock-dot" style="background: #27c93f"></div>
+                <div class="mock-header">
+                    <div class="mock-dot" style="background:#ff5f57"></div>
+                    <div class="mock-dot" style="background:#febc2e"></div>
+                    <div class="mock-dot" style="background:#28c840"></div>
+                    <span
+                        style="margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:#8892A4">ComplianceOS
+                        · Dashboard</span>
                 </div>
-                <!-- Main Dashboard SVG Illustration -->
-                <div class="hero-mock-body" style="padding: 0; height: calc(100% - 40px);">
-                    <svg width="100%" height="100%" viewBox="0 0 600 410" fill="none" xmlns="http://www.w3.org/2000/svg"
-                        preserveAspectRatio="xMidYMid slice">
-                        <defs>
-                            <linearGradient id="gradBar1" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="0%" stop-color="rgba(0,229,255,1)" />
-                                <stop offset="100%" stop-color="rgba(0,229,255,0.2)" />
-                            </linearGradient>
-                            <linearGradient id="gradBarYellow" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="0%" stop-color="rgba(245,166,35,1)" />
-                                <stop offset="100%" stop-color="rgba(245,166,35,0.2)" />
-                            </linearGradient>
-                            <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-                                <feGaussianBlur stdDeviation="4" result="blur" />
-                                <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                            </filter>
-                        </defs>
-                        <!-- Background panel -->
-                        <rect width="600" height="410" fill="#111318" />
-
-                        <!-- Top Nav inside mock -->
-                        <rect x="24" y="24" width="552" height="40" rx="6" fill="#1A1D24"
-                            stroke="rgba(255,255,255,0.05)" />
-                        <rect x="40" y="38" width="120" height="12" rx="4" fill="rgba(255,255,255,0.1)" />
-                        <rect x="480" y="34" width="20" height="20" rx="10" fill="rgba(255,255,255,0.1)" />
-                        <rect x="516" y="34" width="40" height="20" rx="10" fill="rgba(0,229,255,0.1)" />
-
-                        <!-- Left Sidebar -->
-                        <rect x="24" y="80" width="140" height="306" rx="6" fill="#1A1D24"
-                            stroke="rgba(255,255,255,0.05)" />
-                        <rect x="40" y="100" width="80" height="10" rx="4" fill="#00E5FF" fill-opacity="0.8" />
-                        <rect x="40" y="130" width="100" height="10" rx="4" fill="rgba(255,255,255,0.1)" />
-                        <rect x="40" y="160" width="90" height="10" rx="4" fill="rgba(255,255,255,0.1)" />
-                        <rect x="40" y="190" width="95" height="10" rx="4" fill="rgba(255,255,255,0.1)" />
-
-                        <!-- Main Content Area -->
-                        <!-- KPI Cards -->
-                        <rect x="180" y="80" width="188" height="100" rx="6" fill="#1A1D24"
-                            stroke="rgba(255,255,255,0.05)" />
-                        <text x="200" y="110" font-family="'JetBrains Mono', monospace" font-size="12"
-                            fill="#8892A4">Risk Score</text>
-                        <text x="200" y="150" font-family="'JetBrains Mono', monospace" font-size="36" fill="#00E5FF"
-                            filter="url(#glow)">98.4</text>
-                        <path d="M 310 150 Q 330 130 350 140 T 380 120" stroke="#00E5FF" stroke-width="2" fill="none"
-                            transform="translate(-10, -5)" />
-
-                        <rect x="388" y="80" width="188" height="100" rx="6" fill="rgba(245,166,35,0.05)"
-                            stroke="rgba(245,166,35,0.2)" />
-                        <text x="408" y="110" font-family="'JetBrains Mono', monospace" font-size="12"
-                            fill="#F5A623">Critical Alerts</text>
-                        <text x="408" y="150" font-family="'JetBrains Mono', monospace" font-size="36"
-                            fill="#F5A623">3</text>
-                        <circle cx="540" cy="110" r="16" fill="rgba(245,166,35,0.1)" />
-
-                        <!-- Chart Area -->
-                        <rect x="180" y="196" width="396" height="190" rx="6" fill="#1A1D24"
-                            stroke="rgba(255,255,255,0.05)" />
-                        <text x="200" y="230" font-family="'JetBrains Mono', monospace" font-size="14"
-                            fill="#F0F2F5">Due Diligence Activity</text>
-
-                        <!-- Bar Chart -->
-                        <rect x="220" y="320" width="24" height="40" rx="3" fill="url(#gradBar1)" />
-                        <rect x="260" y="280" width="24" height="80" rx="3" fill="url(#gradBar1)" />
-                        <rect x="300" y="220" width="24" height="140" rx="3" fill="url(#gradBarYellow)" />
-                        <rect x="340" y="260" width="24" height="100" rx="3" fill="url(#gradBar1)" />
-                        <rect x="380" y="290" width="24" height="70" rx="3" fill="url(#gradBar1)" />
-                        <rect x="420" y="240" width="24" height="120" rx="3" fill="url(#gradBar1)" />
-                        <rect x="460" y="310" width="24" height="50" rx="3" fill="url(#gradBar1)" />
-                        <rect x="500" y="270" width="24" height="90" rx="3" fill="url(#gradBar1)" />
-
-                        <path d="M 200 360 L 560 360" stroke="rgba(255,255,255,0.1)" stroke-width="1" />
-                    </svg>
+                <div class="mock-body">
+                    <div class="mock-row">
+                        <div class="mock-stat">
+                            <div class="mock-stat-val">847</div>
+                            <div class="mock-stat-lbl">Entidades KYB</div>
+                        </div>
+                        <div class="mock-stat">
+                            <div class="mock-stat-val" style="color:#F5A623">3</div>
+                            <div class="mock-stat-lbl">Alertas Ativos</div>
+                        </div>
+                        <div class="mock-stat">
+                            <div class="mock-stat-val" style="color:#34d399">99,2%</div>
+                            <div class="mock-stat-lbl">Score Médio</div>
+                        </div>
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:0.5rem">
+                        <div class="mock-line accent"></div>
+                        <div class="mock-line" style="width:80%"></div>
+                        <div class="mock-line short"></div>
+                    </div>
+                    <div class="mock-alert">⚠ OFAC Match — Entidade #8842 · LATAM Holdings — Revisar</div>
+                    <div style="display:flex;flex-direction:column;gap:0.5rem">
+                        <div class="mock-line" style="width:70%"></div>
+                        <div class="mock-line short"></div>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- 3. SOCIAL PROOF -->
-    <section class="social-proof">
-        <div class="social-proof-title">Usado por equipes de compliance em &rarr;</div>
-        <div class="marquee-wrapper">
-            <div class="marquee-content">
-                <span class="partner-logo">Acme Fintech</span>
-                <span class="partner-logo">Beta Corp</span>
-                <span class="partner-logo">RiverTrust</span>
-                <span class="partner-logo">NovaPay</span>
-                <span class="partner-logo">CapitalBridge</span>
+    <!-- ══════════════ 3. SOCIAL PROOF ══════════════ -->
+    <div class="social-proof">
+        <p class="proof-label">Usado por equipes de compliance em →</p>
+        <div class="marquee-wrap">
+            <div class="marquee-track">
+                <span class="partner">Acme Fintech</span>
+                <span class="partner">Beta Corp</span>
+                <span class="partner">RiverTrust</span>
+                <span class="partner">NovaPay</span>
+                <span class="partner">CapitalBridge</span>
             </div>
-            <div class="marquee-content" aria-hidden="true">
-                <span class="partner-logo">Acme Fintech</span>
-                <span class="partner-logo">Beta Corp</span>
-                <span class="partner-logo">RiverTrust</span>
-                <span class="partner-logo">NovaPay</span>
-                <span class="partner-logo">CapitalBridge</span>
+            <div class="marquee-track" aria-hidden="true">
+                <span class="partner">Acme Fintech</span>
+                <span class="partner">Beta Corp</span>
+                <span class="partner">RiverTrust</span>
+                <span class="partner">NovaPay</span>
+                <span class="partner">CapitalBridge</span>
             </div>
         </div>
-    </section>
+    </div>
 
-    <!-- 4. PROBLEM -> SOLUTION -->
-    <section id="solucoes" class="solutions reveal">
+    <!-- ══════════════ 4. PROBLEMA → SOLUÇÃO ══════════════ -->
+    <section class="solutions" id="solutions">
         <div class="container">
-            <div class="section-header">
-                <h2>O cenário regulatório brasileiro é complexo. Nós simplificamos.</h2>
+            <div class="section-header reveal">
+                <p class="section-label">O cenário regulatório</p>
+                <h2>O cenário regulatório brasileiro é complexo.<br>Nós simplificamos.</h2>
+                <p>Três pilares de conformidade, geridos em um único centro de comando.</p>
             </div>
             <div class="cards-grid">
-                <div class="solution-card">
-                    <div class="card-icon">
-                        <svg viewBox="0 0 24 24">
+                <div class="sol-card reveal">
+                    <div class="card-icon-box">
+                        <svg viewBox="0 0 24 24" stroke="#00E5FF">
                             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
                         </svg>
                     </div>
-                    <h3>PLD-FT</h3>
-                    <p>Monitoramento contínuo, listas restritivas e screening de sanções em tempo real.</p>
+                    <h3>PLD-FT &amp; Sanções</h3>
+                    <p>Monitoramento contínuo, listas restritivas OFAC/ONU/COAF e screening de sanções em tempo real com
+                        alertas automáticos.</p>
                 </div>
-                <div class="solution-card">
-                    <div class="card-icon">
-                        <svg viewBox="0 0 24 24">
-                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                <div class="sol-card reveal" style="transition-delay:0.1s">
+                    <div class="card-icon-box">
+                        <svg viewBox="0 0 24 24" stroke="#00E5FF">
+                            <rect x="3" y="11" width="18" height="11" rx="2" />
+                            <path d="M7 11V7a5 5 0 0110 0v4" />
                         </svg>
                     </div>
-                    <h3>LGPD</h3>
-                    <p>Registro de operações de tratamento, gestão de consentimento e resposta a titulares.</p>
+                    <h3>Privacidade LGPD</h3>
+                    <p>Registro de operações de tratamento, gestão de consentimento e fluxo completo de resposta a
+                        titulares — ANPD ready.</p>
                 </div>
-                <div class="solution-card">
-                    <div class="card-icon">
-                        <svg viewBox="0 0 24 24">
-                            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                <div class="sol-card reveal" style="transition-delay:0.2s">
+                    <div class="card-icon-box">
+                        <svg viewBox="0 0 24 24" stroke="#F5A623">
+                            <path d="M12 3L3 6v6c0 5.25 3.75 10.15 9 11.25C18.25 22.15 22 17.25 22 12V6L12 3z" />
+                            <path d="M9 12l2 2 4-4" />
                         </svg>
                     </div>
-                    <h3>Anticorrupção</h3>
-                    <p>Due diligence de fornecedores, scoring de risco e trilha de auditoria imutável.</p>
+                    <h3>Anticorrupção &amp; Governança</h3>
+                    <p>Due diligence de fornecedores, scoring de risco automatizado e trilha de auditoria imutável para
+                        Lei 12.846/13.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- 5. FEATURES DETALHADAS -->
-    <section class="features">
+    <!-- ══════════════ 5. FEATURES ══════════════ -->
+    <section class="features" id="features">
         <div class="container">
 
-            <!-- Block A -->
+            <!-- Block A: KYC/KYB -->
             <div class="feature-block reveal">
-                <div class="feature-content">
+                <div class="feat-content">
+                    <p class="feat-label">Módulo 01 — Entidades</p>
                     <h3>KYC/KYB automatizado</h3>
-                    <ul class="feature-list">
+                    <p>Consulta automática à Receita Federal, checklists dinâmicos por tipo de entidade e score de risco
+                        calculado em tempo real.</p>
+                    <ul class="feat-list">
                         <li>Consulta automática CNPJ (Receita Federal)</li>
                         <li>Checklists regulatórios dinâmicos por tipo de entidade</li>
                         <li>Score de risco calculado em tempo real</li>
+                        <li>Alertas de vencimento de documentos</li>
                     </ul>
                 </div>
-                <div class="feature-visual" style="border: none; background: transparent;">
-                    <svg width="100%" height="100%" viewBox="0 0 400 300" fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <defs>
-                            <linearGradient id="glowCian" x1="0" y1="0" x2="1" y2="1">
-                                <stop offset="0%" stop-color="rgba(0,229,255,0.1)" />
-                                <stop offset="100%" stop-color="rgba(0,229,255,0)" />
-                            </linearGradient>
-                        </defs>
-                        <!-- Floating Form Background -->
-                        <g filter="drop-shadow(0 20px 40px rgba(0,0,0,0.6))">
-                            <rect x="50" y="30" width="300" height="240" rx="12" fill="#1A1D24"
-                                stroke="rgba(255,255,255,0.1)" />
-
-                            <!-- Header -->
-                            <rect x="50" y="30" width="300" height="60" rx="12" fill="rgba(255,255,255,0.02)" />
-                            <rect x="70" y="55" width="40" height="10" rx="4" fill="rgba(255,255,255,0.3)" />
-                            <path d="M 50 90 L 350 90" stroke="rgba(255,255,255,0.05)" />
-
-                            <!-- Badges -->
-                            <rect x="230" y="45" width="100" height="28" rx="6" fill="rgba(0,229,255,0.1)"
-                                stroke="#00E5FF" stroke-width="1" />
-                            <text x="245" y="63" font-family="'JetBrains Mono', monospace" font-size="10" fill="#00E5FF"
-                                font-weight="bold">SCORE: 92</text>
-
-                            <!-- Form Fields -->
-                            <rect x="70" y="110" width="100" height="8" rx="4" fill="rgba(255,255,255,0.2)" />
-                            <rect x="70" y="125" width="260" height="36" rx="6" fill="#111318"
-                                stroke="rgba(255,255,255,0.1)" />
-                            <rect x="85" y="139" width="120" height="8" rx="4" fill="rgba(255,255,255,0.6)" />
-
-                            <rect x="70" y="180" width="100" height="8" rx="4" fill="rgba(255,255,255,0.2)" />
-                            <rect x="70" y="195" width="120" height="36" rx="6" fill="#111318"
-                                stroke="rgba(255,255,255,0.1)" />
-                            <rect x="210" y="195" width="120" height="36" rx="6" fill="#111318"
-                                stroke="rgba(255,255,255,0.1)" />
-                        </g>
-
-                        <!-- Floating checkmark icon -->
-                        <circle cx="350" cy="59" r="16" fill="#00E5FF"
-                            filter="drop-shadow(0 4px 10px rgba(0,229,255,0.4))" />
-                        <path d="M 344 59 L 348 63 L 356 55" stroke="#1A1D24" stroke-width="2" stroke-linecap="round"
-                            stroke-linejoin="round" fill="none" />
-                    </svg>
+                <div class="feat-visual">
+                    <div class="mock-entity">
+                        <div>
+                            <div class="mock-field-label">CNPJ / Razão Social</div>
+                            <div class="mock-field"><span
+                                    style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:#8892A4">35.123.456/0001-78
+                                    · Acme Fintech Ltda.</span></div>
+                        </div>
+                        <div>
+                            <div class="mock-field-label">Tipo de Entidade</div>
+                            <div class="mock-field"><span style="font-size:0.78rem;color:#8892A4">Instituição de
+                                    Pagamento — Emissor de Moeda</span></div>
+                        </div>
+                        <div>
+                            <div class="mock-field-label">Risco Calculado</div>
+                            <div class="mock-badge">● RISCO BAIXO — Score 91/100</div>
+                        </div>
+                        <div style="display:flex;flex-direction:column;gap:0.4rem">
+                            <div class="mock-line accent"></div>
+                            <div class="mock-line" style="width:72%"></div>
+                            <div class="mock-line short"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Block B -->
-            <div class="feature-block reveal">
-                <div class="feature-content">
+            <!-- Block B: Audit Trail -->
+            <div class="feature-block reverse reveal">
+                <div class="feat-content">
+                    <p class="feat-label">Módulo 02 — Auditoria</p>
                     <h3>Audit Trail imutável</h3>
-                    <ul class="feature-list">
+                    <p>Cada ação registrada com timestamp, usuário e tenant. Exportação para auditores com um clique.
+                        Prova de conformidade para BACEN e COAF.</p>
+                    <ul class="feat-list">
                         <li>Cada ação registrada com timestamp, usuário e tenant</li>
                         <li>Exportação para auditores externos com um clique</li>
                         <li>Prova de conformidade para BACEN e COAF</li>
+                        <li>Integridade criptográfica dos registros</li>
                     </ul>
                 </div>
-                <div class="feature-visual" style="border: none; background: transparent;">
-                    <svg width="100%" height="100%" viewBox="0 0 400 300" fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <!-- Timeline Background -->
-                        <rect x="60" y="40" width="280" height="220" rx="12" fill="#1A1D24"
-                            stroke="rgba(255,255,255,0.1)" filter="drop-shadow(0 20px 40px rgba(0,0,0,0.6))" />
-                        <!-- Connection Line -->
-                        <path d="M 120 70 L 120 230" stroke="rgba(255,255,255,0.1)" stroke-width="2"
-                            stroke-dasharray="4 4" />
-
-                        <!-- Event 1 -->
-                        <circle cx="120" cy="80" r="6" fill="#F5A623" stroke="#1A1D24" stroke-width="3" />
-                        <rect x="140" y="65" width="160" height="30" rx="4" fill="rgba(245,166,35,0.05)"
-                            stroke="rgba(245,166,35,0.2)" />
-                        <text x="150" y="85" font-family="'JetBrains Mono', monospace" font-size="10"
-                            fill="#F5A623">[10:45:01] SYSTEM_ALERT</text>
-
-                        <!-- Event 2 -->
-                        <circle cx="120" cy="140" r="6" fill="#00E5FF" stroke="#1A1D24" stroke-width="3" />
-                        <rect x="140" y="125" width="140" height="30" rx="4" fill="rgba(255,255,255,0.02)"
-                            stroke="rgba(255,255,255,0.05)" />
-                        <text x="150" y="145" font-family="'JetBrains Mono', monospace" font-size="10"
-                            fill="#00E5FF">[10:42:15] USER_AUTH</text>
-
-                        <!-- Event 3 -->
-                        <circle cx="120" cy="200" r="6" fill="#8892A4" stroke="#1A1D24" stroke-width="3" />
-                        <rect x="140" y="185" width="130" height="30" rx="4" fill="rgba(255,255,255,0.02)" />
-                        <text x="150" y="205" font-family="'JetBrains Mono', monospace" font-size="10"
-                            fill="#8892A4">[10:30:00] CRON_JOB</text>
-
-                        <!-- Lock Hexagon icon -->
-                        <path d="M 290 200 L 310 190 L 330 200 L 330 220 L 310 230 L 290 220 Z"
-                            fill="rgba(0,229,255,0.1)" stroke="#00E5FF" stroke-width="1"
-                            filter="drop-shadow(0 4px 10px rgba(0,229,255,0.3))" />
-                        <path d="M 305 210 L 310 215 L 316 205" stroke="#00E5FF" stroke-width="2" fill="none" />
-                    </svg>
+                <div class="feat-visual">
+                    <div class="mock-timeline">
+                        <div class="mock-event active">
+                            <div class="mock-event-time">2026-03-03 14:23:11 UTC · admin@acme.com</div>
+                            <div class="mock-event-text">⚠ OFAC Match detectado — Entidade #8842 criado alerta</div>
+                        </div>
+                        <div class="mock-event">
+                            <div class="mock-event-time">2026-03-03 14:20:05 UTC · analyst@acme.com</div>
+                            <div class="mock-event-text">✓ KYB aprovado — CNPJ 35.123.456/0001-78</div>
+                        </div>
+                        <div class="mock-event">
+                            <div class="mock-event-time">2026-03-03 13:58:42 UTC · sys@compliance-os</div>
+                            <div class="mock-event-text">↻ Sync RFB concluído — 847 entidades atualizadas</div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Block C -->
+            <!-- Block C: Screening -->
             <div class="feature-block reveal">
-                <div class="feature-content">
-                    <h3>Screening de Sanções & PEP</h3>
-                    <ul class="feature-list">
+                <div class="feat-content">
+                    <p class="feat-label">Módulo 03 — Sanções &amp; PEP</p>
+                    <h3>Screening de Sanções &amp; PEP</h3>
+                    <p>Listas OFAC, ONU, COAF, Interpol e PEP nacional. Alertas em tempo real com workflow de
+                        investigação e case management integrado.</p>
+                    <ul class="feat-list">
                         <li>Listas OFAC, ONU, COAF, Interpol e PEP nacional</li>
                         <li>Alertas em tempo real com workflow de investigação</li>
-                        <li>Case Management integrado para equipes de analistas</li>
+                        <li>Case Management integrado para analistas</li>
+                        <li>Re-screening automático ao atualizar listas</li>
                     </ul>
                 </div>
-                <div class="feature-visual" style="border: none; background: transparent;">
-                    <svg width="100%" height="100%" viewBox="0 0 400 300" fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <g filter="drop-shadow(0 25px 50px rgba(0,0,0,0.8))">
-                            <!-- Alert Card Background -->
-                            <rect x="50" y="60" width="300" height="180" rx="12" fill="#1A1D24"
-                                stroke="rgba(245,166,35,0.3)" />
-                            <rect x="50" y="60" width="300" height="180" rx="12" fill="url(#gradBarYellow)"
-                                opacity="0.1" />
-
-                            <!-- Icon & Title -->
-                            <circle cx="90" cy="110" r="20" fill="rgba(245,166,35,0.1)" />
-                            <path d="M 90 98 L 90 115" stroke="#F5A623" stroke-width="3" stroke-linecap="round" />
-                            <circle cx="90" cy="122" r="2" fill="#F5A623" />
-
-                            <text x="125" y="105" font-family="'JetBrains Mono', monospace" font-size="12"
-                                fill="#F5A623" font-weight="bold">MATCH FOUND: PEP</text>
-                            <rect x="125" y="115" width="180" height="8" rx="4" fill="rgba(255,255,255,0.4)" />
-                            <rect x="125" y="130" width="140" height="8" rx="4" fill="rgba(255,255,255,0.2)" />
-
-                            <!-- Internal Divider -->
-                            <path d="M 50 160 L 350 160" stroke="rgba(255,255,255,0.05)" />
-
-                            <!-- Buttons -->
-                            <rect x="70" y="180" width="120" height="36" rx="6" fill="transparent" stroke="#F5A623" />
-                            <text x="130" y="202" font-family="'IBM Plex Sans', sans-serif" font-size="12"
-                                fill="#F5A623" font-weight="bold" text-anchor="middle">Investigar Casos</text>
-
-                            <rect x="200" y="180" width="130" height="36" rx="6" fill="rgba(255,255,255,0.05)"
-                                stroke="transparent" />
-                            <text x="265" y="202" font-family="'IBM Plex Sans', sans-serif" font-size="12"
-                                fill="#8892A4" font-weight="bold" text-anchor="middle">Falso Positivo</text>
-                        </g>
-
-                        <!-- Notification indicator ping -->
-                        <circle cx="350" cy="60" r="8" fill="#F5A623" />
-                        <circle cx="350" cy="60" r="16" fill="none" stroke="#F5A623" stroke-width="2" opacity="0.5" />
-                        <circle cx="350" cy="60" r="24" fill="none" stroke="#F5A623" stroke-width="1" opacity="0.2" />
-                    </svg>
+                <div class="feat-visual">
+                    <div class="mock-alert-card">
+                        <div class="mock-alert-head">
+                            <div class="mock-alert-icon">⚠</div>
+                            <div>
+                                <div class="mock-alert-title">Match Confirmado — OFAC SDN</div>
+                                <div class="mock-alert-sub">LATAM Holdings S.A · Score de risco: CRÍTICO</div>
+                            </div>
+                        </div>
+                        <div
+                            style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:#8892A4;line-height:1.5">
+                            Lista: OFAC_SDN_2026-03-01<br>
+                            Tipo: Entidade · Motivo: SDN Match 98.3%
+                        </div>
+                        <div class="mock-actions">
+                            <div class="mock-action-btn amber">Investigar →</div>
+                            <div class="mock-action-btn">Dispensar</div>
+                            <div class="mock-action-btn">Escalar</div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
         </div>
     </section>
 
-    <!-- 6. REGULAÇÕES COBERTAS -->
-    <section id="regulacoes" class="regulations reveal">
+    <!-- ══════════════ 6. REGULAÇÕES ══════════════ -->
+    <section class="regulations" id="regulations">
         <div class="container">
-            <div class="section-header" style="margin-bottom: 3rem;">
-                <h2 style="font-size: 2.5rem;">Projetado para o framework regulatório brasileiro</h2>
+            <div class="section-header reveal">
+                <p class="section-label">Cobertura regulatória</p>
+                <h2>Projetado para o framework regulatório brasileiro</h2>
+                <p>Atualizado conforme novas resoluções do BACEN e ANPD.</p>
             </div>
-            <div class="regs-grid">
-                <span class="reg-badge">Lei 9.613/98</span>
-                <span class="reg-badge">Res. BACEN 4.753</span>
-                <span class="reg-badge">LGPD (13.709/18)</span>
-                <span class="reg-badge">Lei Anticorrupção 12.846/13</span>
-                <span class="reg-badge">ANPD CD/ANPD 02/2022</span>
-                <span class="reg-badge">Decreto 11.129/22</span>
+            <div class="regs-grid reveal">
+                <span class="reg-pill">Lei 9.613/98</span>
+                <span class="reg-pill">Res. BACEN 4.753</span>
+                <span class="reg-pill">Res. BCB 50/2021</span>
+                <span class="reg-pill">LGPD (Lei 13.709/18)</span>
+                <span class="reg-pill">Lei Anticorrupção 12.846/13</span>
+                <span class="reg-pill">ANPD CD/ANPD 02/2022</span>
+                <span class="reg-pill">Decreto 11.129/22</span>
+                <span class="reg-pill">OFAC SDN</span>
+                <span class="reg-pill">ONU Sanctions</span>
+                <span class="reg-pill">CVM 50/2021</span>
+                <span class="reg-pill">ISO 27001</span>
+                <span class="reg-pill">ISO 27701</span>
             </div>
-            <p class="reg-subtext">Atualizado conforme novas resoluções do BACEN e ANPD.</p>
+            <p class="regs-note reveal">Atualizado conforme novas resoluções do BACEN, ANPD e COAF.</p>
         </div>
     </section>
 
-    <!-- 7. STACK & CONFIABILIDADE -->
-    <section class="stack reveal">
+    <!-- ══════════════ 7. STACK ══════════════ -->
+    <section class="stack-section" id="stack">
         <div class="container">
-            <div class="section-header" style="margin-bottom: 2rem; max-width: 1000px;">
-                <h2 style="font-size: 2.5rem;">Infraestrutura enterprise-grade,<br> sem overhead enterprise.</h2>
+            <div class="section-header reveal">
+                <p class="section-label">Infraestrutura</p>
+                <h2>Enterprise-grade, sem overhead enterprise.</h2>
+                <p>Tecnologia de ponta construída para operar com máxima segurança e disponibilidade.</p>
             </div>
             <div class="stack-grid">
-                <div class="stack-item">
-                    <div class="stack-icon" style="color: var(--accent-primary);">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                        </svg>
-                    </div>
-                    <div class="stack-text">Multi-tenant isolado com RLS no PostgreSQL</div>
+                <div class="stack-item reveal">
+                    <div class="stack-icon">🔒</div>
+                    <div class="stack-name">Isolamento de Dados</div>
+                    <div class="stack-desc">Multi-tenant isolado com RLS no PostgreSQL. Seus dados nunca se misturam com
+                        os de outros clientes.</div>
                 </div>
-                <div class="stack-item">
-                    <div class="stack-icon" style="color: var(--accent-secondary);">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
-                        </svg>
+                <div class="stack-item reveal" style="transition-delay:0.1s">
+                    <div class="stack-icon">⚡</div>
+                    <div class="stack-name">Alta Disponibilidade</div>
+                    <div class="stack-desc">SLA 99,9% · AWS ECS Fargate · Multi-AZ · Auto-scaling em picos de carga.
                     </div>
-                    <div class="stack-text">SLA 99.9% &middot; AWS ECS Fargate &middot; Multi-AZ</div>
                 </div>
-                <div class="stack-item">
-                    <div class="stack-icon" style="color: var(--accent-primary);">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                        </svg>
+                <div class="stack-item reveal" style="transition-delay:0.2s">
+                    <div class="stack-icon">🛡️</div>
+                    <div class="stack-name">Segurança Zero-Trust</div>
+                    <div class="stack-desc">JWT RS256 · MFA TOTP · WAF + Shield · Criptografia em trânsito e em repouso.
                     </div>
-                    <div class="stack-text">JWT RS256 &middot; MFA TOTP &middot; WAF + Shield</div>
                 </div>
-                <div class="stack-item">
-                    <div class="stack-icon" style="color: var(--accent-secondary);">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="18" y1="20" x2="18" y2="10"></line>
-                            <line x1="12" y1="20" x2="12" y2="4"></line>
-                            <line x1="6" y1="20" x2="6" y2="14"></line>
-                        </svg>
+                <div class="stack-item reveal" style="transition-delay:0.3s">
+                    <div class="stack-icon">📊</div>
+                    <div class="stack-name">Observabilidade</div>
+                    <div class="stack-desc">Datadog APM · Audit logs imutáveis · SOC 2 ready · Alertas em tempo real.
                     </div>
-                    <div class="stack-text">Datadog APM &middot; Audit logs imutáveis &middot; SOC 2 ready</div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- 8. PRICING -->
-    <section id="precos" class="pricing reveal">
+    <!-- ══════════════ 8. PRICING ══════════════ -->
+    <section class="pricing" id="pricing">
         <div class="container">
-            <div class="section-header">
-                <h2>Planos transparentes.</h2>
+            <div class="section-header reveal">
+                <p class="section-label">Preços</p>
+                <h2>Transparente. Sem surpresas.</h2>
+                <p>Escolha o plano ideal para o tamanho da sua operação de compliance.</p>
             </div>
             <div class="pricing-grid">
 
-                <div class="plan-card">
+                <div class="plan-card reveal">
                     <div class="plan-name">Starter</div>
-                    <div class="plan-desc">Essencial para operações iniciais. Até 100 entidades monitoradas.</div>
                     <div class="plan-price">R$ 890<span>/mês</span></div>
-                    <a href="#" class="btn btn-outline">Selecionar</a>
+                    <div class="plan-desc">Ideal para PMEs iniciando a jornada de compliance regulatório.</div>
+                    <div class="plan-divider"></div>
+                    <ul class="plan-features">
+                        <li>Até 100 entidades monitoradas</li>
+                        <li>Módulos PLD-FT e LGPD</li>
+                        <li>Screening básico de sanções</li>
+                        <li>Audit Trail padrão</li>
+                        <li>Suporte por e-mail</li>
+                    </ul>
+                    <div class="plan-cta">
+                        <a href="/dashboard" class="btn btn-outline" style="width:100%;justify-content:center">Começar
+                            Agora</a>
+                    </div>
                 </div>
 
-                <div class="plan-card featured">
-                    <div
-                        style="position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--accent-primary); color: var(--bg-base); font-size: 0.7rem; font-weight: bold; padding: 2px 10px; border-radius: 12px; text-transform: uppercase; font-family: var(--font-mono);">
-                        Recomendado</div>
-                    <div class="plan-name text-accent">Growth</div>
-                    <div class="plan-desc">Para fintechs em escala. Até 1.000 entidades + API pública.</div>
+                <div class="plan-card featured reveal" style="transition-delay:0.1s">
+                    <div class="plan-badge">Mais Popular</div>
+                    <div class="plan-name">Growth</div>
                     <div class="plan-price">R$ 2.490<span>/mês</span></div>
-                    <a href="#" class="btn btn-primary">Começar Agora</a>
+                    <div class="plan-desc">Para fintechs e empresas com operação regulatória madura.</div>
+                    <div class="plan-divider"></div>
+                    <ul class="plan-features">
+                        <li>Até 1.000 entidades + API pública</li>
+                        <li>Todos os módulos regulatórios</li>
+                        <li>Screening OFAC/ONU/COAF completo</li>
+                        <li>Case Management de investigações</li>
+                        <li>Exportação para BACEN/COAF</li>
+                        <li>Suporte prioritário</li>
+                    </ul>
+                    <div class="plan-cta">
+                        <a href="/dashboard" class="btn btn-primary" style="width:100%;justify-content:center">Começar
+                            Agora →</a>
+                    </div>
                 </div>
 
-                <div class="plan-card">
+                <div class="plan-card reveal" style="transition-delay:0.2s">
                     <div class="plan-name">Enterprise</div>
-                    <div class="plan-desc">Operações críticas. Ilimitado + SLA dedicado + SAML SSO.</div>
-                    <div class="plan-price" style="font-size: 1.5rem; align-items:center; margin-bottom: 3.35rem;">Sob
-                        consulta</div>
-                    <a href="#" class="btn btn-outline">Falar com Vendas</a>
+                    <div class="plan-price" style="font-size:1.8rem">Sob consulta</div>
+                    <div class="plan-desc">Para grupos financeiros e conglomerados com necessidades avançadas.</div>
+                    <div class="plan-divider"></div>
+                    <ul class="plan-features">
+                        <li>Entidades ilimitadas</li>
+                        <li>SLA dedicado + suporte 24/7</li>
+                        <li>SAML SSO + SCIM provisioning</li>
+                        <li>Deploy on-premise disponível</li>
+                        <li>Integrações customizadas</li>
+                        <li>Treinamento da equipe</li>
+                    </ul>
+                    <div class="plan-cta">
+                        <a href="/dashboard" class="btn btn-outline" style="width:100%;justify-content:center">Falar com
+                            Equipe</a>
+                    </div>
                 </div>
 
             </div>
-            <p class="pricing-note">Preços em BRL. Cancelamento a qualquer momento. Sem taxa de setup.</p>
+            <p class="pricing-note reveal">Preços em BRL. Cancelamento a qualquer momento. Sem taxa de setup.</p>
         </div>
     </section>
 
-    <!-- 9. TESTIMONIAL / CTA -->
-    <section class="cta-section reveal">
+    <!-- ══════════════ 9. TESTIMONIAL + CTA ══════════════ -->
+    <section class="testimonial">
         <div class="container">
-            <div class="testimonial">
-                <p class="quote">Reduzimos em 70% o tempo de onboarding KYC/KYB e eliminamos planilhas do processo de
-                    PLD. O ComplianceOS virou infraestrutura crítica para nós.</p>
-                <p class="author">— Rafael M., CCO · Acme Fintech</p>
-            </div>
-            <div class="final-cta">
-                <h2>Sua equipe merece uma plataforma à altura do desafio regulatório.</h2>
-                <a href="#" class="btn btn-primary" style="padding: 1rem 2.5rem; font-size: 1rem;">Agendar demonstração
-                    gratuita &rarr;</a>
+            <div class="quote-block reveal">
+                <span class="quote-mark">"</span>
+                <p class="quote-text">
+                    Reduzimos em 70% o tempo de onboarding KYC/KYB e eliminamos planilhas do processo de PLD. O
+                    ComplianceOS virou infraestrutura crítica para nós.
+                </p>
+                <p class="quote-author">— Rafael M., CCO · <strong>Acme Fintech</strong></p>
+                <h2 class="cta-headline">Sua equipe merece uma plataforma à altura do desafio regulatório.</h2>
+                <div class="cta-buttons">
+                    <a href="/dashboard" class="btn btn-primary">Agendar demonstração gratuita →</a>
+                    <a href="/login" class="btn btn-ghost">Já tenho conta</a>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- 10. FOOTER -->
+    <!-- ══════════════ 10. FOOTER ══════════════ -->
     <footer class="footer">
         <div class="container">
-            <div class="footer-top">
-                <div class="logo" style="font-family: var(--font-ui);">
-                    <svg viewBox="0 0 24 24">
-                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                    </svg>
-                    ComplianceOS
+            <div class="footer-inner">
+                <div class="footer-brand">
+                    <a href="#" class="logo">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#8892A4" stroke-width="2" width="22" height="22">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                        </svg>
+                        ComplianceOS
+                    </a>
+                    <p class="footer-tagline">Plataforma de Compliance &amp; Governança para fintechs e PMEs
+                        brasileiras.</p>
+                    <p style="font-size:0.8rem;color:#8892A4;margin-top:0.5rem">Desenvolvido por <strong
+                            style="color:#F0F2F5">Chuangxin</strong> · Grupo Guinle</p>
                 </div>
-                <div class="footer-links">
-                    <a href="#">Produto</a>
-                    <a href="#">Docs</a>
-                    <a href="#">API</a>
-                    <a href="#">Status</a>
-                    <a href="#">Privacidade</a>
-                    <a href="#">Termos</a>
+                <div>
+                    <p
+                        style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:#8892A4;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:1rem">
+                        Produto</p>
+                    <nav class="footer-nav">
+                        <a href="#solutions">Produto</a>
+                        <a href="#features">Features</a>
+                        <a href="#pricing">Preços</a>
+                        <a href="#stack">Docs</a>
+                        <a href="#">API Reference</a>
+                        <a href="#">Status</a>
+                    </nav>
+                </div>
+                <div>
+                    <p
+                        style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:#8892A4;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:1rem">
+                        Legal</p>
+                    <nav class="footer-nav">
+                        <a href="#">Privacidade</a>
+                        <a href="#">Termos de Uso</a>
+                        <a href="#">LGPD</a>
+                        <a href="#">Segurança</a>
+                    </nav>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>Desenvolvido por Chuangxin &middot; Grupo Guinle</p>
+                <p class="footer-copy">© 2026 Chuangxin Tecnologia da Informação Ltda. Todos os direitos reservados.</p>
                 <div class="footer-badges">
-                    <span class="f-badge">LGPD Compliant</span>
-                    <span class="f-badge">AWS Partner</span>
-                    <span class="f-badge">ISO 27001 Ready</span>
+                    <span class="footer-badge">LGPD Compliant</span>
+                    <span class="footer-badge">AWS Partner</span>
+                    <span class="footer-badge">ISO 27001 Ready</span>
                 </div>
             </div>
         </div>
     </footer>
 
-    <!-- Scripts -->
     <script>
-        // Scroll Progress Bar
-        const progressBar = document.getElementById('scroll-progress');
-        const navbar = document.getElementById('navbar');
-
+        // ── Scroll progress bar
+        const bar = document.getElementById('scroll-bar');
         window.addEventListener('scroll', () => {
-            // Progress Bar
-            let winScroll = document.body.scrollTop || document.documentElement.scrollTop;
-            let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-            let scrolled = (winScroll / height) * 100;
-            progressBar.style.width = scrolled + "%";
-
-            // Navbar Blur
-            if (winScroll > 50) {
-                navbar.classList.add('scrolled');
-            } else {
-                navbar.classList.remove('scrolled');
-            }
+            const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+            bar.style.width = (scrollTop / (scrollHeight - clientHeight) * 100) + '%';
         });
 
-        // Intersection Observer for Reveal Animations
-        const revealElements = document.querySelectorAll('.reveal');
+        // ── Navbar scroll state
+        const nav = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            nav.classList.toggle('scrolled', window.scrollY > 30);
+        });
 
-        const revealObserver = new IntersectionObserver((entries, observer) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('active');
-                    observer.unobserve(entry.target);
-                }
+        // ── Reveal on scroll (IntersectionObserver)
+        const reveals = document.querySelectorAll('.reveal');
+        const obs = new IntersectionObserver((entries) => {
+            entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+        }, { threshold: 0.12 });
+        reveals.forEach(el => obs.observe(el));
+
+        // ── Smooth anchor scroll
+        document.querySelectorAll('a[href^="#"]').forEach(a => {
+            a.addEventListener('click', e => {
+                const target = document.querySelector(a.getAttribute('href'));
+                if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
             });
-        }, {
-            root: null,
-            threshold: 0.15,
-            rootMargin: "0px 0px -50px 0px"
-        });
-
-        revealElements.forEach(el => {
-            revealObserver.observe(el);
         });
     </script>
 </body>
