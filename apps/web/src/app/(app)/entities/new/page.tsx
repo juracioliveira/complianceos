@@ -16,11 +16,33 @@ export default function NewEntityPage() {
         sector: '',
     })
 
+    const formatTaxId = (value: string) => {
+        const numbers = value.replace(/\D/g, '')
+        if (numbers.length <= 11) {
+            return numbers
+                .replace(/(\d{3})(\d)/, '$1.$2')
+                .replace(/(\d{3})(\d)/, '$1.$2')
+                .replace(/(\d{3})(\d{1,2})/, '$1-$2')
+                .replace(/(-\d{2})\d+?$/, '$1')
+        }
+        return numbers
+            .replace(/(\d{2})(\d)/, '$1.$2')
+            .replace(/(\d{3})(\d)/, '$1.$2')
+            .replace(/(\d{3})(\d)/, '$1/$2')
+            .replace(/(\d{4})(\d{1,2})/, '$1-$2')
+            .replace(/(-\d{2})\d+?$/, '$1')
+    }
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setLoading(true)
         try {
             const taxIdClean = formData.taxId.replace(/\D/g, '')
+            // Aceita 11 (CPF) ou 14 (CNPJ)
+            if (taxIdClean.length !== 11 && taxIdClean.length !== 14) {
+                throw new Error('Documento inválido. Use 11 dígitos para CPF ou 14 para CNPJ.')
+            }
+
             const isCnpj = taxIdClean.length === 14
 
             await fetchWithAuth('/v1/entities', {
@@ -34,8 +56,8 @@ export default function NewEntityPage() {
                 })
             })
             router.push('/entities')
-        } catch (err) {
-            alert('Erro ao criar entidade')
+        } catch (err: any) {
+            alert(err.message || 'Erro ao criar entidade')
         } finally {
             setLoading(false)
         }
@@ -75,7 +97,7 @@ export default function NewEntityPage() {
                             className="input-field"
                             placeholder="Apenas números"
                             value={formData.taxId}
-                            onChange={e => setFormData({ ...formData, taxId: e.target.value })}
+                            onChange={e => setFormData({ ...formData, taxId: formatTaxId(e.target.value) })}
                         />
                     </div>
 
