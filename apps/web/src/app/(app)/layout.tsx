@@ -12,23 +12,35 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     return (
         <AuthProvider>
             <AuthGuard>
-                <div className="flex h-screen bg-[#0A0C10] text-[#F0F2F5] font-ui overflow-hidden relative">
-                    {/* Background Tech Effects */}
-                    <div className="absolute inset-0 pointer-events-none opacity-20"
+                <div
+                    className="flex h-screen overflow-hidden relative"
+                    style={{ background: '#0A0C10', color: '#F0F2F5', fontFamily: "'IBM Plex Sans', sans-serif" }}
+                >
+                    {/* Grid background — mirrors hero section in landing */}
+                    <div
+                        className="absolute inset-0 pointer-events-none"
                         style={{
-                            backgroundImage: `
-                                linear-gradient(45deg, rgba(255,255,255,0.05) 1px, transparent 1px),
-                                linear-gradient(-45deg, rgba(255,255,255,0.05) 1px, transparent 1px)
-                            `,
-                            backgroundSize: '60px 60px'
+                            backgroundImage:
+                                'linear-gradient(45deg, rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(-45deg, rgba(255,255,255,0.04) 1px, transparent 1px)',
+                            backgroundSize: '60px 60px',
                         }}
                     />
-                    <div className="absolute top-[-20%] right-[-10%] w-[60vw] h-[60vw] bg-[radial-gradient(circle,rgba(0,229,255,0.07)0%,transparent0%)] rounded-full blur-[120px] pointer-events-none opacity-50" />
+                    {/* Cyan radial glow — top-right as on landing */}
+                    <div
+                        className="absolute pointer-events-none"
+                        style={{
+                            top: '-40%', right: '-15%',
+                            width: '60vw', height: '60vw',
+                            background: 'radial-gradient(circle, rgba(0,229,255,0.07) 0%, transparent 60%)',
+                            borderRadius: '50%',
+                            filter: 'blur(80px)',
+                        }}
+                    />
 
                     {/* Sidebar */}
                     <AppSidebar />
 
-                    {/* Área principal */}
+                    {/* Main area */}
                     <div className="flex flex-col flex-1 overflow-hidden relative z-10">
                         <AppHeader />
                         <main className="flex-1 overflow-y-auto p-6 animate-fade-in">
@@ -36,7 +48,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                         </main>
                     </div>
                 </div>
-
             </AuthGuard>
         </AuthProvider>
     )

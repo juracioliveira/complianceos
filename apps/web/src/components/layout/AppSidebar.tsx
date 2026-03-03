@@ -46,13 +46,13 @@ export function AppSidebar() {
     return (
         <aside className="sidebar h-screen flex flex-col animate-slide-left">
             {/* Logo */}
-            <div className="flex items-center gap-3 px-5 h-16 border-b border-white/[0.05] shrink-0">
-                <div className="w-8 h-8 rounded bg-primary flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(0,229,255,0.3)]">
-                    <ShieldCheck className="w-5 h-5 text-background" strokeWidth={2.5} />
+            <div className="flex items-center gap-3 px-5 h-16 shrink-0" style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+                <div className="w-8 h-8 rounded flex items-center justify-center shrink-0" style={{ background: '#00E5FF', boxShadow: '0 0 15px rgba(0,229,255,0.3)' }}>
+                    <ShieldCheck className="w-5 h-5" style={{ color: '#0A0C10' }} strokeWidth={2.5} />
                 </div>
                 <div className="min-w-0">
-                    <p className="font-display text-lg text-foreground leading-tight tracking-tight">ComplianceOS</p>
-                    <p className="text-[10px] uppercase font-mono tracking-widest text-primary/70">Governance Engine</p>
+                    <p style={{ fontFamily: "'DM Serif Display', serif", fontSize: '1.1rem', color: '#F0F2F5', lineHeight: 1.2 }}>ComplianceOS</p>
+                    <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.15em', color: 'rgba(0,229,255,0.6)' }}>Governance Engine</p>
                 </div>
             </div>
 
@@ -60,7 +60,7 @@ export function AppSidebar() {
             <nav className="flex-1 overflow-y-auto px-4 py-6 space-y-7">
                 {NAV_GROUPS.map((group) => (
                     <div key={group.label} className="space-y-1.5">
-                        <p className="text-[10px] font-bold text-muted-foreground/40 uppercase tracking-[0.2em] px-3">
+                        <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '9px', fontWeight: 700, color: 'rgba(136,146,164,0.5)', textTransform: 'uppercase', letterSpacing: '0.15em', padding: '0 12px' }}>
                             {group.label}
                         </p>
                         <div className="space-y-1">
@@ -81,11 +81,11 @@ export function AppSidebar() {
                                         )} strokeWidth={isActive ? 2.5 : 2} />
                                         <span className="flex-1 text-[13px]">{item.label}</span>
                                         {'badge' in item && item.badge ? (
-                                            <span className="min-w-[18px] h-[18px] px-1 rounded bg-primary text-background text-[10px] font-bold flex items-center justify-center shadow-[0_0_10px_rgba(0,229,255,0.2)]">
+                                            <span style={{ minWidth: 18, height: 18, padding: '0 4px', borderRadius: 4, background: '#00E5FF', color: '#0A0C10', fontSize: 10, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 10px rgba(0,229,255,0.25)' }}>
                                                 {item.badge}
                                             </span>
                                         ) : isActive ? (
-                                            <div className="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_8px_rgba(0,229,255,1)]" />
+                                            <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#00E5FF', boxShadow: '0 0 8px #00E5FF' }} />
                                         ) : null}
                                     </Link>
                                 )
@@ -96,21 +96,24 @@ export function AppSidebar() {
             </nav>
 
             {/* Tenant info + logout */}
-            <div className="border-t border-white/[0.05] px-4 py-4 shrink-0">
+            <div className="px-4 py-4 shrink-0" style={{ borderTop: '1px solid rgba(255,255,255,0.07)' }}>
                 <div
                     onClick={handleLogout}
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/[0.03] transition-all cursor-pointer group border border-transparent hover:border-white/[0.05]"
+                    className="flex items-center gap-3 px-3 py-2.5 transition-all cursor-pointer group"
+                    style={{ borderRadius: 4, border: '1px solid transparent' }}
+                    onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.03)'; (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.06)' }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = ''; (e.currentTarget as HTMLElement).style.borderColor = 'transparent' }}
                 >
-                    <div className="w-9 h-9 rounded bg-gradient-to-br from-primary/20 to-blue-500/20 border border-primary/30 flex items-center justify-center shrink-0">
-                        <span className="text-xs font-bold text-primary">
+                    <div className="w-9 h-9 flex items-center justify-center shrink-0" style={{ borderRadius: 4, background: 'rgba(0,229,255,0.1)', border: '1px solid rgba(0,229,255,0.2)' }}>
+                        <span style={{ fontSize: 11, fontWeight: 700, color: '#00E5FF', fontFamily: "'JetBrains Mono', monospace" }}>
                             {user?.name ? user.name.substring(0, 2).toUpperCase() : 'US'}
                         </span>
                     </div>
                     <div className="min-w-0 flex-1">
-                        <p className="text-[12px] font-semibold text-foreground truncate">{user?.name || 'Usuário'}</p>
-                        <p className="text-[10px] font-mono text-muted-foreground truncate uppercase">{user?.tenantName || 'ComplianceOS'}</p>
+                        <p style={{ fontSize: 12, fontWeight: 600, color: '#F0F2F5' }} className="truncate">{user?.name || 'Usuário'}</p>
+                        <p style={{ fontSize: 9, fontFamily: "'JetBrains Mono', monospace", color: '#8892A4', textTransform: 'uppercase', letterSpacing: '0.08em' }} className="truncate">{user?.tenantName || 'ComplianceOS'}</p>
                     </div>
-                    <LogOut className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors" />
+                    <LogOut className="w-3.5 h-3.5 transition-colors" style={{ color: '#8892A4' }} />
                 </div>
             </div>
 
