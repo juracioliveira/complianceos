@@ -222,7 +222,7 @@
         .hero {
             position: relative;
             min-height: 100vh;
-            padding: 12rem 2rem 8rem;
+            padding: 10rem 2rem 6rem;
             display: flex;
             align-items: center;
             background-image:
@@ -245,8 +245,16 @@
         }
 
         .hero-content {
-            max-width: 680px;
+            max-width: 560px;
             z-index: 2;
+        }
+
+        /* Hero inner = 2-col grid */
+        .hero .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
         }
 
         .hero-badge {
@@ -308,21 +316,17 @@
             display: flex;
             gap: 1rem;
             flex-wrap: wrap;
-            margin-bottom: 4rem;
         }
 
-        /* ── Dashboard mock (CSS art) ── */
+        /* ── Dashboard mock (CSS art) — right column ── */
         .hero-mock {
-            position: absolute;
-            right: 4%;
-            bottom: 0;
-            width: 44%;
             background: var(--bg-surface);
             border: 1px solid var(--border);
-            border-radius: 8px 8px 0 0;
-            box-shadow: 0 -20px 60px -20px rgba(0, 229, 255, 0.06), 0 0 0 1px var(--border);
+            border-radius: 8px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px var(--border);
             overflow: hidden;
             animation: slideUpFade 1s 0.3s both cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 2;
         }
 
         @keyframes slideUpFade {
@@ -1171,8 +1175,16 @@
 
         /* ── Responsive ── */
         @media (max-width:1024px) {
+            .hero .container {
+                grid-template-columns: 1fr;
+            }
+
             .hero-mock {
                 display: none;
+            }
+
+            .hero-content {
+                max-width: 100%;
             }
 
             .feature-block,
