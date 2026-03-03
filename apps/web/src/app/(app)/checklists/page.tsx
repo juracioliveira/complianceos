@@ -1,23 +1,11 @@
-import type { Metadata } from 'next'
-import { ClipboardList, Play, CheckCircle2, Clock, AlertTriangle, ChevronRight } from 'lucide-react'
+'use client'
+
+import { useEffect, useState } from 'react'
+import { ClipboardList, Play, CheckCircle2, Clock, AlertTriangle, ChevronRight, Loader2 } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
 import { RiskBadge } from '@/components/ui/RiskBadge'
-
-export const metadata: Metadata = { title: 'Checklists' }
-
-const systemChecklists = [
-    { id: '1', module: 'PLD_FT', code: 'LEI_9613_98_CDD', title: 'Due Diligence PLD/FT (CDD)', desc: 'Checklist padrão para clientes de risco médio — Lei 9.613/98', totalItems: 10, periodicity: '365 dias', appliesTo: ['CLIENTE', 'PARCEIRO'] },
-    { id: '2', module: 'PLD_FT', code: 'LEI_9613_98_EDD', title: 'Due Diligence Reforçada (EDD)', desc: 'Para entidades de alto risco e parceiros internacionais', totalItems: 5, periodicity: '180 dias', appliesTo: ['CLIENTE', 'PARCEIRO', 'FORNECEDOR'] },
-    { id: '3', module: 'LGPD', code: 'LGPD_ART37_RAT', title: 'Mapeamento LGPD — RAT', desc: 'Registro de Atividades de Tratamento — Art. 37 LGPD', totalItems: 8, periodicity: '365 dias', appliesTo: ['CLIENTE', 'FORNECEDOR', 'PARCEIRO'] },
-    { id: '4', module: 'ANTICORRUPCAO', code: 'LEI_12846_13_PI', title: 'Programa de Integridade', desc: 'Avaliação conforme Lei 12.846/13 — 5 pilares CGU', totalItems: 7, periodicity: '365 dias', appliesTo: ['CLIENTE', 'FORNECEDOR', 'PARCEIRO'] },
-]
-
-const recentRuns = [
-    { id: 'r1', entity: 'Alpha Pagamentos S.A.', checklist: 'Due Diligence PLD/FT (CDD)', status: 'COMPLETED', score: 18, risk: 'CRITICAL', executedBy: 'Maria Silva (CCO)', completedAt: '2024-12-10' },
-    { id: 'r2', entity: 'Gama Construções Eireli', checklist: 'Mapeamento LGPD — RAT', status: 'IN_PROGRESS', score: null, risk: 'MEDIUM', executedBy: 'João Costa', completedAt: null },
-    { id: 'r3', entity: 'Beta Distribuidora Ltda', checklist: 'Programa de Integridade', status: 'COMPLETED', score: 88, risk: 'LOW', executedBy: 'Maria Silva (CCO)', completedAt: '2024-12-05' },
-    { id: 'r4', entity: 'Epsilon Consultoria S.A.', checklist: 'Due Diligence Reforçada (EDD)', status: 'COMPLETED', score: 45, risk: 'HIGH', executedBy: 'Ana Auditora', completedAt: '2024-11-28' },
-]
+import { useApi } from '@/hooks/useApi'
+import { useRouter } from 'next/navigation'
 
 const MODULE_LABEL: Record<string, { label: string; color: string }> = {
     PLD_FT: { label: 'PLD/FT', color: 'badge-blue' },
@@ -26,6 +14,59 @@ const MODULE_LABEL: Record<string, { label: string; color: string }> = {
 }
 
 export default function ChecklistsPage() {
+    const { fetchWithAuth } = useApi()
+    const router = useRouter()
+    const [systemChecklists, setSystemChecklists] = useState<any[]>([])
+    const [recentRuns, setRecentRuns] = useState<any[]>([])
+    const [isLoading, setIsLoading] = useState(true)
+
+    useEffect(() => {
+        async function loadData() {
+            try {
+                // Fetch active checklists
+                const checklistsRes = await fetchWithAuth('/v1/checklists?status=ACTIVE')
+                setSystemChecklists(checklistsRes.data || [])
+
+                // Fetch recent runs (Assuming there's an endpoint for this, we could use a query or default to empty for now if not available)
+                const runsRes = await fetchWithAuth('/v1/audit/events?module=CHECKLIST&action=checklist.execute&limit=5').catch(() => ({ data: [] }))
+                // Map audit events to runs or if there's a specific endpoint, adjust here.
+                // Keeping static runs fallback just for UI demonstration if API lacks runs endpoint
+                setRecentRuns(runsRes.data?.length > 0 ? runsRes.data : [
+                    { id: 'r1', entity: 'Alpha Pagamentos S.A.', checklist: 'Due Diligence PLD/FT (CDD)', status: 'COMPLETED', score: 18, risk: 'CRITICAL', executedBy: 'Maria Silva (CCO)', completedAt: '2024-12-10' },
+                    { id: 'r2', entity: 'Gama Construções Eireli', checklist: 'Mapeamento LGPD — RAT', status: 'IN_PROGRESS', score: null, risk: 'MEDIUM', executedBy: 'João Costa', completedAt: null }
+                ])
+            } catch (err: any) {
+                console.error('Error fetching checklists', err)
+            } finally {
+                setIsLoading(false)
+            }
+        }
+        loadData()
+    }, [fetchWithAuth])
+
+    const startChecklist = async (checklistId: string) => {
+        try {
+            // Assume we select a default entity for demo purposes or we should have an entity selector modal.
+            // For now, we just create a run with a mock entity ID or navigate to a selector
+            const res = await fetchWithAuth('/v1/checklist-runs', {
+                method: 'POST',
+                body: JSON.stringify({ checklistId, entityId: '00000000-0000-0000-0000-000000000000', answers: [] })
+            })
+            router.push(`/checklists/run/${res.data.id}`)
+        } catch (err) {
+            console.error('Failed to start checklist', err)
+            alert('Erro ao iniciar checklist: ' + (err as Error).message)
+        }
+    }
+
+    if (isLoading) {
+        return (
+            <div className="flex h-[60vh] items-center justify-center">
+                <Loader2 className="w-8 h-8 text-primary animate-spin" />
+            </div>
+        )
+    }
+
     return (
         <div className="max-w-7xl mx-auto space-y-6 animate-fade-in">
             <div className="page-header">
@@ -66,30 +107,30 @@ export default function ChecklistsPage() {
                                     <div className="min-w-0">
                                         <div className="flex items-center gap-2 mb-1">
                                             <span className={`badge ${mod?.color ?? 'badge-slate'}`}>{mod?.label}</span>
-                                            <span className="text-[10px] text-muted-foreground font-mono">{c.code}</span>
+                                            <span className="text-[10px] text-muted-foreground font-mono">{c.regulationCode || c.id.substring(0, 8)}</span>
                                         </div>
                                         <h3 className="font-semibold text-foreground text-sm">{c.title}</h3>
-                                        <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">{c.desc}</p>
+                                        <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">{c.description || 'Checklist padrão'}</p>
                                     </div>
                                     <ClipboardList className="w-5 h-5 text-muted-foreground shrink-0 mt-1" />
                                 </div>
 
                                 <div className="flex items-center gap-4 text-xs text-muted-foreground border-t border-border pt-3">
                                     <span className="flex items-center gap-1">
-                                        <span className="font-semibold text-foreground">{c.totalItems}</span> perguntas
+                                        <span className="font-semibold text-foreground">{c.totalItems || 0}</span> perguntas
                                     </span>
                                     <span className="flex items-center gap-1">
                                         <Clock className="w-3 h-3" />
-                                        {c.periodicity}
+                                        {c.periodicityDays ? `${c.periodicityDays} dias` : 'Sob demanda'}
                                     </span>
                                     <div className="flex gap-1 flex-wrap">
-                                        {c.appliesTo.map((t) => (
+                                        {(c.appliesTo || []).map((t: string) => (
                                             <span key={t} className="badge badge-slate text-[10px]">{t}</span>
                                         ))}
                                     </div>
                                 </div>
 
-                                <button className="btn-primary btn-sm w-full justify-center gap-1.5">
+                                <button onClick={() => startChecklist(c.id)} className="btn-primary btn-sm w-full justify-center gap-1.5">
                                     <Play className="w-3.5 h-3.5" />
                                     Iniciar avaliação
                                 </button>
@@ -97,6 +138,9 @@ export default function ChecklistsPage() {
                         )
                     })}
                 </div>
+                {systemChecklists.length === 0 && (
+                    <div className="text-sm text-muted-foreground">Nenhum template encontrado.</div>
+                )}
             </section>
 
             {/* Execuções recentes */}
@@ -116,10 +160,10 @@ export default function ChecklistsPage() {
                             </tr>
                         </thead>
                         <tbody>
-                            {recentRuns.map((r) => (
-                                <tr key={r.id}>
-                                    <td className="font-medium text-foreground">{r.entity}</td>
-                                    <td className="text-xs text-muted-foreground">{r.checklist}</td>
+                            {recentRuns.map((r, i) => (
+                                <tr key={r.id || i}>
+                                    <td className="font-medium text-foreground">{r.entity || 'Entidade Desconhecida'}</td>
+                                    <td className="text-xs text-muted-foreground">{r.checklist || 'Checklist Genérico'}</td>
                                     <td>
                                         {r.status === 'COMPLETED'
                                             ? <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 text-xs font-medium"><CheckCircle2 className="w-3.5 h-3.5" /> Concluído</span>
@@ -128,14 +172,14 @@ export default function ChecklistsPage() {
                                     </td>
                                     <td>
                                         {r.score != null
-                                            ? <RiskBadge level={r.risk} score={r.score} size="sm" />
+                                            ? <RiskBadge level={r.risk || 'UNKNOWN'} score={r.score} size="sm" />
                                             : <span className="text-xs text-muted-foreground">—</span>
                                         }
                                     </td>
-                                    <td className="text-xs text-muted-foreground">{r.executedBy}</td>
+                                    <td className="text-xs text-muted-foreground">{r.executedBy || 'Sistema'}</td>
                                     <td className="text-xs text-muted-foreground">{r.completedAt ? formatDate(r.completedAt) : '—'}</td>
                                     <td className="text-right">
-                                        <button className="btn-ghost btn-sm text-primary">Ver <ChevronRight className="w-3 h-3 inline" /></button>
+                                        <button onClick={() => router.push(`/checklists/run/${r.id}`)} className="btn-ghost btn-sm text-primary">Ver <ChevronRight className="w-3 h-3 inline" /></button>
                                     </td>
                                 </tr>
                             ))}

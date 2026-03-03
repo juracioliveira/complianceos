@@ -27,6 +27,7 @@ export default function EntitiesPage() {
     const { fetchWithAuth } = useApi()
     const [entities, setEntities] = useState<any[]>([])
     const [isLoading, setIsLoading] = useState(true)
+    const [isExporting, setIsExporting] = useState(false)
     const [error, setError] = useState<string | null>(null)
 
     useEffect(() => {
@@ -42,6 +43,40 @@ export default function EntitiesPage() {
         }
         loadEntities()
     }, [fetchWithAuth])
+
+    const handleExport = async (format: 'PDF' | 'JSON' = 'PDF') => {
+        try {
+            setIsExporting(true)
+            // Create a document generation job
+            const res = await fetchWithAuth('/v1/documents/generate', {
+                method: 'POST',
+                body: JSON.stringify({
+                    type: 'REGISTRO_ENTIDADES',
+                    parameters: { listOnly: true },
+                    format: format,
+                })
+            })
+            const { url, id } = res.data
+
+            // if API returns direct buffer or async URL
+            if (url) {
+                const link = document.createElement('a')
+                link.href = url
+                link.download = `export-${id}.${format.toLowerCase()}`
+                document.body.appendChild(link)
+                link.click()
+                document.body.removeChild(link)
+            } else {
+                alert(`Exportação ${format} solicitada. O arquivo estará disponível na seção de Auditoria em breve.`)
+            }
+
+        } catch (err) {
+            console.error('Falha na exportação', err)
+            alert('Falha na exportação: ' + (err as Error).message)
+        } finally {
+            setIsExporting(false)
+        }
+    }
 
     const RISK_ORDER: Record<string, number> = { CRITICAL: 0, HIGH: 1, MEDIUM: 2, LOW: 3, UNKNOWN: 4 }
     const sorted = [...entities].sort((a, b) => RISK_ORDER[a.riskLevel]! - RISK_ORDER[b.riskLevel]!)
@@ -73,9 +108,21 @@ export default function EntitiesPage() {
                     </p>
                 </div>
                 <div className="flex items-center gap-2">
-                    <button className="btn-secondary btn-sm gap-1.5">
+                    <button
+                        onClick={() => handleExport('PDF')}
+                        disabled={isExporting}
+                        className="btn-secondary btn-sm gap-1.5 disabled:opacity-50"
+                    >
+                        {isExporting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
+                        Exportar PDF
+                    </button>
+                    <button
+                        onClick={() => handleExport('JSON')}
+                        disabled={isExporting}
+                        className="btn-secondary btn-sm gap-1.5 disabled:opacity-50"
+                    >
                         <Download className="w-3.5 h-3.5" />
-                        Exportar
+                        Exportar JSON
                     </button>
                     <a href="/entities/new" className="btn-primary btn-sm gap-1.5 flex items-center">
                         <Plus className="w-3.5 h-3.5" />

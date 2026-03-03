@@ -115,7 +115,7 @@ export default function LoginPage() {
                         {[
                             { label: 'Checklists Regulatórios', desc: 'PLD/FT, LGPD, Lei 12.846' },
                             { label: 'Audit Trail Imutável', desc: 'Retenção de 5 anos' },
-                            { label: 'KYC/KYB Automatizado', desc: 'Due diligence simplificada' },
+                            { label: 'KYC/KYB Automatizado', desc: 'Due diligence completa' },
                             { label: 'Documentos PDF', desc: 'RAT, DPIA, Relatórios' },
                         ].map((f) => (
                             <div key={f.label} className="rounded-xl border border-white/8 bg-white/4 p-3.5">
@@ -128,7 +128,7 @@ export default function LoginPage() {
 
                 {/* Rodapé */}
                 <p className="relative text-slate-600 text-xs">
-                    © 2026 Grupo Guinle · Chuangxin Tecnologia · Uso corporativo restrito
+                    © 2026 Grupo Guinle · Chuangxin Tecnologia · Uso corporativo
                 </p>
             </div>
 

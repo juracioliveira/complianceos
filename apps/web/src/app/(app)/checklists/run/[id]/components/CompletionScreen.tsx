@@ -10,19 +10,42 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
+import { useApi } from '@/hooks/useApi'
 
 interface CompletionScreenProps {
+    checklistId: string
     entityId: string | null
 }
 
-export default function CompletionScreen({ entityId }: CompletionScreenProps) {
+export default function CompletionScreen({ checklistId, entityId }: CompletionScreenProps) {
+    const { fetchWithAuth } = useApi()
     const [processing, setProcessing] = useState(true)
+    const [score, setScore] = useState<number | null>(null)
+    const [error, setError] = useState<string | null>(null)
 
     useEffect(() => {
-        // Simula tempo de processamento do Job BullMQ
-        const timer = setTimeout(() => setProcessing(false), 3000)
-        return () => clearTimeout(timer)
-    }, [])
+        async function completeRun() {
+            try {
+                const res = await fetchWithAuth(`/v1/checklist-runs/${checklistId}/complete`, {
+                    method: 'POST',
+                    body: JSON.stringify({ summaryNotes: 'Completado via interface' })
+                })
+                setScore(res.data.score || 0)
+            } catch (err: any) {
+                console.error('Completion error', err)
+                // Depending on the backend logic, it might already be COMPLETED, so handle politely
+                if (err.message?.includes('COMPLETED') || err.message?.includes('already')) {
+                    const fallback = await fetchWithAuth(`/v1/checklist-runs/${checklistId}`).catch(() => ({ data: {} }))
+                    setScore(fallback.data?.score || 0)
+                } else {
+                    setError('Erro ao finalizar o checklist.')
+                }
+            } finally {
+                setProcessing(false)
+            }
+        }
+        completeRun()
+    }, [checklistId, fetchWithAuth])
 
     return (
         <div className="flex flex-col items-center justify-center py-12 md:py-20 animate-in fade-in zoom-in-95 duration-700">
@@ -47,9 +70,11 @@ export default function CompletionScreen({ entityId }: CompletionScreenProps) {
                             {processing ? 'O motor BullMQ está calculando a pontuação...' : 'A pontuação foi calculada e atualizada no dashboard.'}
                         </p>
                     </div>
-                    {!processing && (
-                        <div className="text-3xl font-black text-primary">82 <span className="text-sm font-bold opacity-60">pts</span></div>
+                    {!processing && !error && (
+                        <div className="text-3xl font-black text-primary">{score} <span className="text-sm font-bold opacity-60">pts</span></div>
                     )}
+                    {error && <div className="text-sm text-red-500 font-bold">{error}</div>}
+
                 </div>
 
                 <div className="card p-6 flex flex-col items-center text-center gap-4 group hover:border-primary/50 transition-colors">

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
     CheckCircle2,
     ChevronRight,
@@ -13,38 +13,47 @@ import { useChecklistAutoSave } from '@/lib/hooks/useChecklistAutoSave'
 import SectionRenderer from './SectionRenderer'
 import CompletionScreen from './CompletionScreen'
 
+import { useApi } from '@/hooks/useApi'
+
 interface WizardShellProps {
     checklistId: string
     entityId: string | null
 }
 
 export default function WizardShell({ checklistId, entityId }: WizardShellProps) {
+    const { fetchWithAuth } = useApi()
     const [currentSection, setCurrentSection] = useState(0)
     const [complete, setComplete] = useState(false)
+    const [loading, setLoading] = useState(true)
     const [formData, setFormData] = useState<any>({
-        registration: {
-            is_active: 'yes',
-            has_sanctions: 'no',
-            justification: ''
-        },
-        pep: {
-            is_pep: 'no',
-            beneficiary_pep: 'no'
-        },
-        funds: {
-            origin: '',
-            monthly_revenue: ''
-        }
+        registration: { is_active: '', has_sanctions: '', justification: '' },
+        pep: { is_pep: '', beneficiary_pep: '' },
+        funds: { origin: '', monthly_revenue: '' }
     })
 
-    // Hook de Auto-Save
+    useEffect(() => {
+        async function loadRun() {
+            try {
+                const res = await fetchWithAuth(`/v1/checklist-runs/${checklistId}`)
+                if (res.data.status === 'COMPLETED') {
+                    setComplete(true)
+                }
+                if (res.data.responses) {
+                    setFormData(res.data.responses)
+                }
+            } catch (err) {
+                console.error('Failed to load checklist run:', err)
+            } finally {
+                setLoading(false)
+            }
+        }
+        loadRun()
+    }, [checklistId, fetchWithAuth])
+
+    // Hook de Auto-Save usando a implementação real (sem o onSave mockado)
     const { isSaving } = useChecklistAutoSave({
         checklistId,
-        data: formData,
-        onSave: async (id, data) => {
-            // Simulação de PATCH /checklists/{id}/responses
-            return new Promise((resolve) => setTimeout(resolve, 800))
-        }
+        data: formData
     })
 
     const sections = [
@@ -69,8 +78,16 @@ export default function WizardShell({ checklistId, entityId }: WizardShellProps)
         }
     }
 
+    if (loading) {
+        return (
+            <div className="flex h-[300px] items-center justify-center">
+                <Loader2 className="w-8 h-8 animate-spin text-primary" />
+            </div>
+        )
+    }
+
     if (complete) {
-        return <CompletionScreen entityId={entityId} />
+        return <CompletionScreen checklistId={checklistId} entityId={entityId} />
     }
 
     return (
