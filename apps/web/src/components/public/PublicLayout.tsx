@@ -24,7 +24,7 @@ export function PublicNav() {
                     Compliance<span style={{ color: CYAN }}>OS</span>
                 </Link>
                 <div style={{ display: 'flex', gap: '2.5rem' }}>
-                    {[['/', 'Produto'], ['/#pricing', 'Preços'], ['/cobertura', 'Regulações'], ['/docs', 'Docs']].map(([h, l]) => (
+                    {([['/', 'Produto'], ['/#pricing', 'Preços'], ['/cobertura', 'Regulações'], ['/docs', 'Docs']] as [string, string][]).map(([h, l]) => (
                         <Link key={l} href={h} style={{ fontSize: '.8125rem', color: MUTED, textDecoration: 'none', fontFamily: UI }}>{l}</Link>
                     ))}
                 </div>
@@ -46,10 +46,10 @@ export function PublicFooter() {
                     <span style={{ fontFamily: UI, fontWeight: 600, color: TEXT, fontSize: '.9rem' }}>ComplianceOS</span>
                 </div>
                 <div style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap' }}>
-                    {[
+                    {([
                         ['/cobertura', 'Cobertura'], ['/docs', 'Docs'], ['/seguranca', 'Segurança'],
                         ['/privacidade', 'Privacidade'], ['/termos', 'Termos'], ['/contato', 'Contato'],
-                    ].map(([h, l]) => (
+                    ] as [string, string][]).map(([h, l]) => (
                         <Link key={l} href={h} style={{ fontFamily: UI, fontSize: '.8125rem', color: MUTED, textDecoration: 'none' }}>{l}</Link>
                     ))}
                 </div>
@@ -87,4 +87,9 @@ export const contentWrap = {
     maxWidth: 1200, margin: '0 auto', padding: '5rem 3rem',
 }
 
-export { CYAN, BG, SURFACE, SURFACE2: '#16191f', LINE, LINE_STRONG: 'rgba(255,255,255,0.14)', TEXT, MUTED, UI, MONO, SERIF: "'DM Serif Display', serif" }
+export const SURFACE2 = '#16191f'
+export const LINE_STRONG = 'rgba(255,255,255,0.14)'
+export const SERIF = "'DM Serif Display', serif"
+
+export { CYAN, BG, SURFACE, LINE, TEXT, MUTED, UI, MONO }
+

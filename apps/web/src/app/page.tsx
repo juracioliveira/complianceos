@@ -389,7 +389,7 @@ export default function LandingPage() {
                         Compliance<span style={{ color: CYAN }}>OS</span>
                     </Link>
                     <div style={{ display: 'flex', gap: '2.5rem' }}>
-                        {[['#solutions', 'Produto'], ['#pricing', 'Preços'], ['/dashboard', 'Plataforma']].map(([h, l]) => (
+                        {([['#solutions', 'Produto'], ['#pricing', 'Preços'], ['/dashboard', 'Plataforma']] as [string, string][]).map(([h, l]) => (
                             <Link key={l} href={h} style={{ fontSize: '.8125rem', color: MUTED, textDecoration: 'none' }}>{l}</Link>
                         ))}
                     </div>

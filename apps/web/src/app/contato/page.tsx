@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import type { Metadata } from 'next'
 import Link from 'next/link'
 import { PublicNav, PublicFooter, PageHero, pageStyle, contentWrap, CYAN, SURFACE, LINE, LINE_STRONG, TEXT, MUTED, UI, MONO } from '@/components/public/PublicLayout'
 
