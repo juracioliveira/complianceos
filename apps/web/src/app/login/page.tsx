@@ -29,7 +29,7 @@ export default function LoginPage() {
                             apiUrl = `https://api.${baseDomain}`
                         }
                     } else {
-                        apiUrl = 'http://localhost:3000'
+                        apiUrl = 'http://localhost:4000'
                     }
                 }
                 const res = await fetch(`${apiUrl}/v1/auth/login`, {

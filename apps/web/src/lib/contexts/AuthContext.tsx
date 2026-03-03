@@ -38,7 +38,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         async function loadUser() {
             const token = sessionStorage.getItem('access_token')
             if (!token) {
-                if (isMounted) setIsLoading(false)
+                setIsLoading(false)
                 return
             }
 
@@ -49,31 +49,43 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                         if (window.location.hostname.includes('easypanel.host')) {
                             apiUrl = `https://${window.location.hostname.replace('-web-', '-api-')}`
                         } else {
-                            const baseDomain = window.location.hostname.split('.').slice(-3).join('.')
+                            const parts = window.location.hostname.split('.')
+                            const baseDomain = parts.length > 2 ? parts.slice(-3).join('.') : window.location.hostname
                             apiUrl = `https://api.${baseDomain}`
                         }
                     } else {
-                        apiUrl = 'http://localhost:3000'
+                        apiUrl = 'http://localhost:4000'
                     }
                 }
 
+                console.log('[Auth] Carregando usuário de:', apiUrl)
+
+                const controller = new AbortController()
+                const timeoutId = setTimeout(() => controller.abort(), 10000) // 10s timeout
+
                 const res = await fetch(`${apiUrl}/v1/auth/me`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    signal: controller.signal
                 })
+
+                clearTimeout(timeoutId)
 
                 if (res.ok) {
                     const { data } = await res.json()
-                    if (isMounted) setUser(data)
+                    setUser(data)
                 } else {
+                    console.warn('[Auth] Sessão inválida ou expirada')
                     sessionStorage.removeItem('access_token')
                     document.cookie = 'access_token=; path=/; max-age=0'
                 }
-            } catch (err) {
-                console.error('Failed to load user', err)
+            } catch (err: any) {
+                if (err.name === 'AbortError') {
+                    console.error('[Auth] Timeout ao conectar com a API')
+                } else {
+                    console.error('[Auth] Erro ao carregar usuário:', err)
+                }
             } finally {
-                if (isMounted) setIsLoading(false)
+                setIsLoading(false)
             }
         }
 

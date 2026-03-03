@@ -16,7 +16,7 @@ export function useApi() {
                     apiUrl = `https://api.${baseDomain}`
                 }
             } else {
-                apiUrl = 'http://localhost:3000'
+                apiUrl = 'http://localhost:4000'
             }
         }
 

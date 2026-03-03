@@ -47,7 +47,14 @@ export const app = Fastify({
 await app.register(fastifyHelmet, { contentSecurityPolicy: false })
 await app.register(fastifyCookie, { secret: process.env['COOKIE_SECRET'] ?? 'dev_secret' })
 await app.register(fastifyCors, {
-    origin: (process.env['CORS_ALLOWED_ORIGINS'] ?? 'http://localhost:3000').split(','),
+    origin: (origin, cb) => {
+        const allowed = (process.env['CORS_ALLOWED_ORIGINS'] ?? 'http://localhost:3000,http://localhost:4000').split(',')
+        if (!origin || allowed.includes(origin) || origin.endsWith('.easypanel.host') || origin.includes('complianceos.com.br')) {
+            cb(null, true)
+            return
+        }
+        cb(new Error('Not allowed by CORS'), false)
+    },
     credentials: true,
 })
 await app.register(fastifyRateLimit, { global: false, redis })
