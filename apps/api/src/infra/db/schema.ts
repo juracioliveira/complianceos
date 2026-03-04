@@ -1,4 +1,4 @@
-import { pgTable, uuid, varchar, timestamp, integer, boolean, jsonb, decimal, pgEnum } from 'drizzle-orm/pg-core'
+import { pgTable, uuid, varchar, timestamp, integer, boolean, jsonb, text, pgEnum } from 'drizzle-orm/pg-core'
 
 export const entityTypeEnum = pgEnum('entity_type', ['CLIENTE', 'FORNECEDOR', 'PARCEIRO', 'COLABORADOR'])
 export const riskLevelEnum = pgEnum('risk_level', ['LOW', 'MEDIUM', 'HIGH', 'CRITICAL', 'UNKNOWN'])
@@ -151,4 +151,41 @@ export const auditEvents = pgTable('audit_events', {
     payloadHash: varchar('payload_hash', { length: 64 }).notNull(),
     prevHash: varchar('prev_hash', { length: 64 }),
     metadata: jsonb('metadata').notNull().default({})
+})
+
+// ─── Alert Cases (P0 — Case Management) ──────────────────────────────────────
+
+export const alertSourceEnum = pgEnum('alert_source', [
+    'SANCTIONS_MATCH', 'PEP_MATCH', 'CHECKLIST_OVERDUE', 'HIGH_RISK_ENTITY', 'MANUAL'
+])
+
+export const alertSeverityEnum = pgEnum('alert_severity', [
+    'CRITICAL', 'HIGH', 'MEDIUM', 'LOW'
+])
+
+export const alertCaseStatusEnum = pgEnum('alert_case_status', [
+    'OPEN', 'UNDER_REVIEW', 'ESCALATED', 'CLOSED_FALSE_POSITIVE', 'CLOSED_CONFIRMED'
+])
+
+export const alertCases = pgTable('alert_cases', {
+    id: uuid('id').primaryKey().defaultRandom(),
+    tenantId: uuid('tenant_id').notNull().references(() => tenants.id),
+    entityId: uuid('entity_id').references(() => entities.id),
+
+    source: alertSourceEnum('source').notNull(),
+    severity: alertSeverityEnum('severity').notNull().default('MEDIUM'),
+    status: alertCaseStatusEnum('status').notNull().default('OPEN'),
+
+    title: varchar('title', { length: 300 }).notNull(),
+    description: text('description').notNull().default(''),
+    evidence: jsonb('evidence').notNull().default({}),
+
+    assignedTo: uuid('assigned_to').references(() => users.id),
+    resolvedBy: uuid('resolved_by').references(() => users.id),
+    resolvedAt: timestamp('resolved_at'),
+    resolutionNote: text('resolution_note'),
+
+    createdBy: uuid('created_by').references(() => users.id),
+    createdAt: timestamp('created_at').defaultNow(),
+    updatedAt: timestamp('updated_at').defaultNow(),
 })

@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation'
 import {
     ShieldCheck, LayoutDashboard, Users, ClipboardList,
     FileText, Activity, Bell, Settings, LogOut, ChevronRight,
+    ShieldAlert,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAuth } from '@/lib/contexts/AuthContext'
@@ -15,6 +16,7 @@ const NAV_GROUPS = [
         items: [
             { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
             { href: '/entities', icon: Users, label: 'Entidades' },
+            { href: '/alerts', icon: ShieldAlert, label: 'Alertas', badgeDynamic: 'openCases' },
             { href: '/checklists', icon: ClipboardList, label: 'Checklists' },
         ],
     },

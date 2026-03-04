@@ -24,6 +24,7 @@ import { webhooksRoutes } from './modules/notifications/webhooks.controller.js'
 import { usersRoutes } from './modules/users/users.controller.js'
 import { intelligenceRoutes } from './modules/intelligence/intelligence.controller.js'
 import { billingRoutes } from './modules/billing/billing.controller.js'
+import { alertCasesRoutes } from './modules/alert-cases/alert-cases.controller.js'
 
 const isDev = process.env['NODE_ENV'] === 'development'
 const PORT = Number(process.env['API_PORT'] ?? 4000)
@@ -108,6 +109,7 @@ await app.register(webhooksRoutes, { prefix: '/v1/webhooks' })
 await app.register(usersRoutes, { prefix: '/v1/users' })
 await app.register(intelligenceRoutes, { prefix: '/v1/intelligence' })
 await app.register(billingRoutes, { prefix: '/v1/billing' })
+await app.register(alertCasesRoutes, { prefix: '/v1/alert-cases' })
 
 // ─── Health Checks ───────────────────────────────────────────────────────────
 app.get('/', async () => ({ status: 'ok', service: 'ComplianceOS API', timestamp: new Date().toISOString() }))
