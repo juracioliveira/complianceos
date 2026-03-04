@@ -348,14 +348,14 @@ function Footer() {
                         <p style={{ ...S.p, fontSize: '.825rem', marginTop: '.5rem' }}>Desenvolvido por Chuangxin · Grupo Guinle</p>
                     </div>
                     {[
-                        { label: 'Produto', links: ['Módulos', 'Plataforma', 'Preços', 'API Reference', 'Status'] },
-                        { label: 'Regulatório', links: ['Cobertura', 'Documentação', 'LGPD', 'Segurança'] },
-                        { label: 'Legal', links: ['Privacidade', 'Termos de Uso', 'Cookies', 'Contato'] },
+                        { label: 'Produto', links: [{ l: 'Módulos', h: '#solutions' }, { l: 'Plataforma', h: '#features' }, { l: 'Preços', h: '#pricing' }, { l: 'API Reference', h: '/docs' }, { l: 'Status', h: '#' }] },
+                        { label: 'Regulatório', links: [{ l: 'Cobertura', h: '/cobertura' }, { l: 'Documentação', h: '/docs' }, { l: 'LGPD', h: '/lgpd' }, { l: 'Segurança', h: '/seguranca' }] },
+                        { label: 'Legal', links: [{ l: 'Privacidade', h: '/privacidade' }, { l: 'Termos de Uso', h: '/termos' }, { l: 'Cookies', h: '/cookies' }, { l: 'Contato', h: '/contato' }] },
                     ].map(g => (
                         <div key={g.label}>
                             <span style={{ fontFamily: MONO, fontSize: '.65rem', textTransform: 'uppercase', letterSpacing: '.1em', color: '#94A3B8', display: 'block', marginBottom: '.75rem' }}>{g.label}</span>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '.5rem' }}>
-                                {g.links.map(l => <Link key={l} href="/dashboard" style={{ fontSize: '.8125rem', color: MUTED, textDecoration: 'none' }}>{l}</Link>)}
+                                {g.links.map(link => <Link key={link.l} href={link.h} style={{ fontSize: '.8125rem', color: MUTED, textDecoration: 'none' }}>{link.l}</Link>)}
                             </div>
                         </div>
                     ))}

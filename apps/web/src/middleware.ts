@@ -11,6 +11,7 @@ export function middleware(request: NextRequest) {
         '/login',
         '/cobertura',
         '/docs',
+        '/documentacao',
         '/lgpd',
         '/seguranca',
         '/privacidade',
@@ -18,7 +19,14 @@ export function middleware(request: NextRequest) {
         '/cookies',
         '/contato'
     ]
-    const isPublicRoute = publicRoutes.includes(request.nextUrl.pathname)
+
+    const pathname = request.nextUrl.pathname
+    // Normalizar a rota (remover barra final se houver, exceto na raiz)
+    const normalizedPathname = pathname.length > 1 && pathname.endsWith('/')
+        ? pathname.slice(0, -1)
+        : pathname
+
+    const isPublicRoute = publicRoutes.includes(normalizedPathname)
 
     if (!token && !isPublicRoute) {
         return NextResponse.redirect(new URL('/login', request.url))
