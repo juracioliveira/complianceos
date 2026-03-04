@@ -12,17 +12,21 @@
         rel="stylesheet">
     <style>
         :root {
-            --ink: #0A0C10;
-            --surface: #111318;
-            --surface-2: #16191f;
-            --line: rgba(255, 255, 255, 0.08);
-            --line-strong: rgba(255, 255, 255, 0.14);
-            --cyan: #00C8E0;
-            --amber: #E8941A;
-            --text: #EDF0F4;
-            --muted: #7A8494;
-            --dim: #3A4152;
+            --bg: #FFFFFF;
+            --surface: #F9FAFB;
+            --surface-2: #F3F4F6;
+            --line: rgba(0, 0, 0, 0.06);
+            --line-strong: rgba(0, 0, 0, 0.12);
+            --cyan: #00A3BF;
+            --amber: #D97706;
+            --text: #0F172A;
+            --muted: #475569;
+            --dim: #94A3B8;
             --max: 1200px;
+            --green: #10B981;
+            --red: #EF4444;
+            --glass-bg: rgba(255, 255, 255, 0.9);
+            --grid-line: rgba(0, 0, 0, 0.04);
         }
 
         *,
@@ -41,7 +45,7 @@
 
         body {
             font-family: 'IBM Plex Sans', sans-serif;
-            background: var(--ink);
+            background: var(--bg);
             color: var(--text);
             line-height: 1.65;
             overflow-x: hidden;
@@ -131,7 +135,7 @@
 
         .btn-fill {
             background: var(--cyan);
-            color: var(--ink);
+            color: #FFFFFF;
             border-color: var(--cyan);
         }
 
@@ -162,7 +166,7 @@
         }
 
         #nav.s {
-            background: rgba(10, 12, 16, .92);
+            background: var(--glass-bg);
             backdrop-filter: blur(16px);
             border-bottom-color: var(--line);
         }
@@ -242,9 +246,9 @@
             content: '';
             position: absolute;
             inset: 0;
-            background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px);
+            background-image: linear-gradient(var(--grid-line) 1px, transparent 1px), linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
             background-size: 80px 80px;
-            opacity: .5;
+            opacity: 1;
             pointer-events: none;
         }
 
@@ -392,7 +396,7 @@
         }
 
         .risk.low {
-            color: #34d399;
+            color: var(--green);
         }
 
         .risk.med {
@@ -400,7 +404,7 @@
         }
 
         .risk.high {
-            color: #f87171;
+            color: var(--red);
         }
 
         .status-dot {
@@ -410,7 +414,7 @@
         }
 
         .status-dot.ok {
-            background: #34d399;
+            background: var(--green);
         }
 
         .status-dot.warn {
@@ -418,7 +422,7 @@
         }
 
         .status-dot.crit {
-            background: #f87171;
+            background: var(--red);
         }
 
         .ep-footer {
@@ -732,9 +736,9 @@
         }
 
         .audit-badge.ok {
-            color: #34d399;
-            border-color: rgba(52, 211, 153, .25);
-            background: rgba(52, 211, 153, .05);
+            color: var(--green);
+            border-color: rgba(16, 185, 129, .25);
+            background: rgba(16, 185, 129, .05);
         }
 
         .audit-badge.warn {
@@ -805,7 +809,7 @@
         }
 
         .meter-fill.green {
-            background: #34d399;
+            background: var(--green);
         }
 
         .meter-fill.amber {
@@ -813,7 +817,7 @@
         }
 
         .meter-fill.red {
-            background: #f87171;
+            background: var(--red);
         }
 
         /* ─── 6. REGULATIONS ──────────────────────────── */
@@ -1163,8 +1167,8 @@
                 <span class="logo-mark">
                     <svg width="20" height="22" viewBox="0 0 20 22" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M10 1L1 4.8V10.2C1 15.08 4.96 19.64 10 21C15.04 19.64 19 15.08 19 10.2V4.8L10 1Z"
-                            stroke="#00C8E0" stroke-width="1.5" stroke-linejoin="round" />
-                        <path d="M6.5 10.5L9 13L14 8" stroke="#00C8E0" stroke-width="1.5" stroke-linecap="round"
+                            stroke="var(--cyan)" stroke-width="1.5" stroke-linejoin="round" />
+                        <path d="M6.5 10.5L9 13L14 8" stroke="var(--cyan)" stroke-width="1.5" stroke-linecap="round"
                             stroke-linejoin="round" />
                     </svg>
                 </span>

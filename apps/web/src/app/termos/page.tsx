@@ -28,11 +28,11 @@ export default function TermosPage() {
             <div style={contentWrap}>
                 <div style={{ display: 'grid', gridTemplateColumns: '260px 1fr', gap: '5rem', alignItems: 'start' }}>
                     <div style={{ position: 'sticky', top: '6rem' }}>
-                        <div style={{ fontFamily: MONO, fontSize: '.65rem', color: '#3A4152', textTransform: 'uppercase' as const, letterSpacing: '.1em', marginBottom: '1rem' }}>Índice</div>
+                        <div style={{ fontFamily: MONO, fontSize: '.65rem', color: '#94A3B8', textTransform: 'uppercase' as const, letterSpacing: '.1em', marginBottom: '1rem' }}>Índice</div>
                         <div style={{ display: 'flex', flexDirection: 'column' as const, gap: '.5rem' }}>
                             {SECTIONS.map(s => <a key={s.title} href="#" style={{ fontFamily: UI, fontSize: '.8125rem', color: MUTED, textDecoration: 'none' }}>{s.title}</a>)}
                         </div>
-                        <div style={{ marginTop: '2rem', paddingTop: '1.5rem', borderTop: `1px solid ${LINE}`, fontFamily: MONO, fontSize: '.65rem', color: '#3A4152' }}>
+                        <div style={{ marginTop: '2rem', paddingTop: '1.5rem', borderTop: `1px solid ${LINE}`, fontFamily: MONO, fontSize: '.65rem', color: '#94A3B8' }}>
                             Última atualização:<br />03 Mar 2026
                         </div>
                     </div>

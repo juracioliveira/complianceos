@@ -2,18 +2,20 @@ import Link from 'next/link'
 import { ShieldCheck, Lock, FileText, BarChart3, ArrowRight, CheckCircle, Server, Key, Activity } from 'lucide-react'
 
 /* ─── Design tokens ─────────────────────────────── */
-const BG = '#0A0C10'
-const SURFACE = '#111318'
-const SURFACE2 = '#16191f'
-const CYAN = '#00C8E0'
-const AMBER = '#E8941A'
-const TEXT = '#EDF0F4'
-const MUTED = '#7A8494'
-const LINE = 'rgba(255,255,255,0.08)'
-const LINE_STRONG = 'rgba(255,255,255,0.14)'
+const BG = '#FFFFFF'
+const SURFACE = '#F9FAFB'
+const SURFACE2 = '#F3F4F6'
+const CYAN = '#00A3BF'
+const AMBER = '#D97706'
+const TEXT = '#0F172A'
+const MUTED = '#475569'
+const LINE = 'rgba(0,0,0,0.06)'
+const LINE_STRONG = 'rgba(0,0,0,0.12)'
 const MONO = "'IBM Plex Mono', monospace"
 const SERIF = "'DM Serif Display', serif"
 const UI = "'IBM Plex Sans', sans-serif"
+const GREEN = '#10B981'
+const RED = '#EF4444'
 
 /* ─── Shared styles ──────────────────────────────── */
 const S = {
@@ -24,7 +26,7 @@ const S = {
     p: { color: MUTED, fontSize: '.9375rem', lineHeight: 1.75 },
     btnFill: {
         display: 'inline-flex' as const, alignItems: 'center' as const, gap: '.5rem',
-        padding: '.625rem 1.25rem', background: CYAN, color: BG,
+        padding: '.625rem 1.25rem', background: CYAN, color: '#FFFFFF',
         border: `1px solid ${CYAN}`, fontFamily: UI, fontWeight: 500,
         fontSize: '.8125rem', letterSpacing: '.04em', textTransform: 'uppercase' as const,
         textDecoration: 'none', transition: 'all .18s',
@@ -92,7 +94,7 @@ function Hero() {
                         {/* Column headers */}
                         <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', padding: '.5rem 1.25rem', borderBottom: `1px solid ${LINE}` }}>
                             {['Entidade', 'Score', 'PEP', 'Status'].map(c => (
-                                <span key={c} style={{ fontFamily: MONO, fontSize: '.65rem', color: '#3A4152', textTransform: 'uppercase', letterSpacing: '.06em' }}>{c}</span>
+                                <span key={c} style={{ fontFamily: MONO, fontSize: '.65rem', color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '.06em' }}>{c}</span>
                             ))}
                         </div>
                         {/* Rows */}
@@ -107,13 +109,13 @@ function Hero() {
                                     <div style={{ fontSize: '.8125rem', color: TEXT }}>{row.name}</div>
                                     <div style={{ fontFamily: MONO, fontSize: '.65rem', color: MUTED }}>{row.cnpj}</div>
                                 </div>
-                                <span style={{ fontFamily: MONO, fontSize: '.75rem', fontWeight: 500, color: row.score >= 80 ? '#34d399' : row.score >= 50 ? AMBER : '#f87171' }}>{row.score}</span>
-                                <span style={{ fontFamily: MONO, fontSize: '.7rem', color: row.pep ? AMBER : '#3A4152' }}>{row.pep ? 'PEP' : 'Não'}</span>
-                                <span style={{ width: 8, height: 8, borderRadius: '50%', background: row.status === 'ok' ? '#34d399' : row.status === 'warn' ? AMBER : '#f87171', display: 'inline-block' }} />
+                                <span style={{ fontFamily: MONO, fontSize: '.75rem', fontWeight: 500, color: row.score >= 80 ? GREEN : row.score >= 50 ? AMBER : RED }}>{row.score}</span>
+                                <span style={{ fontFamily: MONO, fontSize: '.7rem', color: row.pep ? AMBER : '#94A3B8' }}>{row.pep ? 'PEP' : 'Não'}</span>
+                                <span style={{ width: 8, height: 8, borderRadius: '50%', background: row.status === 'ok' ? GREEN : row.status === 'warn' ? AMBER : RED, display: 'inline-block' }} />
                             </div>
                         ))}
                         <div style={{ padding: '.75rem 1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <span style={{ fontFamily: MONO, fontSize: '.65rem', color: '#3A4152' }}>847 entidades · 3 alertas ativos</span>
+                            <span style={{ fontFamily: MONO, fontSize: '.65rem', color: '#94A3B8' }}>847 entidades · 3 alertas ativos</span>
                             <Link href="/dashboard" style={{ fontFamily: MONO, fontSize: '.65rem', color: CYAN, textDecoration: 'none' }}>Ver todas →</Link>
                         </div>
                     </div>
@@ -183,13 +185,13 @@ function Solutions() {
                     {cards.map((c, i) => (
                         <div key={c.num} style={{ padding: '2.5rem', borderRight: i < 2 ? `1px solid ${LINE}` : undefined }}>
                             <div style={{ height: 1, background: LINE, marginBottom: '2rem', transition: 'background .2s' }} />
-                            <span style={{ fontFamily: MONO, fontSize: '.65rem', color: '#3A4152', letterSpacing: '.08em', marginBottom: '1.5rem', display: 'block' }}>{c.num}</span>
+                            <span style={{ fontFamily: MONO, fontSize: '.65rem', color: '#94A3B8', letterSpacing: '.08em', marginBottom: '1.5rem', display: 'block' }}>{c.num}</span>
                             <IconBox icon={c.icon} color={c.color} />
                             <div style={{ fontFamily: UI, fontWeight: 600, fontSize: '1.0625rem', color: TEXT, marginBottom: '.875rem' }}>{c.title}</div>
                             <p style={{ ...S.p, fontSize: '.9rem', marginBottom: '1.75rem' }}>{c.desc}</p>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '.375rem' }}>
                                 {c.tags.map(t => (
-                                    <span key={t} style={{ fontFamily: MONO, fontSize: '.7rem', color: '#3A4152', paddingLeft: '.875rem', position: 'relative' }}>
+                                    <span key={t} style={{ fontFamily: MONO, fontSize: '.7rem', color: '#94A3B8', paddingLeft: '.875rem', position: 'relative' }}>
                                         <span style={{ position: 'absolute', left: 0 }}>—</span>{t}
                                     </span>
                                 ))}
@@ -268,7 +270,7 @@ function Pricing() {
                                 {p.tier}{p.featured && <span style={{ color: CYAN, marginLeft: '.75rem' }}>▲ Popular</span>}
                             </div>
                             <div style={{ fontFamily: SERIF, fontSize: p.price === 'Sob consulta' ? '1.75rem' : '2.5rem', color: TEXT, lineHeight: 1, marginBottom: '.25rem' }}>{p.price}</div>
-                            <div style={{ fontFamily: MONO, fontSize: '.7rem', color: '#3A4152', marginBottom: '1.5rem' }}>{p.period || '\u00a0'}</div>
+                            <div style={{ fontFamily: MONO, fontSize: '.7rem', color: '#94A3B8', marginBottom: '1.5rem' }}>{p.period || '\u00a0'}</div>
                             <div style={{ height: 1, background: LINE, marginBottom: '1.5rem' }} />
                             <p style={{ ...S.p, fontSize: '.875rem', marginBottom: '2rem', lineHeight: 1.6 }}>{p.desc}</p>
                             <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '.625rem', marginBottom: '2.5rem' }}>
@@ -290,7 +292,7 @@ function Pricing() {
                         </div>
                     ))}
                 </div>
-                <p style={{ textAlign: 'center', fontSize: '.8125rem', color: '#3A4152', marginTop: '2rem' }}>
+                <p style={{ textAlign: 'center', fontSize: '.8125rem', color: '#94A3B8', marginTop: '2rem' }}>
                     Preços em BRL · Cancelamento a qualquer momento · Sem taxa de setup
                 </p>
             </div>
@@ -322,7 +324,7 @@ function QuoteCTA() {
                         <Link href="/dashboard" style={{ ...S.btnFill, width: '100%', justifyContent: 'center' }}>
                             Agendar Demonstração Gratuita →
                         </Link>
-                        <p style={{ marginTop: '1rem', fontSize: '.75rem', color: '#3A4152', textAlign: 'center' }}>
+                        <p style={{ marginTop: '1rem', fontSize: '.75rem', color: '#94A3B8', textAlign: 'center' }}>
                             Sem compromisso. Resposta em até 24h úteis.
                         </p>
                     </div>
@@ -351,7 +353,7 @@ function Footer() {
                         { label: 'Legal', links: ['Privacidade', 'Termos de Uso', 'Cookies', 'Contato'] },
                     ].map(g => (
                         <div key={g.label}>
-                            <span style={{ fontFamily: MONO, fontSize: '.65rem', textTransform: 'uppercase', letterSpacing: '.1em', color: '#3A4152', display: 'block', marginBottom: '.75rem' }}>{g.label}</span>
+                            <span style={{ fontFamily: MONO, fontSize: '.65rem', textTransform: 'uppercase', letterSpacing: '.1em', color: '#94A3B8', display: 'block', marginBottom: '.75rem' }}>{g.label}</span>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '.5rem' }}>
                                 {g.links.map(l => <Link key={l} href="/dashboard" style={{ fontSize: '.8125rem', color: MUTED, textDecoration: 'none' }}>{l}</Link>)}
                             </div>
@@ -359,10 +361,10 @@ function Footer() {
                     ))}
                 </div>
                 <div style={{ marginTop: '3rem', paddingTop: '1.5rem', borderTop: `1px solid ${LINE}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-                    <span style={{ fontSize: '.75rem', color: '#3A4152' }}>© 2026 Chuangxin Tecnologia da Informação Ltda.</span>
+                    <span style={{ fontSize: '.75rem', color: '#94A3B8' }}>© 2026 Chuangxin Tecnologia da Informação Ltda.</span>
                     <div style={{ display: 'flex', gap: '.75rem' }}>
                         {['LGPD', 'ISO 27001 Ready', 'AWS Partner', 'SOC 2'].map(b => (
-                            <span key={b} style={{ fontFamily: MONO, fontSize: '.65rem', color: '#3A4152', border: `1px solid ${LINE}`, padding: '.25rem .625rem' }}>{b}</span>
+                            <span key={b} style={{ fontFamily: MONO, fontSize: '.65rem', color: '#94A3B8', border: `1px solid ${LINE}`, padding: '.25rem .625rem' }}>{b}</span>
                         ))}
                     </div>
                 </div>
@@ -382,7 +384,7 @@ export default function LandingPage() {
       `}</style>
 
             {/* Navbar */}
-            <nav style={{ position: 'fixed', top: 0, width: '100%', zIndex: 100, borderBottom: `1px solid ${LINE}`, background: `rgba(10,12,16,.92)`, backdropFilter: 'blur(16px)' }}>
+            <nav style={{ position: 'fixed', top: 0, width: '100%', zIndex: 100, borderBottom: `1px solid ${LINE}`, background: `rgba(255,255,255,.92)`, backdropFilter: 'blur(16px)' }}>
                 <div style={{ ...S.wrap, height: 60, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '.625rem', fontSize: '1rem', fontWeight: 600, letterSpacing: '-.02em', color: TEXT, textDecoration: 'none' }}>
                         <ShieldCheck size={20} stroke={CYAN} strokeWidth={1.5} />

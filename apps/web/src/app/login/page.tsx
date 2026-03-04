@@ -71,16 +71,16 @@ export default function LoginPage() {
     return (
         <div className="min-h-screen grid lg:grid-cols-2">
             {/* Painel esquerdo — branding */}
-            <div className="hidden lg:flex flex-col justify-between p-12 bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 relative overflow-hidden">
+            <div className="hidden lg:flex flex-col justify-between p-12 bg-slate-50 relative overflow-hidden border-right border-slate-200">
                 {/* Padrão de fundo decorativo */}
                 <div className="absolute inset-0 pointer-events-none">
-                    <div className="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] bg-blue-500/10 rounded-full blur-3xl" />
-                    <div className="absolute bottom-[-10%] right-[-10%] w-[400px] h-[400px] bg-indigo-500/10 rounded-full blur-3xl" />
+                    <div className="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] bg-blue-100/50 rounded-full blur-3xl" />
+                    <div className="absolute bottom-[-10%] right-[-10%] w-[400px] h-[400px] bg-indigo-100/50 rounded-full blur-3xl" />
                     {/* Grid sutil */}
                     <div
-                        className="absolute inset-0 opacity-[0.03]"
+                        className="absolute inset-0 opacity-[0.05]"
                         style={{
-                            backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)',
+                            backgroundImage: 'linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)',
                             backgroundSize: '60px 60px',
                         }}
                     />
@@ -88,23 +88,23 @@ export default function LoginPage() {
 
                 {/* Logo */}
                 <div className="relative flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-blue-500/20 border border-blue-400/30 flex items-center justify-center">
-                        <ShieldCheck className="w-5 h-5 text-blue-400" />
+                    <div className="w-10 h-10 rounded-xl bg-blue-100 border border-blue-200 flex items-center justify-center">
+                        <ShieldCheck className="w-5 h-5 text-blue-600" />
                     </div>
                     <div>
-                        <p className="font-bold text-white text-lg leading-tight">ComplianceOS</p>
-                        <p className="text-blue-300/70 text-xs">Chuangxin Tecnologia</p>
+                        <p className="font-bold text-slate-900 text-lg leading-tight">ComplianceOS</p>
+                        <p className="text-blue-600/70 text-xs">Chuangxin Tecnologia</p>
                     </div>
                 </div>
 
                 {/* Headline */}
                 <div className="relative space-y-6">
                     <div>
-                        <h1 className="text-4xl font-bold text-white leading-tight text-balance">
+                        <h1 className="text-4xl font-bold text-slate-900 leading-tight text-balance">
                             Compliance e Governança<br />
-                            <span className="text-blue-400">numa plataforma única</span>
+                            <span className="text-blue-600">numa plataforma única</span>
                         </h1>
-                        <p className="mt-4 text-slate-400 text-base leading-relaxed max-w-md">
+                        <p className="mt-4 text-slate-600 text-base leading-relaxed max-w-md">
                             Gerencie PLD/FT, LGPD e Anticorrupção com rastreabilidade total,
                             auditoria imutável e relatórios regulatórios automáticos.
                         </p>
@@ -118,16 +118,16 @@ export default function LoginPage() {
                             { label: 'KYC/KYB Automatizado', desc: 'Due diligence completa' },
                             { label: 'Documentos PDF', desc: 'RAT, DPIA, Relatórios' },
                         ].map((f) => (
-                            <div key={f.label} className="rounded-xl border border-white/8 bg-white/4 p-3.5">
-                                <p className="text-white text-xs font-semibold">{f.label}</p>
-                                <p className="text-slate-400 text-[11px] mt-0.5">{f.desc}</p>
+                            <div key={f.label} className="rounded-xl border border-slate-200 bg-white p-3.5 shadow-sm">
+                                <p className="text-slate-900 text-xs font-semibold">{f.label}</p>
+                                <p className="text-slate-500 text-[11px] mt-0.5">{f.desc}</p>
                             </div>
                         ))}
                     </div>
                 </div>
 
                 {/* Rodapé */}
-                <p className="relative text-slate-600 text-xs">
+                <p className="relative text-slate-400 text-xs">
                     © 2026 Grupo Guinle · Chuangxin Tecnologia · Uso corporativo
                 </p>
             </div>
@@ -213,9 +213,9 @@ export default function LoginPage() {
                             </>
                         ) : (
                             <div className="space-y-1.5">
-                                <div className="flex items-center gap-2 mb-4 p-3.5 rounded-xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900">
-                                    <Smartphone className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" />
-                                    <p className="text-sm text-blue-800 dark:text-blue-300">
+                                <div className="flex items-center gap-2 mb-4 p-3.5 rounded-xl bg-blue-50 border border-blue-200">
+                                    <Smartphone className="w-4 h-4 text-blue-600 shrink-0" />
+                                    <p className="text-sm text-blue-800">
                                         Abra seu app autenticador (Google Authenticator, Authy) e insira o código de 6 dígitos.
                                     </p>
                                 </div>

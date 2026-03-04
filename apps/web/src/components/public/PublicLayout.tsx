@@ -1,12 +1,12 @@
 import Link from 'next/link'
 import { ShieldCheck } from 'lucide-react'
 
-const CYAN = '#00C8E0'
-const BG = '#0A0C10'
-const SURFACE = '#111318'
-const LINE = 'rgba(255,255,255,0.08)'
-const TEXT = '#EDF0F4'
-const MUTED = '#7A8494'
+const CYAN = '#00A3BF'
+const BG = '#FFFFFF'
+const SURFACE = '#F9FAFB'
+const LINE = 'rgba(0,0,0,0.06)'
+const TEXT = '#0F172A'
+const MUTED = '#475569'
 const UI = "'IBM Plex Sans', sans-serif"
 const MONO = "'IBM Plex Mono', monospace"
 
@@ -15,7 +15,7 @@ export function PublicNav() {
         <nav style={{
             position: 'fixed', top: 0, width: '100%', zIndex: 100,
             borderBottom: `1px solid ${LINE}`,
-            background: 'rgba(10,12,16,0.95)',
+            background: 'rgba(255,255,255,0.92)',
             backdropFilter: 'blur(16px)',
         }}>
             <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 3rem', height: 60, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -30,7 +30,7 @@ export function PublicNav() {
                 </div>
                 <div style={{ display: 'flex', gap: '.75rem' }}>
                     <Link href="/login" style={{ display: 'inline-flex', alignItems: 'center', padding: '.6rem 1.2rem', background: 'transparent', color: TEXT, border: `1px solid ${LINE}`, fontFamily: UI, fontWeight: 500, fontSize: '.8125rem', letterSpacing: '.04em', textTransform: 'uppercase' as const, textDecoration: 'none' }}>Entrar</Link>
-                    <Link href="/dashboard" style={{ display: 'inline-flex', alignItems: 'center', padding: '.6rem 1.2rem', background: CYAN, color: BG, border: `1px solid ${CYAN}`, fontFamily: UI, fontWeight: 500, fontSize: '.8125rem', letterSpacing: '.04em', textTransform: 'uppercase' as const, textDecoration: 'none' }}>Acessar →</Link>
+                    <Link href="/dashboard" style={{ display: 'inline-flex', alignItems: 'center', padding: '.6rem 1.2rem', background: CYAN, color: '#FFFFFF', border: `1px solid ${CYAN}`, fontFamily: UI, fontWeight: 500, fontSize: '.8125rem', letterSpacing: '.04em', textTransform: 'uppercase' as const, textDecoration: 'none' }}>Acessar →</Link>
                 </div>
             </div>
         </nav>
@@ -53,7 +53,7 @@ export function PublicFooter() {
                         <Link key={l} href={h} style={{ fontFamily: UI, fontSize: '.8125rem', color: MUTED, textDecoration: 'none' }}>{l}</Link>
                     ))}
                 </div>
-                <span style={{ fontFamily: MONO, fontSize: '.7rem', color: '#3A4152' }}>© 2026 Chuangxin Tecnologia</span>
+                <span style={{ fontFamily: MONO, fontSize: '.7rem', color: '#94A3B8' }}>© 2026 Chuangxin Tecnologia</span>
             </div>
         </footer>
     )
@@ -87,8 +87,8 @@ export const contentWrap = {
     maxWidth: 1200, margin: '0 auto', padding: '5rem 3rem',
 }
 
-export const SURFACE2 = '#16191f'
-export const LINE_STRONG = 'rgba(255,255,255,0.14)'
+export const SURFACE2 = '#F3F4F6'
+export const LINE_STRONG = 'rgba(0,0,0,0.12)'
 export const SERIF = "'DM Serif Display', serif"
 
 export { CYAN, BG, SURFACE, LINE, TEXT, MUTED, UI, MONO }

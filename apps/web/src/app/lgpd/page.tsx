@@ -42,7 +42,7 @@ export default function LgpdPage() {
                     </h2>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: '1px', background: LINE }}>
                         {MODULES.map(m => (
-                            <div key={m.title} style={{ background: '#0A0C10', padding: '2rem' }}>
+                            <div key={m.title} style={{ background: SURFACE, padding: '2rem' }}>
                                 <div style={{ fontFamily: UI, fontWeight: 600, fontSize: '.9rem', color: CYAN, marginBottom: '.625rem' }}>{m.title}</div>
                                 <div style={{ fontFamily: UI, fontSize: '.875rem', color: MUTED, lineHeight: 1.7 }}>{m.desc}</div>
                             </div>
@@ -56,7 +56,7 @@ export default function LgpdPage() {
                     </h2>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '1px', background: LINE }}>
                         {RIGHTS.map(r => (
-                            <div key={r.code} style={{ background: '#0A0C10', padding: '1.5rem' }}>
+                            <div key={r.code} style={{ background: SURFACE, padding: '1.5rem' }}>
                                 <div style={{ fontFamily: MONO, fontSize: '.65rem', color: '#3A4152', marginBottom: '.25rem' }}>{r.code}</div>
                                 <div style={{ fontFamily: UI, fontWeight: 600, fontSize: '.875rem', color: TEXT, marginBottom: '.5rem' }}>{r.right}</div>
                                 <div style={{ fontFamily: UI, fontSize: '.8125rem', color: MUTED, lineHeight: 1.6 }}>{r.desc}</div>
@@ -70,7 +70,7 @@ export default function LgpdPage() {
                         <div style={{ fontFamily: UI, fontWeight: 600, fontSize: '1rem', color: TEXT, marginBottom: '.375rem' }}>Precisa do Data Processing Agreement?</div>
                         <p style={{ fontFamily: UI, fontSize: '.875rem', color: MUTED }}>O DPA do ComplianceOS está disponível para todos os planos. Acesse pelo dashboard ou solicite via e-mail.</p>
                     </div>
-                    <Link href="/dashboard" style={{ display: 'inline-flex', padding: '.625rem 1.25rem', background: CYAN, color: '#0A0C10', fontFamily: UI, fontWeight: 500, fontSize: '.8125rem', letterSpacing: '.04em', textTransform: 'uppercase' as const, textDecoration: 'none' }}>
+                    <Link href="/dashboard" style={{ display: 'inline-flex', padding: '.625rem 1.25rem', background: CYAN, color: '#FFFFFF', fontFamily: UI, fontWeight: 500, fontSize: '.8125rem', letterSpacing: '.04em', textTransform: 'uppercase' as const, textDecoration: 'none' }}>
                         Acessar DPA →
                     </Link>
                 </div>

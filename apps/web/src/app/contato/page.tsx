@@ -104,7 +104,7 @@ export default function ContatoPage() {
                                     Li e aceito a <Link href="/privacidade" style={{ color: CYAN }}>Política de Privacidade</Link> e concordo com o tratamento dos meus dados para retorno do contato.
                                 </label>
                             </div>
-                            <button type="submit" style={{ padding: '.75rem 1.5rem', background: CYAN, color: '#0A0C10', border: 'none', fontFamily: UI, fontWeight: 600, fontSize: '.875rem', letterSpacing: '.04em', textTransform: 'uppercase' as const, cursor: 'pointer', alignSelf: 'flex-start' as const }}>
+                            <button type="submit" style={{ padding: '.75rem 1.5rem', background: CYAN, color: '#FFFFFF', border: 'none', fontFamily: UI, fontWeight: 600, fontSize: '.875rem', letterSpacing: '.04em', textTransform: 'uppercase' as const, cursor: 'pointer', alignSelf: 'flex-start' as const }}>
                                 Enviar mensagem →
                             </button>
                         </form>

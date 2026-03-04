@@ -17,14 +17,14 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 <MobileWall>
                     <div
                         className="flex h-screen overflow-hidden relative"
-                        style={{ background: '#0A0C10', color: '#F0F2F5', fontFamily: "'IBM Plex Sans', sans-serif" }}
+                        style={{ background: '#FFFFFF', color: '#0F172A', fontFamily: "'IBM Plex Sans', sans-serif" }}
                     >
                         {/* Grid background — mirrors hero section in landing */}
                         <div
                             className="absolute inset-0 pointer-events-none"
                             style={{
                                 backgroundImage:
-                                    'linear-gradient(45deg, rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(-45deg, rgba(255,255,255,0.04) 1px, transparent 1px)',
+                                    'linear-gradient(45deg, rgba(0,0,0,0.03) 1px, transparent 1px), linear-gradient(-45deg, rgba(0,0,0,0.03) 1px, transparent 1px)',
                                 backgroundSize: '60px 60px',
                             }}
                         />
@@ -34,7 +34,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                             style={{
                                 top: '-40%', right: '-15%',
                                 width: '60vw', height: '60vw',
-                                background: 'radial-gradient(circle, rgba(0,229,255,0.07) 0%, transparent 60%)',
+                                background: 'radial-gradient(circle, rgba(0,163,191,0.05) 0%, transparent 60%)',
                                 borderRadius: '50%',
                                 filter: 'blur(80px)',
                             }}

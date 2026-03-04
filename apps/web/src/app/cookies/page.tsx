@@ -43,7 +43,7 @@ export default function CookiesPage() {
                     <div key={cat.type} style={{ marginBottom: '3rem' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '.875rem', marginBottom: '1.25rem' }}>
                             <h2 style={{ fontFamily: UI, fontWeight: 600, fontSize: '1rem', color: TEXT }}>{cat.type}</h2>
-                            <span style={{ fontFamily: MONO, fontSize: '.65rem', padding: '.2rem .5rem', border: `1px solid ${cat.required ? 'rgba(0,200,224,.3)' : LINE}`, color: cat.required ? CYAN : MUTED }}>
+                            <span style={{ fontFamily: MONO, fontSize: '.65rem', padding: '.2rem .5rem', border: `1px solid ${cat.required ? 'rgba(0,163,191,.3)' : LINE}`, color: cat.required ? CYAN : MUTED }}>
                                 {cat.required ? 'Sempre Ativo' : 'Opcional'}
                             </span>
                         </div>
@@ -51,7 +51,7 @@ export default function CookiesPage() {
                         <div style={{ border: `1px solid ${LINE}`, overflow: 'hidden' }}>
                             <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 2fr 1fr 1fr', padding: '.5rem 1rem', background: SURFACE, borderBottom: `1px solid ${LINE}` }}>
                                 {['Cookie', 'Finalidade', 'Duração', 'Parte'].map(h => (
-                                    <span key={h} style={{ fontFamily: MONO, fontSize: '.65rem', color: '#3A4152', textTransform: 'uppercase' as const, letterSpacing: '.06em' }}>{h}</span>
+                                    <span key={h} style={{ fontFamily: MONO, fontSize: '.65rem', color: '#94A3B8', textTransform: 'uppercase' as const, letterSpacing: '.06em' }}>{h}</span>
                                 ))}
                             </div>
                             {cat.cookies.map((c, i) => (

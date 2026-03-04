@@ -61,7 +61,7 @@ export default function SegurancaPage() {
                         <h2 style={{ fontFamily: UI, fontWeight: 600, fontSize: '1rem', color: TEXT, marginBottom: '1.5rem', paddingBottom: '.875rem', borderBottom: `1px solid ${LINE}` }}>{c.category}</h2>
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: '1px', background: LINE }}>
                             {c.items.map(item => (
-                                <div key={item.title} style={{ background: '#0A0C10', padding: '1.5rem 2rem' }}>
+                                <div key={item.title} style={{ background: SURFACE, padding: '1.5rem 2rem' }}>
                                     <div style={{ fontFamily: MONO, fontSize: '.75rem', color: CYAN, marginBottom: '.5rem' }}>{item.title}</div>
                                     <div style={{ fontFamily: UI, fontSize: '.875rem', color: MUTED, lineHeight: 1.65 }}>{item.desc}</div>
                                 </div>

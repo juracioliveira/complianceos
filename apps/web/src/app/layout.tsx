@@ -17,8 +17,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     return (
         <html
             lang="pt-BR"
-            className={`${inter.variable} ${dmSerif.variable} ${ibmPlex.variable} ${jetbrainsMono.variable} dark`}
-            style={{ colorScheme: 'dark' }}
+            className={`${inter.variable} ${dmSerif.variable} ${ibmPlex.variable} ${jetbrainsMono.variable}`}
             suppressHydrationWarning
         >
             <body className="bg-background text-foreground animate-fade-in">{children}</body>

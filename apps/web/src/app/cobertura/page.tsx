@@ -65,7 +65,7 @@ export default function CoberturaPage() {
                         </div>
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(380px,1fr))', gap: '1px', background: LINE }}>
                             {f.items.map(item => (
-                                <div key={item.code} style={{ background: '#0A0C10', padding: '1.5rem 2rem' }}>
+                                <div key={item.code} style={{ background: SURFACE, padding: '1.5rem 2rem' }}>
                                     <div style={{ fontFamily: MONO, fontSize: '.8rem', color: CYAN, marginBottom: '.5rem' }}>{item.code}</div>
                                     <div style={{ fontFamily: UI, fontSize: '.875rem', color: MUTED, lineHeight: 1.65 }}>{item.desc}</div>
                                 </div>

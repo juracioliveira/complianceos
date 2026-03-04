@@ -66,7 +66,7 @@ export default function DocsPage() {
                             </div>
                             <div style={{ display: 'flex', flexDirection: 'column' as const, gap: '1px', background: LINE }}>
                                 {s.links.map(l => (
-                                    <div key={l.label} style={{ background: '#0A0C10', padding: '1rem 1.25rem' }}>
+                                    <div key={l.label} style={{ background: SURFACE, padding: '1rem 1.25rem' }}>
                                         <div style={{ fontFamily: UI, fontWeight: 500, fontSize: '.875rem', color: CYAN, marginBottom: '.25rem', display: 'flex', alignItems: 'center', gap: '.5rem' }}>
                                             {l.label} <span style={{ color: MUTED, fontSize: '.75rem' }}>→</span>
                                         </div>
@@ -83,7 +83,7 @@ export default function DocsPage() {
                         <div style={{ fontFamily: UI, fontWeight: 600, fontSize: '1rem', color: TEXT, marginBottom: '.375rem' }}>Precisa de ajuda personalizada?</div>
                         <p style={{ fontFamily: UI, fontSize: '.875rem', color: MUTED }}>Nossa equipe de soluções está disponível para integrações complexas e customizações.</p>
                     </div>
-                    <Link href="/contato" style={{ display: 'inline-flex', alignItems: 'center' as const, padding: '.625rem 1.25rem', background: CYAN, color: '#0A0C10', fontFamily: UI, fontWeight: 500, fontSize: '.8125rem', letterSpacing: '.04em', textTransform: 'uppercase' as const, textDecoration: 'none' }}>
+                    <Link href="/contato" style={{ display: 'inline-flex', alignItems: 'center' as const, padding: '.625rem 1.25rem', background: CYAN, color: '#FFFFFF', fontFamily: UI, fontWeight: 500, fontSize: '.8125rem', letterSpacing: '.04em', textTransform: 'uppercase' as const, textDecoration: 'none' }}>
                         Falar com especialista →
                     </Link>
                 </div>
