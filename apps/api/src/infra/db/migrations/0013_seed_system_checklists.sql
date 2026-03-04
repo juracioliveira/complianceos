@@ -14,21 +14,19 @@ INSERT INTO checklists (
   'LEI_9613_98_CDD',
   'Due Diligence PLD/FT — Cliente Padrão (CDD)',
   'Checklist de conformidade com o Art. 10 da Lei 9.613/98 e Resolução BACEN 4.753/2019. Aplicável a clientes pessoa jurídica de risco médio.',
-  '1.0',
+  '1.1',
   'ACTIVE',
   365,
   ARRAY['CLIENTE', 'PARCEIRO']::VARCHAR[],
   '[
-    {"id":"pld_001","order":1,"question":"A empresa possui política PLD/FT documentada e aprovada pelo Conselho de Administração ou Diretoria?","weight":15,"category":"POLITICAS","regulationRef":"Art. 9, Lei 9.613/98","answerType":"BOOLEAN","options":null,"evidenceRequired":true,"helpText":"Considere aprovada apenas política formalizada com assinatura digital ou ata de reunião."},
-    {"id":"pld_002","order":2,"question":"Existe programa de treinamento periódico (mínimo anual) em PLD/FT para todos os colaboradores?","weight":10,"category":"TREINAMENTO","regulationRef":"Art. 9, §1, Lei 9.613/98","answerType":"BOOLEAN","options":null,"evidenceRequired":true,"helpText":"Documentar lista de presença ou certificado de conclusão."},
-    {"id":"pld_003","order":3,"question":"A empresa possui processo formal de identificação e verificação de clientes (KYC)?","weight":15,"category":"KYC","regulationRef":"Art. 10, Lei 9.613/98","answerType":"BOOLEAN","options":null,"evidenceRequired":false,"helpText":"Verificar procedimento documentado com etapas de coleta e validação de documentos."},
-    {"id":"pld_004","order":4,"question":"Existe processo de avaliação de pessoas expostas politicamente (PEP) entre sócios e beneficiários finais?","weight":10,"category":"PEP","regulationRef":"Res. BACEN 4.753/2019 Art. 5","answerType":"BOOLEAN","options":null,"evidenceRequired":false,"helpText":""},
-    {"id":"pld_005","order":5,"question":"A empresa realiza monitoramento contínuo de transações para detecção de operações suspeitas?","weight":15,"category":"MONITORAMENTO","regulationRef":"Art. 11, Lei 9.613/98","answerType":"BOOLEAN","options":null,"evidenceRequired":false,"helpText":"Sistemas automatizados ou processos manuais documentados são aceitos."},
-    {"id":"pld_006","order":6,"question":"Qual o nível de implementação do monitoramento de transações?","weight":10,"category":"MONITORAMENTO","regulationRef":"Art. 11, Lei 9.613/98","answerType":"SCALE","options":null,"evidenceRequired":false,"helpText":"0 = não implementado; 100 = totalmente automatizado com alertas em tempo real."},
-    {"id":"pld_007","order":7,"question":"A empresa possui canal de comunicação de operações suspeitas ao COAF (ou ao obrigado legal)?","weight":15,"category":"COMUNICACAO","regulationRef":"Art. 11, §1, Lei 9.613/98","answerType":"BOOLEAN","options":null,"evidenceRequired":false,"helpText":""},
-    {"id":"pld_008","order":8,"question":"Existem controles para evitar relacionamento com Empresas Fictícias (shell companies) e lavagem via terceiros?","weight":10,"category":"CONTROLES","regulationRef":"Res. BACEN 4.753/2019 Art. 12","answerType":"BOOLEAN","options":null,"evidenceRequired":false,"helpText":""},
-    {"id":"pld_009","order":9,"question":"A empresa realiza screening periódico em listas de sanções (OFAC, ONU, Receita Federal — CNPJ irregular)?","weight":10,"category":"SANCOES","regulationRef":"Res. BACEN 4.753/2019 Art. 15","answerType":"BOOLEAN","options":null,"evidenceRequired":false,"helpText":"Screening mínimo semestral; mensal para clientes de alto risco."},
-    {"id":"pld_010","order":10,"question":"Com que frequência os registros de KYC dos clientes são revisados e atualizados?","weight":5,"category":"KYC","regulationRef":"Art. 10, §4, Lei 9.613/98","answerType":"MULTIPLE_CHOICE","options":["Nunca ou raramente","Apenas no onboarding","Anualmente","Semestralmente","Trimestralmente ou mais frequente"],"evidenceRequired":false,"helpText":""}
+    {"id":"pld_cdd_001","order":1,"question":"A empresa possui política PLD/FT documentada e aprovada pela Alta Direção?","weight":15,"category":"GOVERNANCA","regulationRef":"Art. 9, Lei 9.613/98","answerType":"BOOLEAN","options":null,"evidenceRequired":true,"helpText":"Verifique assinatura digital ou ata de aprovação."},
+    {"id":"pld_cdd_002","order":2,"question":"Existe nomeação formal de um Diretor Responsável (CCO) perante os órgãos reguladores?","weight":10,"category":"GOVERNANCA","regulationRef":"Res. BACEN 4.753/2019 Art. 4","answerType":"BOOLEAN","options":null,"evidenceRequired":true,"helpText":""},
+    {"id":"pld_cdd_003","order":3,"question":"O processo de identificação de clientes (KYC) inclui a coleta de documentos de constituição e identificação de sócios?","weight":15,"category":"KYC","regulationRef":"Art. 10, I, Lei 9.613/98","answerType":"BOOLEAN","options":null,"evidenceRequired":true,"helpText":""},
+    {"id":"pld_cdd_004","order":4,"question":"A identificação do Beneficiário Final (UBO) é realizada para participações superiores a 25%?","weight":15,"category":"KYC","regulationRef":"Circular BACEN 3.978/2020","answerType":"BOOLEAN","options":null,"evidenceRequired":true,"helpText":""},
+    {"id":"pld_cdd_005","order":5,"question":"É realizado screening automatizado em listas de sanções (OFAC, ONU, etc) no momento do cadastro?","weight":15,"category":"SANCOES","regulationRef":"Lei 13.810/2019","answerType":"BOOLEAN","options":null,"evidenceRequired":false,"helpText":""},
+    {"id":"pld_cdd_006","order":6,"question":"Existe verificação de Pessoas Expostas Politicamente (PEP) no onboarding?","weight":15,"category":"PEP","regulationRef":"Res. COAF 40/2021","answerType":"BOOLEAN","options":null,"evidenceRequired":false,"helpText":""},
+    {"id":"pld_cdd_007","order":7,"question":"Qual o nível de automação do monitoramento de transações atípicas?","weight":10,"category":"MONITORAMENTO","regulationRef":"Art. 11, Lei 9.613/98","answerType":"SCALE","options":null,"evidenceRequired":false,"helpText":"0 = Manual; 100 = Totalmente Automatizado."},
+    {"id":"pld_cdd_008","order":8,"question":"A empresa possui canal de reporte ao COAF via SISCOAF ativo?","weight":5,"category":"COMUNICACAO","regulationRef":"Art. 11, Lei 9.613/98","answerType":"BOOLEAN","options":null,"evidenceRequired":true,"helpText":""}
   ]'::JSONB
 );
 
@@ -44,16 +42,16 @@ INSERT INTO checklists (
   'LEI_9613_98_EDD',
   'Due Diligence Reforçada PLD/FT (EDD) — Alto Risco',
   'Checklist aprofundado para clientes e parceiros classificados como Alto Risco ou Crítico. Requerimentos da Resolução BACEN 4.753/2019 para EDD.',
-  '1.0',
+  '1.1',
   'ACTIVE',
   180,
   ARRAY['CLIENTE', 'PARCEIRO', 'FORNECEDOR']::VARCHAR[],
   '[
-    {"id":"edd_001","order":1,"question":"A empresa possui beneficiário final identificado e documentado (ownership ≥25%)?","weight":20,"category":"BENEFICIARIO_FINAL","regulationRef":"Res. BACEN 4.753/2019 Art. 7","answerType":"BOOLEAN","options":null,"evidenceRequired":true,"helpText":"Identificar cadeia de controle até pessoa física final."},
-    {"id":"edd_002","order":2,"question":"Fonte de renda e origem dos recursos do beneficiário final está verificada e documentada?","weight":20,"category":"ORIGEM_RECURSOS","regulationRef":"Res. BACEN 4.753/2019 Art. 8","answerType":"BOOLEAN","options":null,"evidenceRequired":true,"helpText":""},
-    {"id":"edd_003","order":3,"question":"A empresa está ativa na Receita Federal (situação cadastral regular)?","weight":15,"category":"KYB","regulationRef":"Art. 10, Lei 9.613/98","answerType":"BOOLEAN","options":null,"evidenceRequired":true,"helpText":"Consultar sitfiscal.rfb.gov.br ou API da Receita Federal."},
-    {"id":"edd_004","order":4,"question":"A empresa ou seus sócios figuram em alguma lista de sanções ou processos criminais relevantes?","weight":25,"category":"SANCOES","regulationRef":"Res. BACEN 4.753/2019 Art. 15","answerType":"BOOLEAN","options":null,"evidenceRequired":true,"helpText":"Verificar OFAC SDN, Lista da ONU, Lista COAF e pesquisa jurisprudencial."},
-    {"id":"edd_005","order":5,"question":"Existe justificativa econômica plausível para o volume de operações declarado?","weight":20,"category":"MONITORAMENTO","regulationRef":"Art. 11, Lei 9.613/98","answerType":"BOOLEAN","options":null,"evidenceRequired":false,"helpText":""}
+    {"id":"pld_edd_001","order":1,"question":"A origem dos recursos e a fonte da riqueza do cliente foram devidamente comprovadas?","weight":25,"category":"ORIGEM_RECURSOS","regulationRef":"Res. BACEN 4.753/2019 Art. 8","answerType":"BOOLEAN","options":null,"evidenceRequired":true,"helpText":"Exigir IR, Extratos ou documentos de venda de ativos."},
+    {"id":"pld_edd_002","order":2,"question":"Foi obtida aprovação prévia da Alta Direção para o início ou manutenção do relacionamento?","weight":20,"category":"GOVERNANCA","regulationRef":"Res. BACEN 4.753/2019 Art. 14","answerType":"BOOLEAN","options":null,"evidenceRequired":true,"helpText":"Ata de comitê ou assinatura de Diretor estatutário."},
+    {"id":"pld_edd_003","order":3,"question":"Foi realizada visita in loco ou entrevista por videoconferência gravada com os administradores?","weight":15,"category":"KYC_AVANCADO","regulationRef":"Melhores Práticas GAFI/FATF","answerType":"BOOLEAN","options":null,"evidenceRequired":true,"helpText":""},
+    {"id":"pld_edd_004","order":4,"question":"A estrutura de controle societário foi mapeada até o nível de pessoa física, sem lacunas?","weight":20,"category":"UBO","regulationRef":"Circular BACEN 3.978/2020","answerType":"BOOLEAN","options":null,"evidenceRequired":true,"helpText":""},
+    {"id":"pld_edd_005","order":5,"question":"O monitoramento de transações para este cliente é realizado em regime de prioridade (T+0)?","weight":20,"category":"MONITORAMENTO","regulationRef":"Art. 11, Lei 9.613/98","answerType":"BOOLEAN","options":null,"evidenceRequired":false,"helpText":""}
   ]'::JSONB
 );
 
@@ -69,19 +67,19 @@ INSERT INTO checklists (
   'LGPD_ART37_RAT',
   'Mapeamento LGPD — Registro de Atividades de Tratamento (RAT)',
   'Checklist para levantamento do Registro de Atividades de Tratamento de Dados Pessoais conforme Art. 37 da LGPD e Resolução CD/ANPD 02/2022.',
-  '1.0',
+  '1.1',
   'ACTIVE',
   365,
   ARRAY['CLIENTE', 'FORNECEDOR', 'PARCEIRO']::VARCHAR[],
   '[
-    {"id":"lgpd_001","order":1,"question":"A empresa possui Registro de Atividades de Tratamento (RAT) documentado e atualizado?","weight":20,"category":"RAT","regulationRef":"Art. 37, LGPD","answerType":"BOOLEAN","options":null,"evidenceRequired":true,"helpText":"O RAT deve mapear: finalidade, base legal, dados tratados, titulares, destinatários, prazo de retenção."},
-    {"id":"lgpd_002","order":2,"question":"Todas as atividades de tratamento possuem base legal identificada (Art. 7 ou Art. 11 da LGPD)?","weight":15,"category":"BASE_LEGAL","regulationRef":"Art. 7, LGPD","answerType":"BOOLEAN","options":null,"evidenceRequired":false,"helpText":"Bases legais: consentimento, legítimo interesse, obrigação legal, execução de contrato, etc."},
-    {"id":"lgpd_003","order":3,"question":"A empresa nomeou um Encarregado de Dados (DPO)?","weight":10,"category":"GOVERNANCA","regulationRef":"Art. 41, LGPD","answerType":"BOOLEAN","options":null,"evidenceRequired":true,"helpText":"O DPO pode ser interno ou externo. Publicar nome e contato no site (Art. 41, §1)."},
-    {"id":"lgpd_004","order":4,"question":"Existem políticas de privacidade e retenção de dados documentadas e acessíveis aos titulares?","weight":10,"category":"TRANSPARENCIA","regulationRef":"Art. 9, LGPD","answerType":"BOOLEAN","options":null,"evidenceRequired":true,"helpText":""},
-    {"id":"lgpd_005","order":5,"question":"Existe processo formal para atendimento de requisições de titulares (acesso, correção, exclusão, portabilidade)?","weight":15,"category":"DIREITOS_TITULARES","regulationRef":"Art. 18, LGPD","answerType":"BOOLEAN","options":null,"evidenceRequired":false,"helpText":"SLA máximo para resposta: 15 dias (conforme Res. CD/ANPD 02/2022)."},
-    {"id":"lgpd_006","order":6,"question":"Os contratos com agentes de tratamento terceiros (subprocessadores) possuem cláusulas de proteção de dados?","weight":10,"category":"TERCEIROS","regulationRef":"Art. 39, LGPD","answerType":"BOOLEAN","options":null,"evidenceRequired":false,"helpText":"Verificar DPAs (Data Processing Agreements) em todos os contratos com fornecedores de TI, RH, marketing, etc."},
-    {"id":"lgpd_007","order":7,"question":"Existe processo documentado de gestão de incidentes (notificação à ANPD e titulares)?","weight":15,"category":"INCIDENTES","regulationRef":"Art. 48, LGPD","answerType":"BOOLEAN","options":null,"evidenceRequired":false,"helpText":"Prazo de notificação à ANPD: 2 dias úteis após conhecimento do incidente grave (Res. CD/ANPD 01/2021)."},
-    {"id":"lgpd_008","order":8,"question":"A empresa realiza Privacy by Design na concepção de novos produtos e sistemas?","weight":5,"category":"GOVERNANCA","regulationRef":"Art. 46, §2, LGPD","answerType":"MULTIPLE_CHOICE","options":["Não implementado","Em planejamento","Parcialmente","Totalmente implementado"],"evidenceRequired":false,"helpText":""}
+    {"id":"lgpd_rat_001","order":1,"question":"As finalidades do tratamento estão claramente específicas e legítimas para cada processo?","weight":15,"category":"FINALIDADE","regulationRef":"Art. 6, I, LGPD","answerType":"BOOLEAN","options":null,"evidenceRequired":false,"helpText":""},
+    {"id":"lgpd_rat_002","order":2,"question":"Foi identificada a Base Legal (Art. 7 ou 11) para cada operação de tratamento?","weight":15,"category":"BASE_LEGAL","regulationRef":"Art. 7, LGPD","answerType":"BOOLEAN","options":null,"evidenceRequired":true,"helpText":"Consentimento, Execução de Contrato, Legítimo Interesse, etc."},
+    {"id":"lgpd_rat_003","order":3,"question":"O inventário descreve as categorias de dados pessoais (comuns, sensíveis, de menores)?","weight":12,"category":"CATEGORIZACAO","regulationRef":"Art. 37, LGPD","answerType":"BOOLEAN","options":null,"evidenceRequired":false,"helpText":""},
+    {"id":"lgpd_rat_004","order":4,"question":"As categorias de titulares afetados (clientes, funcionários, dependentes) foram mapeadas?","weight":10,"category":"TITULARES","regulationRef":"Art. 37, LGPD","answerType":"BOOLEAN","options":null,"evidenceRequired":false,"helpText":""},
+    {"id":"lgpd_rat_005","order":5,"question":"Existem prazos de retenção e critérios de descarte definidos para os dados?","weight":12,"category":"CICLO_VIDA","regulationRef":"Art. 15, LGPD","answerType":"BOOLEAN","options":null,"evidenceRequired":true,"helpText":""},
+    {"id":"lgpd_rat_006","order":6,"question":"O compartilhamento de dados com terceiros (operadores) está documentado com a respectiva finalidade?","weight":12,"category":"COMPARTILHAMENTO","regulationRef":"Art. 37, LGPD","answerType":"BOOLEAN","options":null,"evidenceRequired":false,"helpText":""},
+    {"id":"lgpd_rat_007","order":7,"question":"Ocorrem transferências internacionais de dados (ex: servidores em nuvem exterior)?","weight":12,"category":"TRANSF_INTERNACIONAL","regulationRef":"Art. 33, LGPD","answerType":"BOOLEAN","options":null,"evidenceRequired":true,"helpText":""},
+    {"id":"lgpd_rat_008","order":8,"question":"As medidas de segurança técnicas e administrativas adotadas estão descritas no registro?","weight":12,"category":"SEGURANCA","regulationRef":"Art. 46, LGPD","answerType":"BOOLEAN","options":null,"evidenceRequired":false,"helpText":""}
   ]'::JSONB
 );
 
@@ -97,18 +95,19 @@ INSERT INTO checklists (
   'LEI_12846_13_PI',
   'Programa de Integridade — Lei Anticorrupção (Lei 12.846/13)',
   'Avaliação do Programa de Integridade conforme Lei 12.846/13 (Lei Anticorrupção) e Decreto 11.129/2022. Baseado nos 5 pilares da CGU.',
-  '1.0',
+  '1.1',
   'ACTIVE',
   365,
   ARRAY['CLIENTE', 'FORNECEDOR', 'PARCEIRO']::VARCHAR[],
   '[
-    {"id":"ac_001","order":1,"question":"A empresa possui comprometimento formal da Alta Direção com o Programa de Integridade (tone at the top)?","weight":15,"category":"COMPROMETIMENTO","regulationRef":"Art. 7, III, Lei 12.846/13","answerType":"BOOLEAN","options":null,"evidenceRequired":true,"helpText":"Manifestação formal via política, carta, vídeo institucional ou comunicação interna datada."},
-    {"id":"ac_002","order":2,"question":"Existe Código de Conduta e Ética documentado, aprovado e comunicado a todos os colaboradores?","weight":15,"category":"CODIGO_CONDUTA","regulationRef":"Decreto 11.129/2022 Art. 57, II","answerType":"BOOLEAN","options":null,"evidenceRequired":true,"helpText":"O código deve abordar: conflito de interesses, brindes, hospitalidade, propina, fraude."},
-    {"id":"ac_003","order":3,"question":"A empresa possui Canal de Denúncias anônimo e independente?","weight":15,"category":"CANAL_DENUNCIA","regulationRef":"Decreto 11.129/2022 Art. 57, IV, d","answerType":"BOOLEAN","options":null,"evidenceRequired":false,"helpText":"O canal deve ser acessível 24h, garantir sigilo e ter governança independente da área denunciada."},
-    {"id":"ac_004","order":4,"question":"Existe processo de due diligence de terceiros (fornecedores, parceiros, intermediários) com avaliação anticorrupção?","weight":20,"category":"TERCEIROS","regulationRef":"Art. 7, VIII, Lei 12.846/13","answerType":"BOOLEAN","options":null,"evidenceRequired":false,"helpText":"Verificar consulta a listas de impedimentos: CEIS, CNEP, BNDES, sócios envolvidos em processos."},
-    {"id":"ac_005","order":5,"question":"A empresa realiza treinamentos periódicos em ética e anticorrupção?","weight":10,"category":"TREINAMENTO","regulationRef":"Decreto 11.129/2022 Art. 57, IV, c","answerType":"BOOLEAN","options":null,"evidenceRequired":true,"helpText":"Mínimo anual. Documentar lista de presença e conteúdo programático."},
-    {"id":"ac_006","order":6,"question":"Existem controles internos e procedimentos para prevenção de fraude e corrupção nas áreas críticas (licitações, pagamentos)?","weight":15,"category":"CONTROLES","regulationRef":"Decreto 11.129/2022 Art. 57, IV, f","answerType":"BOOLEAN","options":null,"evidenceRequired":false,"helpText":"Áreas críticas: compras, pagamentos, contratações públicas, relações com agentes públicos."},
-    {"id":"ac_007","order":7,"question":"O Programa de Integridade é monitorado e atualizado periodicamente?","weight":10,"category":"MONITORAMENTO","regulationRef":"Decreto 11.129/2022 Art. 57, IV, g","answerType":"MULTIPLE_CHOICE","options":["Não monitorado","Monitorado informalmente","Revisão anual formal","Revisão semestral com relatório à diretoria"],"evidenceRequired":false,"helpText":""}
+    {"id":"ac_pi_001","order":1,"question":"[Pilar 1] Existe comprometimento formal e público da Alta Direção com a ética e integridade?","weight":15,"category":"COMPROMETIMENTO","regulationRef":"Dec. 11.129/22 Art. 57, I","answerType":"BOOLEAN","options":null,"evidenceRequired":true,"helpText":"Atas de diretoria, vídeos institucionais ou cartas públicas."},
+    {"id":"ac_pi_002","order":2,"question":"[Pilar 2] A instância responsável pelo programa possui autonomia e recursos materiais/humanos adequados?","weight":15,"category":"INSTANCIA_RESPONSAVEL","regulationRef":"Dec. 11.129/22 Art. 57, III","answerType":"BOOLEAN","options":null,"evidenceRequired":true,"helpText":""},
+    {"id":"ac_pi_003","order":3,"question":"[Pilar 3] A empresa realiza avaliação periódica de riscos de corrupção e os mitiga adequadamente?","weight":15,"category":"ANALISE_RISCO","regulationRef":"Dec. 11.129/22 Art. 57, IV","answerType":"BOOLEAN","options":null,"evidenceRequired":true,"helpText":"Matriz de riscos atualizada nos últimos 12 meses."},
+    {"id":"ac_pi_004","order":4,"question":"[Pilar 4] O Código de Ética abrange vedações a suborno e fraude em licitações e contratos públicos?","weight":10,"category":"CODIGO_CONDUTA","regulationRef":"Dec. 11.129/22 Art. 57, II","answerType":"BOOLEAN","options":null,"evidenceRequired":true,"helpText":""},
+    {"id":"ac_pi_005","order":5,"question":"[Pilar 4] Existe canal de denúncia independente, anônimo e com proteção contra retaliação?","weight":15,"category":"CANAL_DENUNCIA","regulationRef":"Dec. 11.129/22 Art. 57, IV, d","answerType":"BOOLEAN","options":null,"evidenceRequired":false,"helpText":""},
+    {"id":"ac_pi_006","order":6,"question":"[Pilar 4] É realizada Due Diligence de Integridade (DDI) em fornecedores e parceiros de alto risco?","weight":15,"category":"DUE_DILIGENCE","regulationRef":"Dec. 11.129/22 Art. 57, XIII","answerType":"BOOLEAN","options":null,"evidenceRequired":true,"helpText":""},
+    {"id":"ac_pi_007","order":7,"question":"[Pilar 5] O programa de integridade passa por monitoramento contínuo e auditorias independentes?","weight":10,"category":"MONITORAMENTO","regulationRef":"Dec. 11.129/22 Art. 57, IV, g","answerType":"BOOLEAN","options":null,"evidenceRequired":true,"helpText":""},
+    {"id":"ac_pi_008","order":8,"question":"Qual o percentual de colaboradores treinados em ética e anticorrupção no último ano?","weight":5,"category":"TREINAMENTO","regulationRef":"Dec. 11.129/22 Art. 57, IV, c","answerType":"SCALE","options":null,"evidenceRequired":false,"helpText":"0 = Nenhum; 100 = Todos."}
   ]'::JSONB
 );
 

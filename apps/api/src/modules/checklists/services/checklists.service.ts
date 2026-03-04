@@ -14,13 +14,13 @@ export class ChecklistsService {
         if (!template) throw new ComplianceOSError('TEMPLATE_NOT_FOUND', 'Template de checklist não encontrado.')
 
         // Validação via Engine
-        const { valid, missing } = ChecklistEngine.validate(template.items as any, run.responses as any)
+        const { valid, missing } = ChecklistEngine.validate(template.items as any, run.answers as any)
         if (!valid) {
             throw new ComplianceOSError('VALIDATION_FAILED', `Items obrigatórios pendentes: ${missing.join(', ')}`)
         }
 
         // Extração de fatores para o Scoring Engine
-        const factors = ChecklistEngine.extractScoringFactors(template.items as any, run.responses as any)
+        const factors = ChecklistEngine.extractScoringFactors(template.items as any, run.answers as any)
 
         // Atualizar status no banco
         await this.checklistsRepository.updateRunStatus(runId, tenantId, 'COMPLETED')

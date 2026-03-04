@@ -97,7 +97,7 @@ export const checklistRuns = pgTable('checklist_runs', {
     checklistId: uuid('checklist_id').notNull().references(() => checklists.id),
     entityId: uuid('entity_id').notNull().references(() => entities.id),
     status: varchar('status', { length: 50 }).notNull(), // IN_PROGRESS, COMPLETED
-    responses: jsonb('responses'),
+    answers: jsonb('answers'),
     score: integer('score'),
     completedAt: timestamp('completed_at'),
     createdAt: timestamp('created_at').defaultNow(),

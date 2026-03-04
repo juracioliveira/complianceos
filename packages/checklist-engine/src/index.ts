@@ -1,9 +1,14 @@
 export interface ChecklistItem {
     id: string
-    type: 'select' | 'boolean' | 'text'
+    question: string
+    category: string
+    regulationRef?: string
+    helpText?: string
+    answerType: 'BOOLEAN' | 'SCALE' | 'MULTIPLE_CHOICE' | 'TEXT'
     required: boolean
     weight: number
-    options?: { label: string; score: number }[]
+    options?: string[] | { label: string; score: number }[]
+    evidenceRequired?: boolean
 }
 
 export interface ChecklistResponse {
@@ -35,16 +40,19 @@ export class ChecklistEngine {
             if (!item) return null
 
             let score = 0
-            if (item.type === 'select' && item.options) {
-                const option = item.options.find(opt => opt.label === resp.value)
-                score = option?.score ?? 0
-            } else if (item.type === 'boolean') {
-                score = resp.value === true ? 5 : 0 // Exemplo: true = risco alto
+            if (item.answerType === 'MULTIPLE_CHOICE' && Array.isArray(item.options)) {
+                // Se for array de strings (sem score explícito), calcular baseado na posição ou deixar 0
+                const optionIndex = item.options.indexOf(resp.value)
+                score = optionIndex >= 0 ? (optionIndex / (item.options.length - 1)) * 10 : 0
+            } else if (item.answerType === 'BOOLEAN') {
+                score = resp.value === true ? 10 : 0
+            } else if (item.answerType === 'SCALE') {
+                score = Number(resp.value) || 0
             }
 
             return {
                 id: item.id,
-                label: `Item ${item.id}`,
+                label: item.question,
                 weight: item.weight,
                 score
             }

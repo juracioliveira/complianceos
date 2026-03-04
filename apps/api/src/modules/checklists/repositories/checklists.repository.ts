@@ -29,12 +29,12 @@ export class ChecklistsRepository {
         return template
     }
 
-    async updateRunStatus(id: string, tenantId: string, status: string, responses?: any) {
+    async updateRunStatus(id: string, tenantId: string, status: string, answers?: any) {
         await db
             .update(checklistRuns)
             .set({
                 status,
-                responses: responses ? JSON.stringify(responses) : undefined,
+                answers: answers ? JSON.stringify(answers) : undefined,
                 completedAt: status === 'COMPLETED' ? new Date() : null,
                 updatedAt: new Date()
             })
