@@ -1,64 +1,91 @@
 'use client'
 
-import {
-    LineChart,
-    Line,
-    XAxis,
-    YAxis,
-    CartesianGrid,
-    Tooltip,
-    ResponsiveContainer,
-    AreaChart,
-    Area
-} from 'recharts'
-import { TrendingUp, TrendingDown, Minus } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+import { TrendingUp, TrendingDown, Minus, Loader2 } from 'lucide-react'
+import { useApi } from '@/hooks/useApi'
 
 interface RiskEvolutionChartProps {
     id: string
 }
 
-const data = [
-    { date: 'Set', score: 45 },
-    { date: 'Out', score: 52 },
-    { date: 'Nov', score: 48 },
-    { date: 'Dez', score: 65 },
-    { date: 'Jan', score: 72 },
-    { date: 'Fev', score: 78 },
-]
+const RISK_COLORS: Record<string, string> = {
+    LOW: '#16A34A',
+    MEDIUM: '#D97706',
+    HIGH: '#DC2626',
+    CRITICAL: '#7C3AED',
+    UNKNOWN: '#94A3B8',
+}
+
+const MONTH_FORMAT = new Intl.DateTimeFormat('pt-BR', { month: 'short' })
 
 export default function RiskEvolutionChart({ id }: RiskEvolutionChartProps) {
+    const { fetchWithAuth } = useApi()
+    const [data, setData] = useState<{ date: string; score: number; riskLevel: string }[]>([])
+    const [loading, setLoading] = useState(true)
+
+    useEffect(() => {
+        if (!id) return
+        setLoading(true)
+        fetchWithAuth(`/v1/entities/${id}/risk-assessments?limit=12`)
+            .then((res) => {
+                const assessments: any[] = res?.data ?? []
+                // Sort oldest→newest and map to chart format
+                const sorted = [...assessments].sort(
+                    (a, b) => new Date(a.calculatedAt).getTime() - new Date(b.calculatedAt).getTime()
+                )
+                setData(
+                    sorted.map((a) => ({
+                        date: MONTH_FORMAT.format(new Date(a.calculatedAt)),
+                        score: a.score,
+                        riskLevel: a.riskLevel,
+                    }))
+                )
+            })
+            .catch((err) => console.error('RiskEvolutionChart fetch error', err))
+            .finally(() => setLoading(false))
+    }, [id, fetchWithAuth])
+
+    const first = data[0]?.score ?? null
+    const last = data[data.length - 1]?.score ?? null
+    const max = data.length ? Math.max(...data.map(d => d.score)) : null
+    const trend = last != null && first != null ? last - first : null
+
+    if (loading) {
+        return (
+            <div className="card p-6 flex items-center gap-3 text-muted-foreground h-[400px]">
+                <Loader2 className="w-5 h-5 animate-spin" />
+                <span className="text-sm">Carregando histórico de risco...</span>
+            </div>
+        )
+    }
+
+    if (data.length === 0) {
+        return (
+            <div className="card p-6 flex flex-col items-center justify-center text-muted-foreground h-[300px] gap-3">
+                <Minus className="w-8 h-8 opacity-20" />
+                <p className="text-sm">Nenhuma avaliação de risco registrada ainda.</p>
+            </div>
+        )
+    }
+
     return (
         <div className="card p-6 flex flex-col gap-6">
             <div className="flex items-center justify-between">
                 <div className="flex flex-col gap-1">
                     <h3 className="font-bold text-lg">Evolução de Risco</h3>
-                    <p className="text-sm text-muted-foreground">Variação do score nos últimos 6 meses</p>
-                </div>
-
-                <div className="flex items-center gap-2 bg-muted/50 p-1 rounded-lg border border-border">
-                    <button className="px-3 py-1 text-xs font-bold rounded-md bg-white dark:bg-zinc-800 shadow-sm">6M</button>
-                    <button className="px-3 py-1 text-xs font-bold rounded-md text-muted-foreground hover:bg-white/50 dark:hover:bg-zinc-800/50">1Y</button>
-                    <button className="px-3 py-1 text-xs font-bold rounded-md text-muted-foreground hover:bg-white/50 dark:hover:bg-zinc-800/50">ALL</button>
+                    <p className="text-sm text-muted-foreground">Variação do score nos últimos {data.length} meses</p>
                 </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-2">
-                <SummaryItem
-                    label="Início do Período"
-                    value="45 pts"
-                    sub="Baixo"
-                />
-                <SummaryItem
-                    label="Máximo Atingido"
-                    value="82 pts"
-                    sub="Crítico"
-                    variant="destructive"
-                />
+                <SummaryItem label="Score Inicial" value={first != null ? `${first} pts` : '—'} sub={data[0]?.riskLevel ?? '—'} />
+                <SummaryItem label="Score Máximo" value={max != null ? `${max} pts` : '—'} sub="Pior ponto" variant={max != null && max >= 70 ? 'destructive' : undefined} />
                 <SummaryItem
                     label="Tendência"
-                    value="+33 pts"
-                    sub="Crescente"
-                    icon={<TrendingUp className="w-4 h-4 text-red-500" />}
+                    value={trend != null ? `${trend > 0 ? '+' : ''}${trend} pts` : '—'}
+                    sub={trend != null ? (trend > 0 ? 'Crescente ↑' : trend < 0 ? 'Redução ↓' : 'Estável') : '—'}
+                    icon={trend != null && trend > 5 ? <TrendingUp className="w-4 h-4 text-red-500" /> : trend != null && trend < -5 ? <TrendingDown className="w-4 h-4 text-emerald-500" /> : <Minus className="w-4 h-4 text-muted-foreground" />}
                 />
             </div>
 
@@ -79,17 +106,16 @@ export default function RiskEvolutionChart({ id }: RiskEvolutionChartProps) {
                             tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))', fontWeight: 500 }}
                             dy={10}
                         />
-                        <YAxis
-                            hide={true}
-                            domain={[0, 100]}
-                        />
+                        <YAxis hide domain={[0, 100]} />
                         <Tooltip
                             content={({ active, payload }) => {
-                                if (active && payload && payload.length) {
+                                if (active && payload?.length) {
+                                    const d = payload[0]?.payload
                                     return (
-                                        <div className="bg-popover border border-border p-3 rounded-lg shadow-xl animate-in fade-in zoom-in-95 fill-mode-forwards">
-                                            <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1">{payload[0]?.payload?.date}</p>
-                                            <p className="text-xl font-bold text-foreground">{payload[0]?.value} <span className="text-xs font-medium text-muted-foreground">pts</span></p>
+                                        <div className="bg-popover border border-border p-3 rounded-lg shadow-xl">
+                                            <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1">{d?.date}</p>
+                                            <p className="text-xl font-bold text-foreground">{d?.score} <span className="text-xs font-medium text-muted-foreground">pts</span></p>
+                                            <p className="text-xs font-bold mt-1" style={{ color: RISK_COLORS[d?.riskLevel] ?? '#94A3B8' }}>{d?.riskLevel}</p>
                                         </div>
                                     )
                                 }
@@ -113,19 +139,13 @@ export default function RiskEvolutionChart({ id }: RiskEvolutionChartProps) {
 }
 
 function SummaryItem({ label, value, sub, icon, variant }: {
-    label: string,
-    value: string,
-    sub: string,
-    icon?: React.ReactNode,
-    variant?: 'destructive'
+    label: string; value: string; sub: string; icon?: React.ReactNode; variant?: 'destructive'
 }) {
     return (
         <div className="p-4 rounded-xl border border-border/50 bg-muted/10">
             <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1">{label}</p>
             <div className="flex items-center gap-2">
-                <span className={`text-xl font-bold ${variant === 'destructive' ? 'text-red-600 dark:text-red-400' : 'text-foreground'}`}>
-                    {value}
-                </span>
+                <span className={`text-xl font-bold ${variant === 'destructive' ? 'text-red-600 dark:text-red-400' : 'text-foreground'}`}>{value}</span>
                 {icon}
             </div>
             <p className="text-xs font-medium text-muted-foreground mt-0.5">{sub}</p>

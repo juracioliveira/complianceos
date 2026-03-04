@@ -1,25 +1,63 @@
 'use client'
 
-import { Shield, MapPin, Building2, User, ExternalLink, Calendar } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { Shield, MapPin, Building2, User, Calendar, Loader2, AlertCircle } from 'lucide-react'
 import { RiskBadge } from '@/components/ui/RiskBadge'
+import { useApi } from '@/hooks/useApi'
 
 interface EntityHeaderProps {
     id: string
 }
 
+const KYC_LABEL: Record<string, { label: string; color: string; dot: string }> = {
+    APPROVED: { label: 'APROVADO', color: 'text-emerald-600', dot: 'bg-emerald-500' },
+    PENDING: { label: 'PENDENTE', color: 'text-amber-600', dot: 'bg-amber-500' },
+    IN_PROGRESS: { label: 'EM REVISÃO', color: 'text-blue-600', dot: 'bg-blue-500' },
+    REJECTED: { label: 'REJEITADO', color: 'text-red-600', dot: 'bg-red-500' },
+}
+
 export default function EntityHeader({ id }: EntityHeaderProps) {
-    // Mock para desenvolvimento UI premium
-    const entity = {
-        name: 'Alpha Pagamentos S.A.',
-        taxId: '12.345.678/0001-90',
-        type: 'Pessoa Jurídica',
-        status: 'ACTIVE',
-        kycStatus: 'APPROVED',
-        riskScore: 78,
-        riskLevel: 'HIGH',
-        address: 'Av. Paulista, 1000 - São Paulo, SP',
-        lastSync: '10 minutos atrás'
+    const { fetchWithAuth } = useApi()
+    const [entity, setEntity] = useState<any>(null)
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState<string | null>(null)
+
+    useEffect(() => {
+        if (!id) return
+        setLoading(true)
+        fetchWithAuth(`/v1/entities/${id}`)
+            .then((res) => {
+                setEntity(res?.data ?? res)
+            })
+            .catch((err) => {
+                console.error('EntityHeader fetch error', err)
+                setError('Não foi possível carregar os dados da entidade.')
+            })
+            .finally(() => setLoading(false))
+    }, [id, fetchWithAuth])
+
+    if (loading) {
+        return (
+            <div className="card p-6 flex items-center gap-3 text-muted-foreground">
+                <Loader2 className="w-5 h-5 animate-spin" />
+                <span className="text-sm">Carregando entidade...</span>
+            </div>
+        )
     }
+
+    if (error || !entity) {
+        return (
+            <div className="card p-6 flex items-center gap-3 text-red-500">
+                <AlertCircle className="w-5 h-5" />
+                <span className="text-sm">{error ?? 'Entidade não encontrada.'}</span>
+            </div>
+        )
+    }
+
+    const kyc = KYC_LABEL[entity.kycStatus] ?? { label: entity.kycStatus ?? '—', color: 'text-muted-foreground', dot: 'bg-muted' }
+    const cnpjFormatted = entity.cnpj
+        ? entity.cnpj.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, '$1.$2.$3/$4-$5')
+        : entity.cpf ?? '—'
 
     return (
         <div className="card p-6 overflow-hidden relative">
@@ -37,21 +75,25 @@ export default function EntityHeader({ id }: EntityHeaderProps) {
                     <div className="flex flex-col gap-1">
                         <div className="flex items-center gap-3">
                             <h2 className="text-2xl font-bold text-foreground">{entity.name}</h2>
-                            <span className="badge badge-green">Ativo</span>
+                            <span className={`badge ${entity.status === 'ACTIVE' ? 'badge-green' : entity.status === 'BLOCKED' ? 'badge-red' : 'badge-slate'}`}>
+                                {entity.status === 'ACTIVE' ? 'Ativo' : entity.status === 'BLOCKED' ? 'Bloqueado' : entity.status}
+                            </span>
                         </div>
 
                         <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
                             <div className="flex items-center gap-1.5">
-                                <span className="font-bold text-foreground/80">{entity.taxId}</span>
+                                <span className="font-bold text-foreground/80">{cnpjFormatted}</span>
                             </div>
                             <div className="flex items-center gap-1.5">
                                 <User className="w-3.5 h-3.5" />
-                                {entity.type}
+                                {entity.entityType || 'Pessoa Jurídica'}
                             </div>
-                            <div className="flex items-center gap-1.5">
-                                <MapPin className="w-3.5 h-3.5" />
-                                {entity.address}
-                            </div>
+                            {entity.sector && (
+                                <div className="flex items-center gap-1.5">
+                                    <MapPin className="w-3.5 h-3.5" />
+                                    {entity.sector}
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -60,8 +102,8 @@ export default function EntityHeader({ id }: EntityHeaderProps) {
                     <div className="flex flex-col items-center gap-1 px-4 border-r border-border/50">
                         <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Status KYC</span>
                         <div className="flex items-center gap-2 mt-1">
-                            <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
-                            <span className="text-sm font-bold text-emerald-600">APROVADO</span>
+                            <div className={`w-2 h-2 rounded-full ${kyc.dot} shadow-[0_0_8px_rgba(16,185,129,0.5)]`} />
+                            <span className={`text-sm font-bold ${kyc.color}`}>{kyc.label}</span>
                         </div>
                     </div>
 
@@ -69,8 +111,8 @@ export default function EntityHeader({ id }: EntityHeaderProps) {
                         <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Risco Global</span>
                         <div className="mt-1">
                             <RiskBadge
-                                level={entity.riskLevel as any}
-                                score={entity.riskScore}
+                                level={(entity.riskLevel ?? 'UNKNOWN') as any}
+                                score={entity.riskScore ?? undefined}
                                 size="md"
                             />
                         </div>
@@ -80,19 +122,24 @@ export default function EntityHeader({ id }: EntityHeaderProps) {
 
             <div className="mt-6 pt-4 border-t border-border/50 flex items-center justify-between text-[11px] text-muted-foreground uppercase font-bold tracking-wider">
                 <div className="flex items-center gap-4">
-                    <span className="flex items-center gap-1">
-                        <Calendar className="w-3 h-3" />
-                        Vencimento KYC: 12/05/2026
-                    </span>
-                    <span className="flex items-center gap-1">
-                        <Shield className="w-3 h-3" />
-                        Compliance Officer: Maria Silva
-                    </span>
+                    {entity.kycCompletedAt && (
+                        <span className="flex items-center gap-1">
+                            <Calendar className="w-3 h-3" />
+                            KYC concluído em: {new Date(entity.kycCompletedAt).toLocaleDateString('pt-BR')}
+                        </span>
+                    )}
+                    {entity.lastAssessedAt && (
+                        <span className="flex items-center gap-1">
+                            <Shield className="w-3 h-3" />
+                            Última avaliação: {new Date(entity.lastAssessedAt).toLocaleDateString('pt-BR')}
+                        </span>
+                    )}
                 </div>
-                <button className="flex items-center gap-1 hover:text-primary transition-colors">
-                    <ExternalLink className="w-3 h-3" />
-                    Ver na Receita Federal
-                </button>
+                {entity.isPep && (
+                    <span className="flex items-center gap-1 text-amber-500">
+                        ⚠ PEP Detectado
+                    </span>
+                )}
             </div>
         </div>
     )

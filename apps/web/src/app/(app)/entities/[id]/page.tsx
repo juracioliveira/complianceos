@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import {
     Shield,
@@ -8,15 +8,17 @@ import {
     FileText,
     Activity,
     ArrowLeft,
-    ExternalLink,
     Download,
-    AlertTriangle
+    Loader2,
+    AlertCircle
 } from 'lucide-react'
 import Link from 'next/link'
 import EntityHeader from './components/EntityHeader'
 import RiskEvolutionChart from './components/RiskEvolutionChart'
 import ChecklistTimeline from './components/ChecklistTimeline'
 import DocumentVault from './components/DocumentVault'
+import { useApi } from '@/hooks/useApi'
+import { formatDate } from '@/lib/utils'
 
 type TabType = 'overview' | 'checklists' | 'documents' | 'audit'
 
@@ -24,6 +26,15 @@ export default function EntityDetailPage() {
     const params = useParams()
     const id = params.id as string
     const [activeTab, setActiveTab] = useState<TabType>('overview')
+    const { fetchWithAuth } = useApi()
+    const [entity, setEntity] = useState<any>(null)
+
+    useEffect(() => {
+        if (!id) return
+        fetchWithAuth(`/v1/entities/${id}`)
+            .then((res) => setEntity(res?.data ?? res))
+            .catch(() => { })
+    }, [id, fetchWithAuth])
 
     return (
         <div className="flex flex-col gap-6 animate-fade-in">
@@ -47,42 +58,22 @@ export default function EntityDetailPage() {
                         <Download className="w-4 h-4" />
                         Exportar Dossiê
                     </button>
-                    <Link href={`/checklists/run/new?entityId=${id}`} className="btn btn-primary btn-sm gap-2">
+                    <Link href={`/checklists?entityId=${id}`} className="btn btn-primary btn-sm gap-2">
                         <Activity className="w-4 h-4" />
                         Nova Avaliação
                     </Link>
                 </div>
             </div>
 
-            {/* Entity Header - Resume Strip */}
+            {/* Entity Header */}
             <EntityHeader id={id} />
 
             {/* Tabs Navigation */}
             <div className="flex items-center gap-1 border-b border-border">
-                <TabButton
-                    active={activeTab === 'overview'}
-                    onClick={() => setActiveTab('overview')}
-                    icon={<Shield className="w-4 h-4" />}
-                    label="Visão Geral"
-                />
-                <TabButton
-                    active={activeTab === 'checklists'}
-                    onClick={() => setActiveTab('checklists')}
-                    icon={<History className="w-4 h-4" />}
-                    label="Checklists"
-                />
-                <TabButton
-                    active={activeTab === 'documents'}
-                    onClick={() => setActiveTab('documents')}
-                    icon={<FileText className="w-4 h-4" />}
-                    label="Documentos"
-                />
-                <TabButton
-                    active={activeTab === 'audit'}
-                    onClick={() => setActiveTab('audit')}
-                    icon={<Activity className="w-4 h-4" />}
-                    label="Audit Trail"
-                />
+                <TabButton active={activeTab === 'overview'} onClick={() => setActiveTab('overview')} icon={<Shield className="w-4 h-4" />} label="Visão Geral" />
+                <TabButton active={activeTab === 'checklists'} onClick={() => setActiveTab('checklists')} icon={<History className="w-4 h-4" />} label="Checklists" />
+                <TabButton active={activeTab === 'documents'} onClick={() => setActiveTab('documents')} icon={<FileText className="w-4 h-4" />} label="Documentos" />
+                <TabButton active={activeTab === 'audit'} onClick={() => setActiveTab('audit')} icon={<Activity className="w-4 h-4" />} label="Audit Trail" />
             </div>
 
             {/* Tab Content */}
@@ -94,16 +85,33 @@ export default function EntityDetailPage() {
                             <ChecklistTimeline id={id} limit={5} title="Últimas Avaliações" />
                         </div>
                         <div className="flex flex-col gap-6">
+                            {/* Info Card — real data from entity */}
                             <div className="card p-6">
                                 <h3 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground mb-4">
                                     Informações Críticas
                                 </h3>
-                                <div className="space-y-4">
-                                    <InfoItem label="Data de Fundação" value="12/05/2010" />
-                                    <InfoItem label="Setor" value="Tecnologia / Fintech" />
-                                    <InfoItem label="PEP Relacionado" value="Sim (Sócio)" />
-                                    <InfoItem label="Último KYC" value="Há 15 dias" />
-                                </div>
+                                {entity ? (
+                                    <div className="space-y-4">
+                                        <InfoItem label="Tipo" value={entity.entityType ?? '—'} />
+                                        <InfoItem label="Setor" value={entity.sector ?? '—'} />
+                                        <InfoItem label="PEP" value={entity.isPep ? 'Sim ⚠' : 'Não'} />
+                                        <InfoItem label="KYC Status" value={entity.kycStatus ?? '—'} />
+                                        {entity.kycCompletedAt && (
+                                            <InfoItem label="KYC Concluído em" value={formatDate(entity.kycCompletedAt)} />
+                                        )}
+                                        {entity.lastAssessedAt && (
+                                            <InfoItem label="Última Avaliação" value={formatDate(entity.lastAssessedAt)} />
+                                        )}
+                                        {entity.corporateData?.dataAbertura && (
+                                            <InfoItem label="Data de Fundação" value={entity.corporateData.dataAbertura} />
+                                        )}
+                                    </div>
+                                ) : (
+                                    <div className="flex items-center gap-2 text-muted-foreground text-sm">
+                                        <Loader2 className="w-4 h-4 animate-spin" />
+                                        Carregando...
+                                    </div>
+                                )}
                             </div>
                             <DocumentVault id={id} limit={3} />
                         </div>
@@ -125,6 +133,9 @@ export default function EntityDetailPage() {
                         <p className="text-muted-foreground max-w-xs mx-auto text-sm mt-1">
                             Rastreabilidade completa de todas as alterações cadastrais e de risco desta entidade.
                         </p>
+                        <Link href={`/audit?resourceId=${id}`} className="btn btn-secondary btn-sm mt-4 inline-flex">
+                            Ver no Audit Trail →
+                        </Link>
                     </div>
                 )}
             </div>
@@ -144,11 +155,9 @@ function TabButton({ active, onClick, icon, label }: TabButtonProps) {
         <button
             onClick={onClick}
             className={`
-        flex items-center gap-2 px-4 py-3 text-sm font-medium transition-all relative
-        ${active
-                    ? 'text-primary'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'}
-      `}
+                flex items-center gap-2 px-4 py-3 text-sm font-medium transition-all relative
+                ${active ? 'text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'}
+            `}
         >
             {icon}
             {label}
@@ -159,15 +168,11 @@ function TabButton({ active, onClick, icon, label }: TabButtonProps) {
     )
 }
 
-function InfoItem({ label, value }: { label: string, value: string }) {
+function InfoItem({ label, value }: { label: string; value: string }) {
     return (
         <div className="flex flex-col gap-1 border-l-2 border-muted pl-3 py-1">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/70">
-                {label}
-            </span>
-            <span className="text-sm font-semibold text-foreground">
-                {value}
-            </span>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/70">{label}</span>
+            <span className="text-sm font-semibold text-foreground">{value}</span>
         </div>
     )
 }
