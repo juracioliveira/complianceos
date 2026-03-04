@@ -21,7 +21,7 @@ export function PublicNav() {
             <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 3rem', height: 60, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '.625rem', fontSize: '1rem', fontWeight: 600, letterSpacing: '-.02em', color: TEXT, textDecoration: 'none', fontFamily: UI }}>
                     <ShieldCheck size={20} stroke={CYAN} strokeWidth={1.5} />
-                    Compliance<span style={{ color: CYAN }}>OS</span>
+                    <span style={{ whiteSpace: 'nowrap' }}>Compliance<span style={{ color: CYAN }}>OS</span></span>
                 </Link>
                 <div style={{ display: 'flex', gap: '2.5rem' }}>
                     {([['/', 'Produto'], ['/#pricing', 'Preços'], ['/cobertura', 'Regulações'], ['/docs', 'Docs']] as [string, string][]).map(([h, l]) => (

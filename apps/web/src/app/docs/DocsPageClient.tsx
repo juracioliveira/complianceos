@@ -28,10 +28,10 @@ const NAV = [
     {
         group: 'API Reference',
         items: [
-            { id: 'api-entities', label: 'Entidades' },
-            { id: 'api-checklists', label: 'Checklists' },
+            { id: 'api-entities', label: 'Entidades ↗', href: '/docs/api/entities' },
+            { id: 'api-checklists', label: 'Checklists ↗', href: '/docs/api/checklists' },
             { id: 'api-documents', label: 'Documentos' },
-            { id: 'api-audit', label: 'Audit Trail' },
+            { id: 'api-audit', label: 'Audit Trail ↗', href: '/docs/api/audit' },
             { id: 'api-users', label: 'Usuários' },
             { id: 'api-dashboard', label: 'Dashboard' },
         ],
@@ -228,18 +228,26 @@ export function DocsPageClient() {
                             <div style={{ fontFamily: MONO, fontSize: '.6rem', textTransform: 'uppercase' as const, letterSpacing: '.12em', color: '#94A3B8', padding: '0 1.5rem', marginBottom: '.5rem' }}>
                                 {section.group}
                             </div>
-                            {section.items.map(item => (
-                                <button key={item.id} onClick={() => scrollTo(item.id)} style={{
-                                    display: 'block', width: '100%', textAlign: 'left' as const,
-                                    padding: '.45rem 1.5rem', fontFamily: UI, fontSize: '.8125rem',
-                                    color: active === item.id ? CYAN : MUTED,
-                                    background: active === item.id ? CYAN + '08' : 'transparent',
-                                    border: 'none', borderLeft: active === item.id ? `2px solid ${CYAN}` : '2px solid transparent',
-                                    cursor: 'pointer', transition: 'all .15s',
-                                }}>
-                                    {item.label}
-                                </button>
-                            ))}
+                            {section.items.map(item =>
+                                (item as any).href
+                                    ? (
+                                        <Link key={item.id} href={(item as any).href} style={{
+                                            display: 'block', padding: '.45rem 1.5rem', fontFamily: UI, fontSize: '.8125rem',
+                                            color: CYAN, background: 'transparent',
+                                            borderLeft: '2px solid transparent', transition: 'all .15s',
+                                        }}>{item.label}</Link>
+                                    )
+                                    : (
+                                        <button key={item.id} onClick={() => scrollTo(item.id)} style={{
+                                            display: 'block', width: '100%', textAlign: 'left' as const,
+                                            padding: '.45rem 1.5rem', fontFamily: UI, fontSize: '.8125rem',
+                                            color: active === item.id ? CYAN : MUTED,
+                                            background: active === item.id ? CYAN + '08' : 'transparent',
+                                            border: 'none', borderLeft: active === item.id ? `2px solid ${CYAN}` : '2px solid transparent',
+                                            cursor: 'pointer', transition: 'all .15s',
+                                        }}>{item.label}</button>
+                                    )
+                            )}
                         </div>
                     ))}
                 </aside>
@@ -420,37 +428,14 @@ Retry-After: 45   # apenas quando 429`}</Code>
                         <P>Gerencie o portfólio de entidades (clientes, fornecedores, parceiros) sujeitas à due diligence.</P>
                         <Endpoint method="GET" path="/v1/entities" permission="ANALYST, COMPLIANCE_OFFICER, ADMIN, AUDITOR, READONLY" description="Lista com filtros: ?filter[risk_level]=HIGH&filter[status]=ACTIVE&search=acme" />
                         <Endpoint method="POST" path="/v1/entities" permission="COMPLIANCE_OFFICER, ADMIN" description="Cria entidade. KYB é disparado automaticamente em background." />
-                        <Code>{`// POST /v1/entities
-{
-  "name": "Chuangxin Tecnologia da Informacao Ltda",
-  "cnpj": "65089671000116",
-  "entityType": "FORNECEDOR",
-  "sector": "Tecnologia da Informação"
-}
-
-// Response 201
-{
-  "data": { "id": "01HQ7XK2N...", "riskLevel": "UNKNOWN", "kycStatus": "PENDING" },
-  "meta": { "kybJobId": "job_01HQ...", "message": "KYB iniciado automaticamente." }
-}`}</Code>
                         <Endpoint method="GET" path="/v1/entities/:id" permission="Todos os roles" />
+                        <Endpoint method="PATCH" path="/v1/entities/:id" permission="COMPLIANCE_OFFICER, ADMIN" description="Atualiza dados. Alteração de CNPJ dispara novo KYB." />
+                        <Endpoint method="POST" path="/v1/entities/:id/screen" permission="COMPLIANCE_OFFICER, ADMIN" description="Screening de sanções imediato." />
                         <Endpoint method="GET" path="/v1/entities/:id/risk-assessments" permission="ANALYST, COMPLIANCE_OFFICER, ADMIN, AUDITOR" description="Histórico de avaliações de risco com fatores detalhados por módulo." />
-                        <Code>{`// Response — Risk Assessment
-{
-  "data": [{
-    "score": 42,
-    "riskLevel": "HIGH",
-    "levelChanged": true,
-    "factors": {
-      "pldFt":         { "score": 35, "weight": 0.4 },
-      "lgpd":          { "score": 55, "weight": 0.3 },
-      "anticorrupcao": { "score": 60, "weight": 0.3 },
-      "sanctions":     { "clear": true }
-    },
-    "triggeredBy": "CHECKLIST_RUN",
-    "expiresAt": "2026-06-03T10:00:00Z"
-  }]
-}`}</Code>
+                        <div style={{ marginTop: '1.5rem', padding: '1rem', background: CYAN + '06', border: `1px solid ${CYAN}20` }}>
+                            <Link href="/docs/api/entities" style={{ fontFamily: UI, fontSize: '.875rem', color: CYAN, fontWeight: 500 }}>Ver documentação completa de Entidades →</Link>
+                            <p style={{ fontFamily: UI, fontSize: '.8rem', color: MUTED, marginTop: '.375rem' }}>Schema completo, exemplos de erro, parâmetros de filtro e notas de implementação (RLS, scoring, full-text).</p>
+                        </div>
                     </section>
 
                     {/* API CHECKLISTS */}
@@ -458,25 +443,16 @@ Retry-After: 45   # apenas quando 429`}</Code>
                         <SectionTitle id="api-checklists">API — Checklists</SectionTitle>
                         <P>Execute due diligences baseadas nas regulamentações Lei 9.613/98, Lei 12.846/13 e LGPD.</P>
                         <Endpoint method="GET" path="/v1/checklists" permission="Todos os roles" description="Lista templates. Parâmetro: ?module=PLD_FT|LGPD|ANTICORRUPCAO" />
-                        <Endpoint method="POST" path="/v1/checklists/run" permission="ANALYST, COMPLIANCE_OFFICER, ADMIN" description="Inicia execução. Pode começar com answers vazio (modo rascunho)." />
-                        <Endpoint method="POST" path="/v1/checklists/run/:id/complete" permission="COMPLIANCE_OFFICER, ADMIN" description="Finaliza. Score calculado e risco é atualizado automaticamente." />
-                        <Code>{`// POST /v1/checklists/run/:id/complete — Response 200
-{
-  "data": {
-    "status": "COMPLETED",
-    "score": 62,
-    "riskLevel": "MEDIUM",
-    "completedAt": "2026-03-03T22:10:00Z"
-  },
-  "meta": {
-    "riskChanged": true,
-    "previousLevel": "HIGH",
-    "newLevel": "MEDIUM"
-  }
-}`}</Code>
+                        <Endpoint method="POST" path="/v1/checklist-runs" permission="ANALYST, COMPLIANCE_OFFICER, ADMIN" description="Cria execução (alias: /v1/checklists/run). Modo rascunho com answers vazio." />
+                        <Endpoint method="PATCH" path="/v1/checklist-runs/:id" permission="ANALYST, COMPLIANCE_OFFICER, ADMIN" description="Atualiza respostas parciais (autosave a cada 30s)." />
+                        <Endpoint method="POST" path="/v1/checklist-runs/:id/complete" permission="COMPLIANCE_OFFICER, ADMIN" description="Finaliza. Score calculado e risco atualizado automaticamente." />
                         <AlertBox type="warning">
                             <strong>Imutabilidade:</strong> Execuções <code style={{ fontFamily: MONO }}>COMPLETED</code> são imutáveis por garantia regulatória (trigger no banco).
                         </AlertBox>
+                        <div style={{ marginTop: '1.5rem', padding: '1rem', background: CYAN + '06', border: `1px solid ${CYAN}20` }}>
+                            <Link href="/docs/api/checklists" style={{ fontFamily: UI, fontSize: '.875rem', color: CYAN, fontWeight: 500 }}>Ver documentação completa de Checklists →</Link>
+                            <p style={{ fontFamily: UI, fontSize: '.8rem', color: MUTED, marginTop: '.375rem' }}>Schema de ChecklistItem e ChecklistRun, algoritmo de score, catálogo de templates por módulo e autosave.</p>
+                        </div>
                     </section>
 
                     {/* API DOCUMENTS */}
@@ -501,20 +477,12 @@ Retry-After: 45   # apenas quando 429`}</Code>
                         <SectionTitle id="api-audit">API — Audit Trail</SectionTitle>
                         <AlertBox type="danger">Acesso restrito a <strong>AUDITOR</strong> e <strong>ADMIN</strong>. Consultas de audit são registradas para meta-auditoria.</AlertBox>
                         <Endpoint method="GET" path="/v1/audit/events" permission="AUDITOR, ADMIN" description="Consulta com filtros: ?from=ISO&to=ISO&module=PLD_FT&limit=100" />
-                        <Code>{`// Response — hash chain para integridade
-{
-  "data": [{
-    "eventId": "01HR...",
-    "occurredAt": "2026-03-03T22:10:00Z",
-    "module": "PLD_FT",
-    "action": "checklist.execute",
-    "result": "SUCCESS",
-    "payloadHash": "sha256:a1b2c3...",
-    "prevHash": "sha256:z9y8x7..."
-  }],
-  "meta": { "integrityNote": "Hash chain verified — no gaps detected" }
-}`}</Code>
                         <Endpoint method="POST" path="/v1/exports/regulators" permission="COMPLIANCE_OFFICER, ADMIN" description="Exportação para ANPD, BACEN, CGU, COAF em PDF/XLSX/JSON." />
+                        <Endpoint method="GET" path="/v1/audit/chain/verify" permission="ADMIN" description="Verifica integridade do hash chain do tenant." />
+                        <div style={{ marginTop: '1.5rem', padding: '1rem', background: CYAN + '06', border: `1px solid ${CYAN}20` }}>
+                            <Link href="/docs/api/audit" style={{ fontFamily: UI, fontSize: '.875rem', color: CYAN, fontWeight: 500 }}>Ver documentação completa de Audit Trail →</Link>
+                            <p style={{ fontFamily: UI, fontSize: '.8rem', color: MUTED, marginTop: '.375rem' }}>Hash chain, catálogo de actions, exportação para reguladores e política de retenção de 5 anos.</p>
+                        </div>
                     </section>
 
                     {/* API USERS */}
