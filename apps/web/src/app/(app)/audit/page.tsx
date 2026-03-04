@@ -24,11 +24,11 @@ const MODULE_ICON: Record<string, any> = {
 }
 
 const MODULE_COLOR: Record<string, string> = {
-    AUTH: 'text-indigo-500 bg-indigo-50 dark:bg-indigo-950/30',
-    USERS: 'text-blue-500 bg-blue-50 dark:bg-blue-950/30',
-    ENTITIES: 'text-purple-500 bg-purple-50 dark:bg-purple-950/30',
-    PLD_FT: 'text-emerald-500 bg-emerald-50 dark:bg-emerald-950/30',
-    LGPD: 'text-amber-500 bg-amber-50 dark:bg-amber-950/30'
+    AUTH: 'text-indigo-500 bg-indigo-50',
+    USERS: 'text-blue-500 bg-blue-50',
+    ENTITIES: 'text-purple-500 bg-purple-50',
+    PLD_FT: 'text-emerald-500 bg-emerald-50',
+    LGPD: 'text-amber-500 bg-amber-50'
 }
 
 export default function AuditPage() {

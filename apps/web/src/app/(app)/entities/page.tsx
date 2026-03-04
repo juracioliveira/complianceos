@@ -134,10 +134,10 @@ export default function EntitiesPage() {
             {/* Summary strips */}
             <div className="grid grid-cols-4 gap-3">
                 {[
-                    { label: 'Crítico', count: summary.CRITICAL, color: 'border-red-200 bg-red-50 dark:bg-red-950/30 dark:border-red-900', textCount: 'text-red-700 dark:text-red-400' },
-                    { label: 'Alto', count: summary.HIGH, color: 'border-orange-200 bg-orange-50 dark:bg-orange-950/30 dark:border-orange-900', textCount: 'text-orange-700 dark:text-orange-400' },
-                    { label: 'Médio', count: summary.MEDIUM, color: 'border-amber-200 bg-amber-50 dark:bg-amber-950/30 dark:border-amber-900', textCount: 'text-amber-700 dark:text-amber-400' },
-                    { label: 'Baixo', count: summary.LOW, color: 'border-emerald-200 bg-emerald-50 dark:bg-emerald-950/30 dark:border-emerald-900', textCount: 'text-emerald-700 dark:text-emerald-400' },
+                    { label: 'Crítico', count: summary.CRITICAL, color: 'border-red-200 bg-red-50', textCount: 'text-red-700' },
+                    { label: 'Alto', count: summary.HIGH, color: 'border-orange-200 bg-orange-50', textCount: 'text-orange-700' },
+                    { label: 'Médio', count: summary.MEDIUM, color: 'border-amber-200 bg-amber-50', textCount: 'text-amber-700' },
+                    { label: 'Baixo', count: summary.LOW, color: 'border-emerald-200 bg-emerald-50', textCount: 'text-emerald-700' },
                 ].map((s) => (
                     <div key={s.label} className={`rounded-xl border px-4 py-3 cursor-pointer hover:opacity-80 transition-opacity ${s.color}`}>
                         <p className={`text-2xl font-bold ${s.textCount}`}>{s.count}</p>

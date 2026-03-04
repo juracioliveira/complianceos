@@ -56,7 +56,7 @@ export default function BillingPage() {
 
                 {/* Pagamento PIX */}
                 <div className="card p-6 lg:col-span-2 flex flex-col md:flex-row gap-8 items-center bg-muted/20 border-dashed">
-                    <div className="bg-white p-4 rounded-2xl shadow-xl shadow-black/5 dark:shadow-white/5 shrink-0 border border-border">
+                    <div className="bg-white p-4 rounded-2xl shadow-xl shadow-black/5 shrink-0 border border-border">
                         <div className="w-48 h-48 bg-slate-50 flex items-center justify-center border-2 border-dashed border-slate-200">
                             <QrCode className="w-16 h-16 text-slate-300" />
                             <span className="absolute text-[10px] uppercase font-bold text-slate-400 mt-20">Mock QR Code</span>
@@ -127,11 +127,11 @@ export default function BillingPage() {
                 </table>
             </div>
 
-            <div className="p-4 rounded-xl bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900 flex items-start gap-3">
+            <div className="p-4 rounded-xl bg-amber-50 border border-amber-200 flex items-start gap-3">
                 <AlertCircle className="w-5 h-5 text-amber-500 shrink-0" />
                 <div>
-                    <h4 className="font-bold text-sm text-amber-800 dark:text-amber-400">Cartão Expirando</h4>
-                    <p className="text-xs text-amber-700 dark:text-amber-500 mt-0.5">
+                    <h4 className="font-bold text-sm text-amber-800">Cartão Expirando</h4>
+                    <p className="text-xs text-amber-700 mt-0.5">
                         Seu cartão final **** 8829 expira no próximo mês. Atualize seus dados para evitar interrupção no serviço.
                     </p>
                 </div>

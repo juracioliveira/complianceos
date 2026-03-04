@@ -90,7 +90,7 @@ export default function DashboardPage() {
                 </div>
                 <a href="/entities?filter[risk_level]=CRITICAL" className="btn-secondary btn-sm flex gap-1.5">
                     <ShieldAlert className="w-3.5 h-3.5 text-red-500" />
-                    <span className="text-red-600 dark:text-red-400 font-semibold">{stats.alertasCriticos} críticos</span>
+                    <span className="text-red-600 font-semibold">{stats.alertasCriticos} críticos</span>
                     <ArrowUpRight className="w-3 h-3" />
                 </a>
             </div>
@@ -315,10 +315,10 @@ function StatCard({
     trend?: { dir: 'up' | 'down' | 'flat'; text: string }
 }) {
     const colors = {
-        red: { bg: 'bg-red-50 dark:bg-red-950/40', icon: 'text-red-600 dark:text-red-400', iconBg: 'bg-red-100 dark:bg-red-900/60' },
-        amber: { bg: 'bg-amber-50 dark:bg-amber-950/40', icon: 'text-amber-600 dark:text-amber-400', iconBg: 'bg-amber-100 dark:bg-amber-900/60' },
-        green: { bg: 'bg-emerald-50 dark:bg-emerald-950/40', icon: 'text-emerald-600 dark:text-emerald-400', iconBg: 'bg-emerald-100 dark:bg-emerald-900/60' },
-        blue: { bg: 'bg-blue-50 dark:bg-blue-950/40', icon: 'text-blue-600 dark:text-blue-400', iconBg: 'bg-blue-100 dark:bg-blue-900/60' },
+        red: { bg: 'bg-red-50', icon: 'text-red-600', iconBg: 'bg-red-100' },
+        amber: { bg: 'bg-amber-50', icon: 'text-amber-600', iconBg: 'bg-amber-100' },
+        green: { bg: 'bg-emerald-50', icon: 'text-emerald-600', iconBg: 'bg-emerald-100' },
+        blue: { bg: 'bg-blue-50', icon: 'text-blue-600', iconBg: 'bg-blue-100' },
     }
     const c = colors[color]
 

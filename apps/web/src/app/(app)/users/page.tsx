@@ -146,7 +146,7 @@ export default function UsersPage() {
                                                 <button className="p-2 hover:bg-muted rounded-lg text-muted-foreground transition-colors" title="Editar Permissões">
                                                     <ShieldCheck className="w-4 h-4" />
                                                 </button>
-                                                <button className="p-2 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg text-muted-foreground hover:text-red-500 transition-colors" title="Desativar">
+                                                <button className="p-2 hover:bg-red-50 rounded-lg text-muted-foreground hover:text-red-500 transition-colors" title="Desativar">
                                                     <UserX className="w-4 h-4" />
                                                 </button>
                                                 <button className="p-2 hover:bg-muted rounded-lg text-muted-foreground transition-colors">
