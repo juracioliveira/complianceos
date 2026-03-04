@@ -99,6 +99,7 @@ app.setErrorHandler((error, request, reply) => {
 await app.register(authRoutes, { prefix: '/v1/auth' })
 await app.register(entitiesRoutes, { prefix: '/v1/entities' })
 await app.register(checklistsRoutes, { prefix: '/v1/checklists' })
+await app.register(checklistsRoutes, { prefix: '/v1/checklist-runs' })
 await app.register(documentsRoutes, { prefix: '/v1/documents' })
 await app.register(auditRoutes, { prefix: '/v1/audit' })
 await app.register(dashboardRoutes, { prefix: '/v1/dashboard' })
