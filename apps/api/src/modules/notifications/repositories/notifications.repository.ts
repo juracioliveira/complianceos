@@ -48,6 +48,29 @@ export class NotificationsRepository {
                 )
             )
     }
+
+    async create(data: {
+        tenantId: string
+        userId?: string | undefined
+        type: string
+        severity: 'INFO' | 'WARNING' | 'CRITICAL'
+        title: string
+        body: string
+        relatedEntityType?: string | undefined
+        relatedEntityId?: string | undefined
+        actionUrl?: string | undefined
+    }) {
+        const result = await db.execute(
+            sql`INSERT INTO notifications
+                (tenant_id, user_id, type, severity, title, body, related_entity_type, related_entity_id, action_url)
+            VALUES
+                (${data.tenantId}, ${data.userId ?? null}, ${data.type}, ${data.severity},
+                 ${data.title}, ${data.body}, ${data.relatedEntityType ?? null},
+                 ${data.relatedEntityId ?? null}, ${data.actionUrl ?? null})
+            RETURNING id`
+        )
+        return result.rows[0]
+    }
 }
 
 import { sql } from 'drizzle-orm'

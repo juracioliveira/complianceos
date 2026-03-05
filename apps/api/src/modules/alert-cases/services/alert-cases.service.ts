@@ -1,5 +1,6 @@
 import { AlertCasesRepository, type AlertCaseFilters } from '../repositories/alert-cases.repository.js'
 import { AuditService } from '../../audit/services/audit.service.js'
+import { NotificationsService } from '../../notifications/services/notifications.service.js'
 import { NotFoundError, ForbiddenError } from '@compliance-os/types'
 
 const TERMINAL_STATUSES = new Set(['CLOSED_FALSE_POSITIVE', 'CLOSED_CONFIRMED'])
@@ -15,6 +16,7 @@ export class AlertCasesService {
     constructor(
         private readonly repo: AlertCasesRepository,
         private readonly auditService: AuditService,
+        private readonly notificationsService: NotificationsService,
     ) { }
 
     async listCases(tenantId: string, filters: AlertCaseFilters) {
@@ -55,6 +57,17 @@ export class AlertCasesService {
             resourceId: alertCase.id,
             result: 'SUCCESS',
             metadata: { source: data.source, severity: data.severity, title: data.title },
+        })
+
+        // P1-B: Notificação interna para alertas CRITICAL e HIGH
+        await this.notificationsService.notifyAlertCase({
+            tenantId,
+            alertCaseId: alertCase.id,
+            title: data.title,
+            severity: data.severity as 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW',
+            source: data.source,
+            entityId: data.entityId,
+            event: 'CREATED',
         })
 
         return alertCase
@@ -101,6 +114,19 @@ export class AlertCasesService {
             result: 'SUCCESS',
             metadata: { previousStatus: existing.status, newStatus, resolutionNote },
         })
+
+        // P1-B: Notificação ao escalar
+        if (newStatus === 'ESCALATED') {
+            await this.notificationsService.notifyAlertCase({
+                tenantId,
+                alertCaseId: id,
+                title: existing.title,
+                severity: existing.severity as 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW',
+                source: existing.source,
+                entityId: existing.entity_id ?? undefined,
+                event: 'ESCALATED',
+            })
+        }
 
         return updated
     }

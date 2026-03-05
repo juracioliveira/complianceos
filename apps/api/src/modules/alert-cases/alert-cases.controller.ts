@@ -10,6 +10,10 @@ import { AuditService } from '../audit/services/audit.service.js'
 import { AuditRepository } from '../audit/repositories/audit.repository.js'
 import { DocumentsService } from '../documents/services/documents.service.js'
 import { DocumentsRepository } from '../documents/repositories/documents.repository.js'
+import { NotificationsService } from '../notifications/services/notifications.service.js'
+import { NotificationsRepository } from '../notifications/repositories/notifications.repository.js'
+import { WebhooksService } from '../notifications/services/webhooks.service.js'
+import { WebhooksRepository } from '../notifications/repositories/webhooks.repository.js'
 
 // ─── Schemas de Validação ─────────────────────────────────────────────────────
 const listQuerySchema = z.object({
@@ -44,7 +48,11 @@ const auditRepository = new AuditRepository()
 const documentsRepository = new DocumentsRepository()
 const documentsService = new DocumentsService(documentsRepository)
 const auditService = new AuditService(auditRepository, documentsService)
-const alertCasesService = new AlertCasesService(alertCasesRepository, auditService)
+const webhooksRepository = new WebhooksRepository()
+const webhooksService = new WebhooksService(webhooksRepository)
+const notificationsRepository = new NotificationsRepository()
+const notificationsService = new NotificationsService(notificationsRepository, webhooksService)
+const alertCasesService = new AlertCasesService(alertCasesRepository, auditService, notificationsService)
 
 export const alertCasesRoutes: FastifyPluginAsync = async (fastify) => {
 
