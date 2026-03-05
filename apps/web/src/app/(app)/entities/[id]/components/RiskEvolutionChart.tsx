@@ -139,7 +139,7 @@ export default function RiskEvolutionChart({ id }: RiskEvolutionChartProps) {
 }
 
 function SummaryItem({ label, value, sub, icon, variant }: {
-    label: string; value: string; sub: string; icon?: React.ReactNode; variant?: 'destructive'
+    label: string; value: string; sub: string; icon?: React.ReactNode; variant?: 'destructive' | undefined
 }) {
     return (
         <div className="p-4 rounded-xl border border-border/50 bg-muted/10">
