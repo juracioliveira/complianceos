@@ -10,14 +10,14 @@ export const dashboardRoutes: FastifyPluginAsync = async (fastify) => {
     handler: async (request: FastifyRequest, reply: FastifyReply) => {
       const cacheKey = cache.keys.tenantDashboard(request.tenantId)
 
-      // Cache de 5 minutos para o dashboard
+      // Cache reduzido para 60s para melhor frescor de dados
       const cached = await cache.get<object>(cacheKey)
       if (cached) return reply.send({ data: cached })
 
       const db = request.db
 
-      // KPIs paralelos — conforme queries de referência DEV-04 §7.1 e §7.2
-      const [entityStats, checklistStats, documentStats, alertStats, recentAudit, criticalList, caseStats] = await Promise.all([
+      // KPIs paralelos + trend data (mês anterior para comparar)
+      const [entityStats, checklistStats, documentStats, alertStats, recentAudit, criticalList, caseStats, trendStats] = await Promise.all([
         db.query<{ risk_level: string; total: string }>(`
           SELECT risk_level, COUNT(*) AS total
           FROM entities
@@ -84,6 +84,49 @@ export const dashboardRoutes: FastifyPluginAsync = async (fastify) => {
           FROM alert_cases
           WHERE tenant_id = current_setting('app.tenant_id')::UUID
         `).catch(() => ({ rows: [{ open_cases: '0', critical_cases: '0' }] })),
+        // P2: Trend data — compara mes atual com mes anterior
+        db.query<{
+          entities_this_month: string; entities_last_month: string
+          checklists_this_month: string; checklists_last_month: string
+          cases_this_week: string; cases_last_week: string
+        }>(`
+          SELECT
+            COUNT(*) FILTER (WHERE created_at >= date_trunc('month', NOW())) AS entities_this_month,
+            COUNT(*) FILTER (WHERE created_at >= date_trunc('month', NOW() - INTERVAL '1 month')
+                              AND created_at < date_trunc('month', NOW())) AS entities_last_month
+          FROM entities
+        `).then(async (entTrend) => {
+          const [clTrend, caseTrend] = await Promise.all([
+            db.query<{ checklists_this_month: string; checklists_last_month: string }>(`
+              SELECT
+                COUNT(*) FILTER (WHERE completed_at >= date_trunc('month', NOW())) AS checklists_this_month,
+                COUNT(*) FILTER (WHERE completed_at >= date_trunc('month', NOW() - INTERVAL '1 month')
+                                  AND completed_at < date_trunc('month', NOW())) AS checklists_last_month
+              FROM checklist_runs WHERE status = 'COMPLETED'
+            `),
+            db.query<{ cases_this_week: string; cases_last_week: string }>(`
+              SELECT
+                COUNT(*) FILTER (WHERE created_at >= date_trunc('week', NOW())) AS cases_this_week,
+                COUNT(*) FILTER (WHERE created_at >= date_trunc('week', NOW() - INTERVAL '1 week')
+                                  AND created_at < date_trunc('week', NOW())) AS cases_last_week
+              FROM alert_cases
+              WHERE tenant_id = current_setting('app.tenant_id')::UUID
+            `).catch(() => ({ rows: [{ cases_this_week: '0', cases_last_week: '0' }] })),
+          ])
+          return {
+            rows: [{
+              ...entTrend.rows[0],
+              ...clTrend.rows[0],
+              ...caseTrend.rows[0],
+            }]
+          }
+        }).catch(() => ({
+          rows: [{
+            entities_this_month: '0', entities_last_month: '0',
+            checklists_this_month: '0', checklists_last_month: '0',
+            cases_this_week: '0', cases_last_week: '0',
+          }]
+        })),
       ])
 
       // Montar objeto de KPIs
@@ -98,6 +141,20 @@ export const dashboardRoutes: FastifyPluginAsync = async (fastify) => {
       const ds = documentStats.rows[0] ?? { generated_this_month: '0', expiring_soon: '0' }
       const as_ = alertStats.rows[0] ?? { critical: '0', warning: '0', unread: '0' }
       const cases_ = caseStats?.rows[0] ?? { open_cases: '0', critical_cases: '0' }
+      const trend_ = trendStats?.rows[0] ?? {
+        entities_this_month: '0', entities_last_month: '0',
+        checklists_this_month: '0', checklists_last_month: '0',
+        cases_this_week: '0', cases_last_week: '0',
+      }
+
+      // Calcular deltas de trend
+      const trendDelta = (curr: string, prev: string) => {
+        const c = Number(curr), p = Number(prev)
+        const delta = c - p
+        const dir = delta > 0 ? 'up' : delta < 0 ? 'down' : 'flat'
+        const pct = p === 0 ? null : Math.round(Math.abs(delta / p) * 100)
+        return { delta, dir, pct }
+      }
 
       const summary = {
         entities: {
@@ -105,12 +162,14 @@ export const dashboardRoutes: FastifyPluginAsync = async (fastify) => {
           byRisk,
           active: totalEntities,
           blocked: byRisk['UNKNOWN'] ?? 0,
+          trend: trendDelta(String(totalEntities), trend_.entities_last_month ?? '0'),
         },
         checklists: {
           overdue: Number(cs.overdue),
           dueSoon: Number(cs.due_soon),
           completedThisMonth: Number(cs.completed_this_month),
           inProgress: Number(cs.in_progress),
+          trend: trendDelta(trend_.checklists_this_month ?? '0', trend_.checklists_last_month ?? '0'),
         },
         documents: {
           generatedThisMonth: Number(ds.generated_this_month),
@@ -122,16 +181,65 @@ export const dashboardRoutes: FastifyPluginAsync = async (fastify) => {
           unread: Number(as_.unread),
           openCases: Number(cases_.open_cases),
           criticalCases: Number(cases_.critical_cases),
+          trend: trendDelta(trend_.cases_this_week ?? '0', trend_.cases_last_week ?? '0'),
         },
         recentActivities: recentAudit.rows,
         criticalEntities: criticalList.rows,
         lastUpdated: new Date().toISOString(),
       }
 
-      // Cache por 5 minutos
-      await cache.set(cacheKey, summary, 300)
+      // Cache por 60s
+      await cache.set(cacheKey, summary, 60)
 
       return reply.send({ data: summary })
+    },
+  })
+
+  // GET /v1/dashboard/stream — P2: SSE para push de updates em tempo real
+  fastify.get('/stream', {
+    preHandler: [authMiddleware, tenantMiddleware],
+    handler: async (request: FastifyRequest, reply: FastifyReply) => {
+      const tenantId = request.tenantId
+
+      reply.raw.setHeader('Content-Type', 'text/event-stream')
+      reply.raw.setHeader('Cache-Control', 'no-cache')
+      reply.raw.setHeader('Connection', 'keep-alive')
+      reply.raw.setHeader('X-Accel-Buffering', 'no')
+      reply.raw.flushHeaders()
+
+      const send = (event: string, data: object) => {
+        reply.raw.write(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`)
+      }
+
+      // Envia o estado inicial imediatamente
+      const initialCached = await cache.get<object>(cache.keys.tenantDashboard(tenantId))
+      if (initialCached) {
+        send('summary', initialCached)
+      }
+      send('connected', { tenantId, timestamp: new Date().toISOString() })
+
+      // Polling interno a cada 30s para detectar mudanças e notificar o cliente
+      let lastHash = JSON.stringify(initialCached ?? {})
+      const interval = setInterval(async () => {
+        try {
+          const fresh = await cache.get<object>(cache.keys.tenantDashboard(tenantId))
+          const freshHash = JSON.stringify(fresh ?? {})
+          if (freshHash !== lastHash) {
+            lastHash = freshHash
+            send('summary', fresh ?? {})
+          } else {
+            // Heartbeat para manter conexão viva
+            send('heartbeat', { timestamp: new Date().toISOString() })
+          }
+        } catch { /* ignora erros de Redis na stream */ }
+      }, 30_000)
+
+      // Limpa ao desconectar
+      request.raw.on('close', () => clearInterval(interval))
+      request.raw.on('end', () => clearInterval(interval))
+
+      // Mantém o handler aberto (sem chamar reply.send)
+      return new Promise<void>(() => { })
     },
   })
 

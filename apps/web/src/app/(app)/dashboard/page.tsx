@@ -1,39 +1,110 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import {
     ShieldAlert, AlertTriangle, CheckCircle2, FileText,
     TrendingUp, TrendingDown, Minus, ArrowUpRight, Clock,
-    Users, BarChart3, Loader2
+    Users, BarChart3, Loader2, Radio, RotateCcw
 } from 'lucide-react'
 import { RiskBadge } from '@/components/ui/RiskBadge'
 import { formatDate } from '@/lib/utils'
 import { useApi } from '@/hooks/useApi'
+import React from 'react'
 
+// ─── Helpers de Trend ──────────────────────────────────────────────────────────
+function buildTrendText(trend: { delta: number; dir: string; pct: number | null } | undefined, upIsBad = false) {
+    if (!trend || trend.dir === 'flat' || trend.delta === 0) return { text: 'Estável', dir: 'flat' as const }
+    const sign = trend.delta > 0 ? '+' : ''
+    const pctText = trend.pct !== null ? ` (${trend.pct}%)` : ''
+    return {
+        text: `${sign}${trend.delta}${pctText} vs período anterior`,
+        dir: (upIsBad ? (trend.dir === 'up' ? 'bad' : 'good') : trend.dir) as 'up' | 'down' | 'flat' | 'bad' | 'good',
+    }
+}
+
+// ─── Componente Principal ──────────────────────────────────────────────────────
 export default function DashboardPage() {
     const { fetchWithAuth } = useApi()
     const [isLoading, setIsLoading] = useState(true)
     const [data, setData] = useState<any>(null)
+    const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
+    const [isLive, setIsLive] = useState(false)
+    const [timeSince, setTimeSince] = useState('')
+    const [mounted, setMounted] = useState(false)
+    const eventSourceRef = useRef<EventSource | null>(null)
 
-    useEffect(() => {
-        async function loadDashboard() {
-            try {
-                const res = await fetchWithAuth('/v1/dashboard/summary')
-                setData(res.data)
-            } catch (err) {
-                console.error('Failed to load dashboard', err)
-            } finally {
-                setIsLoading(false)
-            }
+    // Carregamento inicial via REST
+    const loadDashboard = useCallback(async () => {
+        try {
+            const res = await fetchWithAuth('/v1/dashboard/summary')
+            setData(res.data)
+            setLastUpdated(new Date())
+        } catch (err) {
+            console.error('Failed to load dashboard', err)
+        } finally {
+            setIsLoading(false)
         }
-        loadDashboard()
     }, [fetchWithAuth])
 
-    const [mounted, setMounted] = useState(false)
-
+    // SSE para updates em tempo real
     useEffect(() => {
         setMounted(true)
-    }, [])
+        loadDashboard()
+
+        // Conectar SSE após carregamento inicial
+        const connectSSE = () => {
+            const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null
+            if (!token) return
+
+            const apiBase = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001'
+            const url = `${apiBase}/v1/dashboard/stream`
+
+            const es = new EventSource(url + `?token=${encodeURIComponent(token)}`)
+            eventSourceRef.current = es
+
+            es.addEventListener('connected', () => {
+                setIsLive(true)
+            })
+
+            es.addEventListener('summary', (e) => {
+                try {
+                    const fresh = JSON.parse(e.data)
+                    setData(fresh)
+                    setLastUpdated(new Date())
+                } catch { /* ignora */ }
+            })
+
+            es.addEventListener('heartbeat', () => {
+                setIsLive(true)
+            })
+
+            es.onerror = () => {
+                setIsLive(false)
+                es.close()
+                // Reconecta em 15s
+                setTimeout(connectSSE, 15_000)
+            }
+        }
+
+        const timeout = setTimeout(connectSSE, 1000)
+
+        return () => {
+            clearTimeout(timeout)
+            eventSourceRef.current?.close()
+        }
+    }, [loadDashboard])
+
+    // Contador "há X segundos"
+    useEffect(() => {
+        const interval = setInterval(() => {
+            if (!lastUpdated) return
+            const diff = Math.floor((Date.now() - lastUpdated.getTime()) / 1000)
+            if (diff < 60) setTimeSince(`há ${diff}s`)
+            else if (diff < 3600) setTimeSince(`há ${Math.floor(diff / 60)}min`)
+            else setTimeSince(`há ${Math.floor(diff / 3600)}h`)
+        }, 5000)
+        return () => clearInterval(interval)
+    }, [lastUpdated])
 
     if (isLoading || !data) {
         return (
@@ -43,10 +114,9 @@ export default function DashboardPage() {
         )
     }
 
-    // Mapeamento resiliente dos dados da API
     const stats = {
         alertasCriticos: data.alerts?.critical ?? 0,
-        entidadesRiscoAlto: data.entities?.byRisk?.['HIGH'] ?? 0,
+        entidadesRiscoAlto: (data.entities?.byRisk?.['HIGH'] ?? 0) + (data.entities?.byRisk?.['CRITICAL'] ?? 0),
         totalEntidades: data.entities?.total ?? 0,
         checklistsVencidos: data.checklists?.overdue ?? 0,
         checklistsVencendoEm30Dias: data.checklists?.dueSoon ?? 0,
@@ -56,6 +126,8 @@ export default function DashboardPage() {
         documentosExpirando: data.documents?.expiringSoon ?? 0,
         notificacoesNaoLidas: data.alerts?.unread ?? 0,
         alertasWarning: data.alerts?.warning ?? 0,
+        openCases: data.alerts?.openCases ?? 0,
+        criticalCases: data.alerts?.criticalCases ?? 0,
     }
 
     const byRiskRaw = data.entities?.byRisk ?? {}
@@ -68,34 +140,63 @@ export default function DashboardPage() {
 
     const recentActivities = data.recentActivities ?? []
     const criticalEntities = data.criticalEntities ?? []
-
     const totalEntidades = stats.totalEntidades || byRisk.reduce((a, b) => a + b.count, 0)
-    const today = new Date()
+
+    // Trends reais da API
+    const entityTrend = buildTrendText(data.entities?.trend, false)
+    const checklistTrend = buildTrendText(data.checklists?.trend, false)
+    const alertsTrend = buildTrendText(data.alerts?.trend, true)
 
     return (
         <div className="max-w-7xl mx-auto space-y-6 animate-fade-in">
 
-            {/* Page header */}
+            {/* Page header com live indicator */}
             <div className="page-header">
                 <div>
                     <h1 className="page-title">Dashboard de Compliance</h1>
-                    <p className="page-subtitle">
-                        Visão executiva do programa de conformidade •
+                    <div className="flex items-center gap-2 mt-1">
+                        <p className="page-subtitle">Visão executiva do programa de conformidade</p>
                         {mounted && (
-                            <span className="ml-1">
-                                Atualizado {today.toLocaleDateString('pt-BR')} às {today.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
-                            </span>
+                            <div className="flex items-center gap-1.5">
+                                <span className="text-xs text-muted-foreground">•</span>
+                                {isLive ? (
+                                    <span className="flex items-center gap-1 text-xs text-emerald-600 font-medium">
+                                        <span className="relative flex h-2 w-2">
+                                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                                            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+                                        </span>
+                                        Ao vivo{timeSince ? ` · atualizado ${timeSince}` : ''}
+                                    </span>
+                                ) : (
+                                    <button
+                                        onClick={loadDashboard}
+                                        className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                                    >
+                                        <RotateCcw className="w-3 h-3" />
+                                        {timeSince ? `Atualizado ${timeSince}` : 'Atualizar'}
+                                    </button>
+                                )}
+                            </div>
                         )}
-                    </p>
+                    </div>
                 </div>
-                <a href="/entities?filter[risk_level]=CRITICAL" className="btn-secondary btn-sm flex gap-1.5">
-                    <ShieldAlert className="w-3.5 h-3.5 text-red-500" />
-                    <span className="text-red-600 font-semibold">{stats.alertasCriticos} críticos</span>
-                    <ArrowUpRight className="w-3 h-3" />
-                </a>
+                <div className="flex items-center gap-2">
+                    {stats.openCases > 0 && (
+                        <a href="/alerts" className="btn-secondary btn-sm flex gap-1.5">
+                            <Radio className="w-3.5 h-3.5 text-orange-500" />
+                            <span className="text-orange-600 font-semibold">{stats.openCases} casos abertos</span>
+                            <ArrowUpRight className="w-3 h-3" />
+                        </a>
+                    )}
+                    <a href="/entities?filter[risk_level]=CRITICAL" className="btn-secondary btn-sm flex gap-1.5">
+                        <ShieldAlert className="w-3.5 h-3.5 text-red-500" />
+                        <span className="text-red-600 font-semibold">{stats.alertasCriticos} críticos</span>
+                        <ArrowUpRight className="w-3 h-3" />
+                    </a>
+                </div>
             </div>
 
-            {/* KPI Row */}
+            {/* KPI Row — 4 cards com trend real */}
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
                 <StatCard
                     label="Entidades Risco Alto+"
@@ -103,7 +204,7 @@ export default function DashboardPage() {
                     sub={`de ${stats.totalEntidades} entidades ativas`}
                     icon={ShieldAlert}
                     color="red"
-                    trend={{ dir: 'up', text: '+3 desde a semana passada' }}
+                    trend={{ dir: entityTrend.dir as any, text: entityTrend.text }}
                 />
                 <StatCard
                     label="Checklists Vencidos"
@@ -111,7 +212,7 @@ export default function DashboardPage() {
                     sub={`${stats.checklistsVencendoEm30Dias} vencem em 30 dias`}
                     icon={AlertTriangle}
                     color="amber"
-                    trend={{ dir: 'flat', text: 'Estável vs mês anterior' }}
+                    trend={{ dir: checklistTrend.dir as any, text: checklistTrend.text }}
                 />
                 <StatCard
                     label="Concluídos no Mês"
@@ -119,14 +220,15 @@ export default function DashboardPage() {
                     sub={`${stats.checklistsEmAndamento} em andamento agora`}
                     icon={CheckCircle2}
                     color="green"
-                    trend={{ dir: 'down', text: '+12 vs mês anterior' }}
+                    trend={{ dir: checklistTrend.dir as any, text: checklistTrend.text }}
                 />
                 <StatCard
-                    label="Documentos Gerados"
-                    value={stats.documentosGerados}
-                    sub={`${stats.documentosExpirando} expiram em 60 dias`}
-                    icon={FileText}
+                    label="Alertas em Aberto"
+                    value={stats.openCases}
+                    sub={`${stats.criticalCases} críticos · ${stats.documentosExpirando} docs expirando`}
+                    icon={Radio}
                     color="blue"
+                    trend={{ dir: alertsTrend.dir as any, text: alertsTrend.text }}
                 />
             </div>
 
@@ -143,7 +245,7 @@ export default function DashboardPage() {
                         <BarChart3 className="w-4 h-4 text-muted-foreground" />
                     </div>
 
-                    {/* Donut simples em CSS */}
+                    {/* Donut em SVG */}
                     <div className="flex items-center justify-center py-2">
                         <div className="relative w-28 h-28">
                             <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
@@ -179,7 +281,6 @@ export default function DashboardPage() {
                         </div>
                     </div>
 
-                    {/* Legenda */}
                     <div className="space-y-2">
                         {byRisk.map((r: any) => (
                             <RiskBar key={r.level} {...r} total={totalEntidades} />
@@ -218,6 +319,20 @@ export default function DashboardPage() {
                         </div>
                     </div>
 
+                    {stats.openCases > 0 && (
+                        <div className="alert alert-warning">
+                            <Radio className="w-4 h-4 shrink-0 mt-px" />
+                            <div>
+                                <p className="text-xs font-semibold">{stats.openCases} Casos de Alerta em Aberto</p>
+                                <p className="text-[11px] opacity-80">
+                                    {stats.criticalCases} críticos aguardando investigação
+                                    {' · '}
+                                    <a href="/alerts" className="underline hover:no-underline">Ver fila →</a>
+                                </p>
+                            </div>
+                        </div>
+                    )}
+
                     <div className="alert alert-info">
                         <FileText className="w-4 h-4 shrink-0 mt-px" />
                         <div>
@@ -234,7 +349,9 @@ export default function DashboardPage() {
                         <a href="/audit" className="text-xs text-primary hover:underline">Ver audit trail →</a>
                     </div>
                     <div className="flex-1 space-y-0 divide-y divide-border/60">
-                        {recentActivities.map((a: any, i: number) => (
+                        {recentActivities.length === 0 ? (
+                            <p className="text-xs text-muted-foreground py-4 text-center">Nenhuma atividade recente</p>
+                        ) : recentActivities.map((a: any, i: number) => (
                             <div key={i} className="py-3 first:pt-0 last:pb-0">
                                 <div className="flex items-start justify-between gap-2">
                                     <div className="min-w-0">
@@ -273,7 +390,13 @@ export default function DashboardPage() {
                             </tr>
                         </thead>
                         <tbody>
-                            {criticalEntities.map((e: any) => (
+                            {criticalEntities.length === 0 ? (
+                                <tr>
+                                    <td colSpan={5} className="text-center text-xs text-muted-foreground py-6">
+                                        Nenhuma entidade com risco crítico
+                                    </td>
+                                </tr>
+                            ) : criticalEntities.map((e: any) => (
                                 <tr key={e.cnpj}>
                                     <td>
                                         <p className="font-medium text-foreground">{e.name}</p>
@@ -303,7 +426,7 @@ export default function DashboardPage() {
     )
 }
 
-// Componente KPI card
+// ─── Componente KPI card ───────────────────────────────────────────────────────
 function StatCard({
     label, value, sub, icon: Icon, color, trend,
 }: {
@@ -312,7 +435,7 @@ function StatCard({
     sub?: string
     icon: React.ElementType
     color: 'red' | 'amber' | 'green' | 'blue'
-    trend?: { dir: 'up' | 'down' | 'flat'; text: string }
+    trend?: { dir: 'up' | 'down' | 'flat' | 'bad' | 'good'; text: string }
 }) {
     const colors = {
         red: { bg: 'bg-red-50', icon: 'text-red-600', iconBg: 'bg-red-100' },
@@ -322,8 +445,13 @@ function StatCard({
     }
     const c = colors[color]
 
-    const TrendIcon = trend?.dir === 'up' ? TrendingUp : trend?.dir === 'down' ? TrendingDown : Minus
-    const trendColor = trend?.dir === 'up' ? 'text-red-500' : trend?.dir === 'down' ? 'text-emerald-500' : 'text-muted-foreground'
+    const TrendIcon = !trend || trend.dir === 'flat' ? Minus
+        : (trend.dir === 'up' || trend.dir === 'bad') ? TrendingUp : TrendingDown
+    const trendColor = !trend ? '' :
+        trend.dir === 'bad' ? 'text-red-500' :
+            trend.dir === 'good' ? 'text-emerald-500' :
+                trend.dir === 'up' ? 'text-red-500' :
+                    trend.dir === 'down' ? 'text-emerald-500' : 'text-muted-foreground'
 
     return (
         <div className={`stat-card border-l-2 ${color === 'red' ? 'border-l-red-500' : color === 'amber' ? 'border-l-amber-500' : color === 'green' ? 'border-l-emerald-500' : 'border-l-blue-500'}`}>
@@ -347,7 +475,7 @@ function StatCard({
     )
 }
 
-// Barra horizontal de risco
+// ─── Barra horizontal de risco ─────────────────────────────────────────────────
 function RiskBar({ level, count, total, color, label }: { level: string; count: number; total: number; color: string; label: string }) {
     const pct = total > 0 ? (count / total) * 100 : 0
     return (
@@ -355,7 +483,7 @@ function RiskBar({ level, count, total, color, label }: { level: string; count: 
             <span className="w-24 text-xs text-muted-foreground text-right shrink-0">{label}</span>
             <div className="flex-1 progress-bar">
                 <div
-                    className="progress-fill"
+                    className="progress-fill transition-all duration-700"
                     style={{ width: `${pct}%`, background: color }}
                 />
             </div>
