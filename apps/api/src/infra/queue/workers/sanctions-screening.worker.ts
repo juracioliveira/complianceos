@@ -8,6 +8,7 @@ import { AuditService } from '../../../modules/audit/services/audit.service.js'
 import { WebhooksRepository } from '../../../modules/notifications/repositories/webhooks.repository.js'
 import { WebhooksService } from '../../../modules/notifications/services/webhooks.service.js'
 import { AlertCasesRepository } from '../../../modules/alert-cases/repositories/alert-cases.repository.js'
+import { createWorkerLogger } from '../../logger.js'
 
 const entitiesRepository = new EntitiesRepository()
 const auditRepository = new AuditRepository()
@@ -22,14 +23,14 @@ export const sanctionsScreeningWorker = new Worker(
     'sanctions-screening',
     async (job: Job) => {
         const { tenantId, entityId, document, name } = job.data
+        const log = createWorkerLogger('sanctions-screening', { jobId: job.id, tenantId, entityId, document })
 
-        console.log(`[SanctionsWorker] Iniciando screening para entidade: ${entityId} (${document})`)
+        log.info({ name }, 'Iniciando screening de sanções e PEP')
 
         try {
             // Simulate external OFAC/UN Sanctions API call
             const sanctionsUrl = process.env['SANCTIONS_SERVICE_URL'] || 'http://localhost:4002'
 
-            // We use a mock response instead of fetching for now, or fetch if it's running
             let isSanctioned = false;
             let matchDetails = null;
 
@@ -46,14 +47,13 @@ export const sanctionsScreeningWorker = new Worker(
                     matchDetails = result.details;
                 }
             } catch (err) {
-                console.log(`[SanctionsWorker] Falha ao conectar no microserviço de sanções. Usando fallback.`);
+                log.warn({ err }, 'Falha ao conectar no microserviço de sanções. Usando fallback.')
+
                 // Fallback simulation for demonstration
-                // Simulating OFAC hit for "0001"
                 if (document.includes('0001')) {
                     isSanctioned = true;
                     matchDetails = { list: 'OFAC_SDN', severity: 'CRITICAL', score: 98, type: 'SANCTION' }
                 }
-                // Simulating PEP hit for "0002"
                 else if (document.includes('0002') || name.toLowerCase().includes('pep') || name.toLowerCase().includes('político')) {
                     isSanctioned = true;
                     matchDetails = { list: 'BR_PEP_PORTAL_TRANSPARENCIA', severity: 'HIGH', score: 95, type: 'PEP' }
@@ -61,9 +61,10 @@ export const sanctionsScreeningWorker = new Worker(
             }
 
             if (isSanctioned) {
-                console.log(`[SanctionsWorker] ALERTA: Match encontrado para a entidade ${entityId}! Tipo: ${matchDetails?.type || 'SANCTION'}`);
+                const type = matchDetails?.type || 'SANCTION'
+                log.warn({ matchDetails }, `ALERTA: Match encontrado para a entidade! Tipo: ${type}`)
 
-                const isPEP = matchDetails?.type === 'PEP';
+                const isPEP = type === 'PEP';
                 const riskLevel = isPEP ? 'HIGH' : 'CRITICAL';
                 const actionName = isPEP ? 'PEP_SCREENING_MATCH' : 'SANCTIONS_SCREENING_MATCH';
                 const alertSource = isPEP ? 'PEP_MATCH' : 'SANCTIONS_MATCH';
@@ -92,10 +93,9 @@ export const sanctionsScreeningWorker = new Worker(
                         evidence: matchDetails ?? {},
                         createdBy: undefined,
                     });
-                    console.log(`[SanctionsWorker] Alert case criado automaticamente para entidade ${entityId} (${alertSource}).`);
+                    log.info('Alert case criado automaticamente')
                 } catch (alertErr) {
-                    console.error(`[SanctionsWorker] Falha ao criar alert case para ${entityId}:`, alertErr);
-                    // Não propaga o erro — o screening continuou com sucesso mesmo que o case falhe
+                    log.error({ err: alertErr }, 'Falha ao criar alert case')
                 }
 
                 // Audit Log
@@ -123,7 +123,7 @@ export const sanctionsScreeningWorker = new Worker(
                     detectedAt: new Date().toISOString()
                 });
             } else {
-                console.log(`[SanctionsWorker] Entidade ${entityId} limpa (No Match).`);
+                log.info('Entidade limpa (No Match)')
 
                 await auditService.logEvent({
                     tenantId,
@@ -137,7 +137,7 @@ export const sanctionsScreeningWorker = new Worker(
             }
 
         } catch (error) {
-            console.error(`[SanctionsWorker] Erro crítico ao processar entidade ${entityId}:`, error);
+            log.error({ err: error }, 'Erro crítico ao processar screening de sanções')
             throw error;
         }
     },

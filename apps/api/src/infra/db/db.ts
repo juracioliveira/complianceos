@@ -2,6 +2,7 @@ import pg from 'pg'
 import { drizzle } from 'drizzle-orm/node-postgres'
 import * as schema from './schema'
 import { AsyncLocalStorage } from 'node:async_hooks'
+import { logger } from '../logger.js'
 
 const { Pool } = pg
 
@@ -22,7 +23,18 @@ export const pool = new Pool({
 })
 
 // Drizzle instance export
-export const db = drizzle(pool, { schema })
+class MyLogger {
+    logQuery(query: string, params: unknown[]): void {
+        if (process.env['NODE_ENV'] === 'development') {
+            logger.debug({ query, params }, 'Executando Query SQL')
+        }
+    }
+}
+
+export const db = drizzle(pool, {
+    schema,
+    logger: new MyLogger()
+})
 
 /**
  * Retorna uma instância do Drizzle configurada para o tenant atual.
@@ -48,7 +60,8 @@ export async function checkDatabaseConnection(): Promise<boolean> {
     try {
         await client.query('SELECT 1')
         return true
-    } catch {
+    } catch (err) {
+        logger.error({ err }, 'Erro na conexão com o Banco de Dados')
         return false
     } finally {
         client.release()

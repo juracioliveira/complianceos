@@ -9,7 +9,8 @@ import {
 } from '@compliance-os/types'
 import type { JwtPayload, ComplianceModule } from '@compliance-os/types'
 
-const authRepo = new AuthRepository()
+// Remover a instância global para permitir DI
+// const authRepo = new AuthRepository()
 
 interface LoginResult {
     accessToken: string
@@ -31,6 +32,7 @@ interface LoginResult {
 
 export class AuthService {
     constructor(
+        private readonly authRepo: AuthRepository,
         private readonly signToken: (payload: JwtPayload) => string,
         private readonly signRefreshToken: (payload: { sub: string }) => string,
     ) { }
@@ -41,7 +43,7 @@ export class AuthService {
         mfaCode: string | undefined,
         clientIp: string,
     ): Promise<LoginResult> {
-        const user = await authRepo.findUserByEmail(email)
+        const user = await this.authRepo.findUserByEmail(email)
 
         if (!user) {
             await this.constantTimeDelay()
@@ -58,7 +60,7 @@ export class AuthService {
         const passwordValid = await verify(user.passwordHash, password)
 
         if (!passwordValid) {
-            await authRepo.incrementFailedAttempts(user.id)
+            await this.authRepo.incrementFailedAttempts(user.id)
             throw new UnauthorizedError('Credenciais inválidas')
         }
 
@@ -69,12 +71,75 @@ export class AuthService {
             const isValidTotp = authenticator.check(mfaCode, secret)
 
             if (!isValidTotp) {
-                await authRepo.incrementFailedAttempts(user.id)
+                await this.authRepo.incrementFailedAttempts(user.id)
                 throw new UnauthorizedError('Código MFA inválido')
             }
         }
 
-        await authRepo.resetFailedAttempts(user.id, clientIp)
+        await this.authRepo.resetFailedAttempts(user.id, clientIp)
+
+        const payload: JwtPayload = {
+            sub: user.id,
+            tenantId: user.tenantId,
+            role: user.role,
+            plan: user.tenantPlan as JwtPayload['plan'],
+            modules: user.tenantModules as ComplianceModule[],
+            iat: Math.floor(Date.now() / 1000),
+            exp: Math.floor(Date.now() / 1000) + Number(process.env['JWT_ACCESS_TOKEN_EXPIRY'] ?? 900),
+        }
+
+        const accessToken = this.signToken(payload)
+        const refreshToken = this.signRefreshToken({ sub: user.id })
+
+        const tokenTtl = Number(process.env['JWT_REFRESH_TOKEN_EXPIRY'] ?? 604_800)
+        await cache.set(
+            `refresh_token:${user.id}:${refreshToken.slice(-16)}`,
+            { userId: user.id, tenantId: user.tenantId },
+            tokenTtl,
+        )
+
+        return {
+            accessToken,
+            refreshToken,
+            expiresIn: Number(process.env['JWT_ACCESS_TOKEN_EXPIRY'] ?? 900),
+            user: {
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                role: user.role,
+                mfaEnabled: user.mfaEnabled,
+            },
+            tenant: {
+                id: user.tenantId,
+                plan: user.tenantPlan,
+                modules: user.tenantModules,
+            },
+        }
+    }
+
+    async refresh(oldRefreshTokenRaw: string, userId: string): Promise<LoginResult> {
+        const user = await this.authRepo.findUserById(userId)
+
+        if (!user) {
+            throw new UnauthorizedError('Usuário não encontrado')
+        }
+
+        if (user.status === 'INACTIVE') {
+            throw new UnauthorizedError('Usuário inativo')
+        }
+
+        if (user.lockedUntil && user.lockedUntil > new Date()) {
+            throw new BusinessRuleViolationError('Conta bloqueada temporariamente')
+        }
+
+        const redisKey = `refresh_token:${userId}:${oldRefreshTokenRaw.slice(-16)}`
+        const isValid = await cache.get(redisKey)
+
+        if (!isValid) {
+            throw new UnauthorizedError('Refresh token revogado, expirado ou inválido')
+        }
+
+        await cache.del(redisKey)
 
         const payload: JwtPayload = {
             sub: user.id,
@@ -120,7 +185,7 @@ export class AuthService {
     }
 
     async getMe(userId: string) {
-        return authRepo.findUserById(userId)
+        return this.authRepo.findUserById(userId)
     }
 
     private decryptMfaSecret(encryptedSecret: string): string {

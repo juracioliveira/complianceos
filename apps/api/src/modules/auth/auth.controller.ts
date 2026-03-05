@@ -4,8 +4,12 @@ import { AuthService } from './auth.service.js'
 import { ValidationError } from '@compliance-os/types'
 import { authMiddleware } from '../../middlewares/auth.middleware.js'
 
+import { AuthRepository } from './auth.repository.js'
+
 export const authRoutes: FastifyPluginAsync = async (fastify) => {
+    const authRepo = new AuthRepository()
     const authService = new AuthService(
+        authRepo,
         (payload) => fastify.jwt.sign(payload as object),
         (payload) => fastify.jwt.sign(payload, { expiresIn: '7d' }),
     )
@@ -59,21 +63,28 @@ export const authRoutes: FastifyPluginAsync = async (fastify) => {
                 const decoded = fastify.jwt.decode<{ sub: string }>(refreshToken)
                 if (!decoded?.sub) throw new Error('Token inválido')
 
-                // Gerar novo access token
-                const newAccessToken = fastify.jwt.sign({ sub: decoded.sub })
+                const refreshResult = await authService.refresh(refreshToken, decoded.sub)
+
+                reply.setCookie('refreshToken', refreshResult.refreshToken, {
+                    httpOnly: true,
+                    secure: process.env['NODE_ENV'] === 'production',
+                    sameSite: 'strict',
+                    path: '/v1/auth/refresh',
+                    maxAge: 604_800, // 7 dias
+                })
 
                 return reply.send({
                     data: {
-                        accessToken: newAccessToken,
-                        expiresIn: Number(process.env['JWT_ACCESS_TOKEN_EXPIRY'] ?? 900),
+                        accessToken: refreshResult.accessToken,
+                        expiresIn: refreshResult.expiresIn,
                     },
                 })
-            } catch {
+            } catch (err: any) {
                 return reply.status(401).send({
                     type: 'https://complianceos.com.br/errors/UNAUTHORIZED',
                     title: 'Refresh token inválido',
                     status: 401,
-                    detail: 'Refresh token expirado ou inválido. Faça login novamente.',
+                    detail: err.message || 'Refresh token expirado ou inválido. Faça login novamente.',
                     instance: request.url,
                     requestId: request.id,
                     timestamp: new Date().toISOString(),

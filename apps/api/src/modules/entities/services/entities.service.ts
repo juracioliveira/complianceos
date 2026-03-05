@@ -67,8 +67,13 @@ export class EntitiesService {
 
         // Chamar CNPJ Service local (Banco próprio RFB)
         const cnpjServiceUrl = process.env['CNPJ_SERVICE_URL'] || 'http://localhost:4001'
+        const internalApiKey = process.env['INTERNAL_API_KEY']
+        if (!internalApiKey) {
+            throw new ComplianceOSError('INTERNAL_API_KEY_MISSING', 'A chave interna de API não está configurada', 500)
+        }
+
         const response = await fetch(`${cnpjServiceUrl}/cnpj/${entity.cnpj}`, {
-            headers: { 'x-api-key': process.env['INTERNAL_API_KEY'] || 'dev-key' }
+            headers: { 'x-api-key': internalApiKey }
         })
 
         if (!response.ok) {

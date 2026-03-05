@@ -71,6 +71,8 @@ export class AuthRepository {
             name: row.name,
             role: row.role as User['role'],
             status: row.status as User['status'],
+            mfaEnabled: row.mfa_enabled,
+            lockedUntil: row.locked_until ? new Date(row.locked_until) : null,
             tenantName: row.tenant_name,
             tenantPlan: row.tenant_plan,
             tenantModules: JSON.parse(row.tenant_modules ?? '[]') as string[],

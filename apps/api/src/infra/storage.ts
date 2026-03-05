@@ -1,8 +1,13 @@
 import AWS from 'aws-sdk'
 
 const endpoint = process.env['MINIO_SERVER_URL'] || 'https://complian-os-minio-complianceos.qztbnm.easypanel.host'
-const accessKeyId = process.env['MINIO_ROOT_USER'] || 'admin'
-const secretAccessKey = process.env['MINIO_ROOT_PASSWORD'] || 'sjMZIp01gv4g'
+const accessKeyId = process.env['MINIO_ROOT_USER']
+const secretAccessKey = process.env['MINIO_ROOT_PASSWORD']
+
+if (!accessKeyId || !secretAccessKey) {
+    throw new Error('MINIO_ROOT_USER and MINIO_ROOT_PASSWORD environment variables are required.')
+}
+
 const region = process.env['MINIO_REGION'] || 'us-east-1'
 
 const s3 = new AWS.S3({

@@ -56,6 +56,7 @@
         "@types/nodemailer": "^6.4.15",
         "@types/pdfkit": "^0.17.5",
         "@types/pg": "^8.11.6",
+        "@vitest/coverage-v8": "^1.6.0",
         "drizzle-kit": "^0.20.18",
         "rimraf": "^5.0.5",
         "testcontainers": "^10.7.2",

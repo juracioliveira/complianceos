@@ -8,6 +8,7 @@ import fastifySwagger from '@fastify/swagger'
 import fastifySwaggerUi from '@fastify/swagger-ui'
 import { checkDatabaseConnection, pool } from './infra/db/db.js'
 import { redis, checkRedisConnection } from './infra/redis.js'
+import { logger } from './infra/logger.js'
 import { initWorkers } from './infra/queue/workers/index.js'
 import type { ProblemDetails, JwtPayload } from '@compliance-os/types'
 import { ComplianceOSError } from '@compliance-os/types'
@@ -34,19 +35,17 @@ const HOST = process.env['API_HOST'] ?? '0.0.0.0'
 initWorkers()
 
 export const app = Fastify({
-    logger: {
-        level: process.env['API_LOG_LEVEL'] ?? 'info',
-        ...(isDev
-            ? {}
-            : {}),
-        redact: ['req.headers.authorization', 'req.body.password', 'req.body.mfaCode', 'req.body.cpf'],
-    },
+    logger,
     genReqId: () => crypto.randomUUID(),
 })
 
 // ─── Registrar plugins ───────────────────────────────────────────────────────
 await app.register(fastifyHelmet, { contentSecurityPolicy: false })
-await app.register(fastifyCookie, { secret: process.env['COOKIE_SECRET'] ?? 'dev_secret' })
+const cookieSecret = process.env['COOKIE_SECRET']
+if (!cookieSecret) {
+    throw new Error('COOKIE_SECRET environment variable is required.')
+}
+await app.register(fastifyCookie, { secret: cookieSecret })
 await app.register(fastifyCors, {
     origin: (origin, cb) => {
         const allowed = (process.env['CORS_ALLOWED_ORIGINS'] ?? 'http://localhost:3000,http://localhost:4000').split(',')
@@ -58,11 +57,35 @@ await app.register(fastifyCors, {
     },
     credentials: true,
 })
-await app.register(fastifyRateLimit, { global: false, redis })
+await app.register(fastifyRateLimit, {
+    global: true,
+    max: 1000,
+    timeWindow: '1 minute',
+    redis,
+    keyGenerator: (request) => {
+        const authHeader = request.headers.authorization
+        if (authHeader && authHeader.startsWith('Bearer ')) {
+            const token = authHeader.substring(7)
+            try {
+                // Instância de JWT de fastify usada optimisticamente
+                const decoded = app.jwt.decode<{ tenantId?: string }>(token)
+                if (decoded && decoded.tenantId) {
+                    return `rate-limit:tenant:${decoded.tenantId}`
+                }
+            } catch {
+                // Fallback para IP em caso malformado
+            }
+        }
+        return `rate-limit:ip:${request.ip}`
+    }
+})
 
 const secretKey = process.env['JWT_SECRET']
     || process.env['JWT_PRIVATE_KEY_BASE64']
-    || 'dev_secret_key_change_in_production_environment'
+
+if (!secretKey) {
+    throw new Error('JWT_SECRET or JWT_PRIVATE_KEY_BASE64 environment variable is required.')
+}
 
 await app.register(fastifyJwt, {
     secret: secretKey,
@@ -79,8 +102,26 @@ if (isDev) {
     await app.register(fastifySwaggerUi, { routePrefix: '/docs' })
 }
 
+// Injetar contexto de logs (tenantId) após validação de rotas autenticadas
+app.addHook('preHandler', async (request) => {
+    if (request.tenantId) {
+        request.log = request.log.child({ tenantId: request.tenantId })
+    }
+})
+
 // Global Error Handler
 app.setErrorHandler((error, request, reply) => {
+    const statusCode = error instanceof ComplianceOSError ? error.statusCode : (error.statusCode || 500)
+
+    // Log estruturado do erro
+    request.log.error({
+        err: error,
+        requestId: request.id,
+        tenantId: request.tenantId,
+        url: request.url,
+        method: request.method
+    }, error.message)
+
     if (error instanceof ComplianceOSError) {
         return reply.status(error.statusCode).send({
             type: `https://complianceos.com.br/errors/${error.code}`,
@@ -92,8 +133,12 @@ app.setErrorHandler((error, request, reply) => {
             timestamp: new Date().toISOString(),
         })
     }
-    request.log.error(error)
-    return reply.status(500).send({ status: 500, title: 'Internal Server Error' })
+
+    return reply.status(statusCode).send({
+        status: statusCode,
+        title: statusCode === 500 ? 'Internal Server Error' : error.message,
+        requestId: request.id
+    })
 })
 
 // ─── Registrar rotas ──────────────────────────────────────────────────────────
