@@ -14,6 +14,7 @@ import { NotificationsService } from '../notifications/services/notifications.se
 import { NotificationsRepository } from '../notifications/repositories/notifications.repository.js'
 import { WebhooksService } from '../notifications/services/webhooks.service.js'
 import { WebhooksRepository } from '../notifications/repositories/webhooks.repository.js'
+import { generateAlertCasesPdf } from './services/pdf-report.service.js'
 
 // ─── Schemas de Validação ─────────────────────────────────────────────────────
 const listQuerySchema = z.object({
@@ -40,6 +41,13 @@ const updateSchema = z.object({
     severity: z.enum(['CRITICAL', 'HIGH', 'MEDIUM', 'LOW']).optional(),
     assignedTo: z.string().uuid().nullable().optional(),
     resolutionNote: z.string().max(5000).optional(),
+})
+
+const exportSchema = z.object({
+    status: z.union([z.string(), z.array(z.string())]).optional(),
+    severity: z.union([z.string(), z.array(z.string())]).optional(),
+    source: z.string().optional(),
+    limit: z.coerce.number().int().min(1).max(500).default(100),
 })
 
 // ─── Injeção de Dependência ───────────────────────────────────────────────────
@@ -139,6 +147,44 @@ export const alertCasesRoutes: FastifyPluginAsync = async (fastify) => {
             }
 
             return reply.send({ data: updated })
+        },
+    })
+
+    // POST /v1/alert-cases/export  — P1-C: Download do relatório PDF regulatório
+    fastify.post('/export', {
+        preHandler: [authMiddleware, tenantMiddleware],
+        handler: async (request: FastifyRequest, reply: FastifyReply) => {
+            const user = request.user as JwtPayload
+            const body = exportSchema.safeParse(request.body)
+            if (!body.success) throw new ValidationError('Parâmetros inválidos', body.error)
+
+            // Buscar casos com os filtros solicitados
+            const { data: cases } = await alertCasesService.listCases(request.tenantId, {
+                ...(body.data.status !== undefined ? { status: body.data.status } : {}),
+                ...(body.data.severity !== undefined ? { severity: body.data.severity } : {}),
+                ...(body.data.source !== undefined ? { source: body.data.source } : {}),
+                limit: body.data.limit,
+                offset: 0,
+            })
+
+            // Gerar PDF
+            const pdfBuffer = generateAlertCasesPdf(cases, {
+                tenantName: request.tenantId,
+                generatedByName: user.sub,
+                filters: {
+                    ...(body.data.status !== undefined ? { status: body.data.status } : {}),
+                    ...(body.data.severity !== undefined ? { severity: body.data.severity } : {}),
+                    ...(body.data.source !== undefined ? { source: body.data.source } : {}),
+                },
+            })
+
+            const filename = `relatorio-alertas-${new Date().toISOString().slice(0, 10)}.pdf`
+
+            return reply
+                .header('Content-Type', 'application/pdf')
+                .header('Content-Disposition', `attachment; filename="${filename}"`)
+                .header('Content-Length', pdfBuffer.length)
+                .send(pdfBuffer)
         },
     })
 }
