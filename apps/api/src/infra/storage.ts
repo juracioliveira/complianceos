@@ -4,10 +4,6 @@ const endpoint = process.env['MINIO_SERVER_URL'] || 'https://complian-os-minio-c
 const accessKeyId = process.env['MINIO_ROOT_USER'] || 'admin'
 const secretAccessKey = process.env['MINIO_ROOT_PASSWORD'] || 'sjMZIp01gv4g'
 
-if (!accessKeyId || !secretAccessKey) {
-    throw new Error('MINIO_ROOT_USER and MINIO_ROOT_PASSWORD environment variables are required.')
-}
-
 const region = process.env['MINIO_REGION'] || 'us-east-1'
 
 const s3 = new AWS.S3({
