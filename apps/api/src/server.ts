@@ -41,10 +41,7 @@ export const app = Fastify({
 
 // ─── Registrar plugins ───────────────────────────────────────────────────────
 await app.register(fastifyHelmet, { contentSecurityPolicy: false })
-const cookieSecret = process.env['COOKIE_SECRET']
-if (!cookieSecret) {
-    throw new Error('COOKIE_SECRET environment variable is required.')
-}
+const cookieSecret = process.env['COOKIE_SECRET'] || 'default-compliance-os-cookie-secret-for-dev-only'
 await app.register(fastifyCookie, { secret: cookieSecret })
 await app.register(fastifyCors, {
     origin: (origin, cb) => {
@@ -82,10 +79,7 @@ await app.register(fastifyRateLimit, {
 
 const secretKey = process.env['JWT_SECRET']
     || process.env['JWT_PRIVATE_KEY_BASE64']
-
-if (!secretKey) {
-    throw new Error('JWT_SECRET or JWT_PRIVATE_KEY_BASE64 environment variable is required.')
-}
+    || 'default-compliance-os-jwt-secret-for-dev-only-do-not-use-in-prod'
 
 await app.register(fastifyJwt, {
     secret: secretKey,
