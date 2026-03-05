@@ -129,7 +129,7 @@ export class AlertCasesRepository {
         title: string
         description: string
         evidence: Record<string, any>
-        createdBy: string
+        createdBy?: string | undefined
     }) {
         const result = await pool.query<any>(`
             INSERT INTO alert_cases

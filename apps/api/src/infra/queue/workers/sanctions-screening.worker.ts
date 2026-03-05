@@ -7,6 +7,7 @@ import { DocumentsService } from '../../../modules/documents/services/documents.
 import { AuditService } from '../../../modules/audit/services/audit.service.js'
 import { WebhooksRepository } from '../../../modules/notifications/repositories/webhooks.repository.js'
 import { WebhooksService } from '../../../modules/notifications/services/webhooks.service.js'
+import { AlertCasesRepository } from '../../../modules/alert-cases/repositories/alert-cases.repository.js'
 
 const entitiesRepository = new EntitiesRepository()
 const auditRepository = new AuditRepository()
@@ -15,6 +16,7 @@ const documentsService = new DocumentsService(documentsRepository)
 const auditService = new AuditService(auditRepository, documentsService)
 const webhooksRepository = new WebhooksRepository()
 const webhooksService = new WebhooksService(webhooksRepository)
+const alertCasesRepository = new AlertCasesRepository()
 
 export const sanctionsScreeningWorker = new Worker(
     'sanctions-screening',
@@ -64,9 +66,37 @@ export const sanctionsScreeningWorker = new Worker(
                 const isPEP = matchDetails?.type === 'PEP';
                 const riskLevel = isPEP ? 'HIGH' : 'CRITICAL';
                 const actionName = isPEP ? 'PEP_SCREENING_MATCH' : 'SANCTIONS_SCREENING_MATCH';
+                const alertSource = isPEP ? 'PEP_MATCH' : 'SANCTIONS_MATCH';
+                const alertSeverity = isPEP ? 'HIGH' : (
+                    matchDetails?.severity === 'HIGH' ? 'HIGH' :
+                        matchDetails?.severity === 'MEDIUM' ? 'MEDIUM' : 'CRITICAL'
+                );
 
                 // Update Entity Risk
                 await entitiesRepository.updateRiskScore(entityId, tenantId, matchDetails?.score || 99, riskLevel, 'SYSTEM_SANCTIONS_ENGINE');
+
+                // --- P1-A: Criar Alert Case automaticamente ---
+                try {
+                    const listName = matchDetails?.list || 'LISTA_DESCONHECIDA';
+                    await alertCasesRepository.create({
+                        tenantId,
+                        ...(entityId ? { entityId } : {}),
+                        source: alertSource as 'SANCTIONS_MATCH' | 'PEP_MATCH',
+                        severity: alertSeverity as 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW',
+                        title: isPEP
+                            ? `Pessoa Politicamente Exposta identificada: ${name}`
+                            : `Match em lista de sanções ${listName}: ${name}`,
+                        description: isPEP
+                            ? `Entidade identificada como PEP na lista ${listName}. Documento: ${document}. Score de correspondência: ${matchDetails?.score || 'N/A'}.`
+                            : `Entidade encontrada na lista de sanções ${listName}. Documento: ${document}. Score de correspondência: ${matchDetails?.score || 'N/A'}. Requer investigação imediata.`,
+                        evidence: matchDetails ?? {},
+                        createdBy: undefined,
+                    });
+                    console.log(`[SanctionsWorker] Alert case criado automaticamente para entidade ${entityId} (${alertSource}).`);
+                } catch (alertErr) {
+                    console.error(`[SanctionsWorker] Falha ao criar alert case para ${entityId}:`, alertErr);
+                    // Não propaga o erro — o screening continuou com sucesso mesmo que o case falhe
+                }
 
                 // Audit Log
                 await auditService.logEvent({
