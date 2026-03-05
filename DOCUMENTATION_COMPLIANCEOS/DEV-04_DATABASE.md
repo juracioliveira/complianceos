@@ -457,7 +457,110 @@ CREATE POLICY notifications_tenant_isolation ON notifications
   USING (tenant_id = current_setting('app.tenant_id')::UUID);
 ```
 
----
+### 4.10 `alert_cases` — Casos de Alerta Regulatórios (P0 · Sprint Mar/2026)
+
+> [!IMPORTANT]
+> Tabela central do módulo de gestão de alertas (Case Management). Gerada automaticamente pelo worker de sanctions screening (P1-A) ou manualmente por usuários.
+
+```sql
+CREATE TYPE alert_source AS ENUM (
+  'SANCTIONS_MATCH', 'PEP_MATCH', 'CHECKLIST_OVERDUE', 'HIGH_RISK_ENTITY', 'MANUAL'
+);
+CREATE TYPE alert_severity AS ENUM ('CRITICAL', 'HIGH', 'MEDIUM', 'LOW');
+CREATE TYPE alert_case_status AS ENUM (
+  'OPEN', 'UNDER_REVIEW', 'ESCALATED', 'CLOSED_FALSE_POSITIVE', 'CLOSED_CONFIRMED'
+);
+
+CREATE TABLE alert_cases (
+  id                  UUID              PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id           UUID              NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+  entity_id           UUID              REFERENCES entities(id) ON DELETE SET NULL,
+  -- Origem e classificação
+  source              alert_source      NOT NULL,
+  severity            alert_severity    NOT NULL DEFAULT 'MEDIUM',
+  title               VARCHAR(300)      NOT NULL,
+  description         TEXT              NOT NULL DEFAULT '',
+  -- Evidências estruturadas (match de sanção, PEP, scores etc.)
+  evidence            JSONB             NOT NULL DEFAULT '{}',
+  -- {
+  --   "list": "OFAC_SDN",
+  --   "matchScore": 0.98,
+  --   "matchedName": "John Doe",
+  --   "entityType": "individual",
+  --   "details": { ... }
+  -- }
+  -- Fluxo de trabalho (máquina de estados)
+  status              alert_case_status NOT NULL DEFAULT 'OPEN',
+  assigned_to         UUID              REFERENCES users(id) ON DELETE SET NULL,
+  resolution_note     TEXT,
+  resolved_at         TIMESTAMPTZ,
+  -- Rastreabilidade
+  created_by          UUID              REFERENCES users(id) ON DELETE SET NULL,  -- null = sistema
+  -- Audit trail interno (array de eventos)
+  audit_trail         JSONB             NOT NULL DEFAULT '[]',
+  -- [
+  --   {
+  --     "timestamp": "2026-03-04T...",
+  --     "actorId": "...",
+  --     "event": "STATUS_CHANGED",
+  --     "from": "OPEN",
+  --     "to": "UNDER_REVIEW",
+  --     "note": "Iniciando investigação"
+  --   }
+  -- ]
+  created_at          TIMESTAMPTZ       NOT NULL DEFAULT NOW(),
+  updated_at          TIMESTAMPTZ       NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX idx_alert_cases_tenant ON alert_cases(tenant_id, status, severity, created_at DESC);
+CREATE INDEX idx_alert_cases_entity ON alert_cases(tenant_id, entity_id) WHERE entity_id IS NOT NULL;
+CREATE INDEX idx_alert_cases_open ON alert_cases(tenant_id, severity) WHERE status IN ('OPEN', 'UNDER_REVIEW', 'ESCALATED');
+
+ALTER TABLE alert_cases ENABLE ROW LEVEL SECURITY;
+CREATE POLICY alert_cases_tenant_isolation ON alert_cases
+  USING (tenant_id = current_setting('app.tenant_id')::UUID);
+```
+
+**Máquina de estados de `alert_cases`:**
+
+```
+OPEN → UNDER_REVIEW → ESCALATED → CLOSED_CONFIRMED
+                              ↘ CLOSED_FALSE_POSITIVE
+```
+
+Transições válidas:
+| De | Para |
+|---|---|
+| `OPEN` | `UNDER_REVIEW`, `CLOSED_FALSE_POSITIVE` |
+| `UNDER_REVIEW` | `ESCALATED`, `CLOSED_FALSE_POSITIVE`, `CLOSED_CONFIRMED` |
+| `ESCALATED` | `CLOSED_CONFIRMED`, `CLOSED_FALSE_POSITIVE` |
+
+### 4.11 `webhooks` — Integrações Externas (Sprint Fev/2026)
+
+```sql
+CREATE TABLE webhooks (
+  id          UUID          PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id   UUID          NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+  url         VARCHAR(500)  NOT NULL,
+  secret      TEXT          NOT NULL,         -- segredo HMAC-SHA256 para verificação de assinatura
+  status      VARCHAR(20)   NOT NULL DEFAULT 'ACTIVE' CHECK (status IN ('ACTIVE', 'INACTIVE')),
+  -- Filtros de eventos (array vazio = todos os eventos)
+  events      TEXT[]        NOT NULL DEFAULT '{}',
+  -- ex: ['alert.created', 'alert.escalated', 'entity.risk.changed']
+  description VARCHAR(200),
+  created_at  TIMESTAMPTZ   NOT NULL DEFAULT NOW(),
+  updated_at  TIMESTAMPTZ   NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX idx_webhooks_tenant ON webhooks(tenant_id, status);
+
+ALTER TABLE webhooks ENABLE ROW LEVEL SECURITY;
+CREATE POLICY webhooks_tenant_isolation ON webhooks
+  USING (tenant_id = current_setting('app.tenant_id')::UUID);
+```
+
+**Assinatura de entrega:** cada request inclui header `X-ComplianceOS-Signature: sha256=<HMAC-SHA256(body, secret)>` para verificação de autenticidade.
+
 
 ## 5. Row-Level Security — Como Funciona
 
@@ -493,19 +596,20 @@ SELECT COUNT(*) FROM entities;  -- retorna apenas entidades do tenant A
 
 ```
 migrations/
-├── 0001_create_extensions.sql
-├── 0002_create_tenants.sql
-├── 0003_create_users.sql
-├── 0004_create_entities.sql
-├── 0005_create_checklists.sql
-├── 0006_create_checklist_runs.sql
-├── 0007_create_risk_assessments.sql
-├── 0008_create_documents.sql
-├── 0009_create_audit_events.sql
-├── 0010_create_notifications.sql
-├── 0011_create_rls_policies.sql
-├── 0012_create_indexes.sql
-└── 0013_seed_system_checklists.sql
+├── 0001_create_extensions.sql       -- pgcrypto, pg_trgm, btree_gin
+├── 0002_create_tenants.sql          -- tenants (config, planos, settings JSONB)
+├── 0003_create_users.sql            -- users, MFA, convites, RLS
+├── 0004_create_entities.sql         -- entities, corporate_data JSONB, PEP
+├── 0005_create_checklists.sql       -- checklists templates versionados
+├── 0006_create_documents.sql        -- documents (S3 keys, SHA-256, status)
+├── 0007_create_checklist_runs.sql   -- checklist_runs, trigger imutabilidade COMPLETED
+├── 0008_create_risk_assessments.sql -- risk_assessments (score composto, factors JSONB)
+├── 0009_create_audit_events.sql     -- audit_events INSERT ONLY + blockchain hash
+├── 0010_create_alert_cases.sql      -- alert_cases (P0) + ENUMs de source/severity/status
+├── 0011_create_notifications.sql    -- notifications, severity, action_url
+├── 0012_create_additional_indexes.sql -- índices compostos de performance
+├── 0013_seed_system_checklists.sql  -- seeds dos checklists regulatórios do sistema
+└── 0014_create_webhooks.sql         -- webhooks (integrações HMAC-SHA256)
 ```
 
 ### 6.2 Regras de Migration
@@ -620,6 +724,69 @@ WHERE tenant_id = current_setting('app.tenant_id')::UUID
   AND event_id > $4                               -- cursor para paginação
 ORDER BY occurred_at ASC, event_id ASC
 LIMIT 500;  -- máximo por página para exportações
+```
+
+### 7.4 Alert Cases — Fila de Investigação (P0)
+
+```sql
+-- Listar casos abertos ordenados por severidade (fila de trabalho do analista)
+SELECT
+  ac.id,
+  ac.title,
+  ac.source,
+  ac.severity,
+  ac.status,
+  ac.created_at,
+  e.name    AS entity_name,
+  e.cnpj    AS entity_cnpj,
+  u.name    AS assigned_to_name
+FROM alert_cases ac
+LEFT JOIN entities e ON e.id = ac.entity_id
+LEFT JOIN users u ON u.id = ac.assigned_to
+WHERE ac.status IN ('OPEN', 'UNDER_REVIEW', 'ESCALATED')
+ORDER BY
+  CASE ac.severity
+    WHEN 'CRITICAL' THEN 1 WHEN 'HIGH' THEN 2
+    WHEN 'MEDIUM' THEN 3 ELSE 4
+  END,
+  ac.created_at ASC  -- mais antigo primeiro dentro da mesma prioridade
+LIMIT 50;
+
+-- KPIs de alert_cases para o dashboard
+SELECT
+  COUNT(*) FILTER (WHERE status IN ('OPEN', 'UNDER_REVIEW', 'ESCALATED')) AS open_cases,
+  COUNT(*) FILTER (WHERE status IN ('OPEN', 'UNDER_REVIEW', 'ESCALATED') AND severity = 'CRITICAL') AS critical_cases,
+  COUNT(*) FILTER (WHERE status = 'CLOSED_CONFIRMED') AS confirmed_threats,
+  COUNT(*) FILTER (WHERE created_at >= date_trunc('week', NOW())) AS new_this_week,
+  COUNT(*) FILTER (WHERE created_at >= date_trunc('week', NOW() - INTERVAL '1 week')
+                    AND created_at < date_trunc('week', NOW())) AS new_last_week
+FROM alert_cases;
+```
+
+### 7.5 Dashboard — Trend Data Mês/Semana (P2)
+
+```sql
+-- Trend de entidades: mês atual vs mês anterior
+SELECT
+  COUNT(*) FILTER (WHERE created_at >= date_trunc('month', NOW())) AS entities_this_month,
+  COUNT(*) FILTER (WHERE created_at >= date_trunc('month', NOW() - INTERVAL '1 month')
+                    AND created_at < date_trunc('month', NOW())) AS entities_last_month
+FROM entities;
+
+-- Trend de checklists concluídos
+SELECT
+  COUNT(*) FILTER (WHERE completed_at >= date_trunc('month', NOW())) AS checklists_this_month,
+  COUNT(*) FILTER (WHERE completed_at >= date_trunc('month', NOW() - INTERVAL '1 month')
+                    AND completed_at < date_trunc('month', NOW())) AS checklists_last_month
+FROM checklist_runs WHERE status = 'COMPLETED';
+
+-- Trend de alert cases: semana atual vs semana anterior
+SELECT
+  COUNT(*) FILTER (WHERE created_at >= date_trunc('week', NOW())) AS cases_this_week,
+  COUNT(*) FILTER (WHERE created_at >= date_trunc('week', NOW() - INTERVAL '1 week')
+                    AND created_at < date_trunc('week', NOW())) AS cases_last_week
+FROM alert_cases;
+-- Nota: essas queries são executadas em paralelo com Promise.all() no dashboard.controller.ts
 ```
 
 ---

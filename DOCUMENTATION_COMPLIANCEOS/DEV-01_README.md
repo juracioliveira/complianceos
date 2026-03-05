@@ -34,6 +34,19 @@ APM        → Datadog Agent 7 · AWS CloudWatch
 
 ---
 
+## 📈 Histórico de Entregas (Sprint Log)
+
+### Sprint Março/2026 — Gestão de Alertas e Tempo Real
+| Código | Funcionalidade | Descrição |
+|---|---|---|
+| **P0** | **Case Management** | Módulo de `alert_cases` para gestão centralizada de incidentes |
+| **P1-A** | **Auto-Alerts** | Integração com sanctions worker para criação automática de alertas |
+| **P1-B** | **Notificações** | Sistema in-app e Webhooks (HMAC) para eventos de criticidade |
+| **P1-C** | **Export PDF** | Geração de relatórios regulatórios conforme Res. COAF 36/2021 |
+| **P2** | **Live Dashboard** | SSE stream para atualizações real-time e trend data (M/M) |
+
+---
+
 ## Estrutura do Monorepo
 
 ```

@@ -666,11 +666,165 @@ GET /v1/audit/events?from=2026-01-01T00:00:00Z&to=2026-02-28T23:59:59Z&module=PL
 
 ---
 
-## 7. Dashboard — `/dashboard`
+## 7. Alert Cases — `/alert-cases` (P0 · Case Management)
+
+> [!IMPORTANT]
+> Módulo de gestão de alertas e investigação regulatória. Casos podem ser criados manualmente ou automaticamente pelo worker de sanctions screening (P1-A). A máquina de estados garante rastreabilidade completa.
+
+### `GET /v1/alert-cases`
+
+**Permissão:** `ANALYST`, `COMPLIANCE_OFFICER`, `ADMIN`, `AUDITOR`
+
+```http
+GET /v1/alert-cases?status=OPEN&severity=CRITICAL,HIGH&limit=50
+```
+
+| Parâmetro | Tipo | Descrição |
+|---|---|---|
+| `status` | string ou array | `OPEN`, `UNDER_REVIEW`, `ESCALATED`, `CLOSED_FALSE_POSITIVE`, `CLOSED_CONFIRMED` |
+| `severity` | string ou array | `CRITICAL`, `HIGH`, `MEDIUM`, `LOW` |
+| `source` | string | `SANCTIONS_MATCH`, `PEP_MATCH`, `CHECKLIST_OVERDUE`, `HIGH_RISK_ENTITY`, `MANUAL` |
+| `assignedTo` | UUID | Filtrar por responsável |
+| `entityId` | UUID | Filtrar por entidade |
+| `limit` | integer | 1–200 (default 50) |
+| `offset` | integer | Offset para paginação |
+
+```json
+// Response 200
+{
+  "data": [
+    {
+      "id": "01HR...",
+      "title": "Match em Lista OFAC_SDN — Acme Pagamentos",
+      "source": "SANCTIONS_MATCH",
+      "severity": "CRITICAL",
+      "status": "OPEN",
+      "entityId": "01HQ...",
+      "entity_name": "Acme Pagamentos Ltda",
+      "entity_cnpj": "12345678000195",
+      "evidence": { "list": "OFAC_SDN", "matchScore": 0.98, "matchedName": "Acme Pagamentos" },
+      "createdBy": null,
+      "assignedTo": null,
+      "createdAt": "2026-03-04T20:15:00Z",
+      "updatedAt": "2026-03-04T20:15:00Z"
+    }
+  ],
+  "meta": { "total": 12, "limit": 50, "hasMore": false }
+}
+```
+
+### `POST /v1/alert-cases`
+
+**Permissão:** `ANALYST`, `COMPLIANCE_OFFICER`, `ADMIN`
+
+```json
+// Request
+{
+  "entityId": "01HQ...",           // opcional
+  "source": "MANUAL",
+  "severity": "HIGH",
+  "title": "Operações atipicas detectadas em análise manual",
+  "description": "Cliente realizou 12 transferências acima de R$10k em 3 dias.",
+  "evidence": { "transactionIds": ["tx_001", "tx_002"], "totalValue": 145000 }
+}
+
+// Response 201
+{
+  "data": {
+    "id": "01HR...",
+    "status": "OPEN",
+    "severity": "HIGH",
+    "source": "MANUAL",
+    "createdAt": "2026-03-04T22:00:00Z"
+  }
+}
+```
+
+### `GET /v1/alert-cases/:id`
+
+```json
+// Response 200
+{
+  "data": {
+    "id": "01HR...",
+    "title": "Match em Lista OFAC_SDN",
+    "source": "SANCTIONS_MATCH",
+    "severity": "CRITICAL",
+    "status": "UNDER_REVIEW",
+    "description": "Entidade Acme Pagamentos encontrada na lista OFAC_SDN com score de similaridade 98%.",
+    "evidence": { "list": "OFAC_SDN", "matchScore": 0.98 },
+    "entity": { "id": "01HQ...", "name": "Acme Pagamentos Ltda", "cnpj": "12345678000195" },
+    "assignedTo": { "id": "uuid", "name": "Maria Silva" },
+    "auditTrail": [
+      { "timestamp": "2026-03-04T20:15:00Z", "event": "CREATED", "actorId": null },
+      { "timestamp": "2026-03-04T21:00:00Z", "event": "STATUS_CHANGED", "from": "OPEN", "to": "UNDER_REVIEW", "actorId": "uuid" }
+    ],
+    "createdAt": "2026-03-04T20:15:00Z",
+    "updatedAt": "2026-03-04T21:00:00Z"
+  }
+}
+```
+
+### `PATCH /v1/alert-cases/:id`
+
+**Permissão:** `ANALYST`, `COMPLIANCE_OFFICER`, `ADMIN`
+
+```json
+// Request — mudar status (máquina de estados)
+{ "status": "ESCALATED", "resolutionNote": "Confirmado match. Bloqueando conta..." }
+
+// Request — atribuir responsável
+{ "assignedTo": "uuid-do-analista" }
+
+// Response 200
+{ "data": { ...dadosCasoAtualizado } }
+```
+
+> **Transições válidas:** `OPEN → UNDER_REVIEW`, `UNDER_REVIEW → ESCALATED`, `UNDER_REVIEW/ESCALATED → CLOSED_*`. Outras transições retornam `422 BUSINESS_RULE_VIOLATION`.
+
+### `POST /v1/alert-cases/export` (P1-C · PDF Regulatório)
+
+**Permissão:** `COMPLIANCE_OFFICER`, `ADMIN`
+
+Gera e retorna um PDF regulatório dos casos de alerta, formatado para submissão ao COAF/BACEN/CVM. O documento inclui: capa institucional, metadados de geração, aviso legal e um card por caso com severidade, status, fonte e evidências.
+
+```json
+// Request
+{
+  "status": "CLOSED_CONFIRMED",   // opcional — pode ser array
+  "severity": ["CRITICAL", "HIGH"],
+  "source": "SANCTIONS_MATCH",     // opcional
+  "limit": 200                     // máximo 500
+}
+```
+
+```http
+// Response 200 — binário PDF
+Content-Type: application/pdf
+Content-Disposition: attachment; filename="relatorio-alertas-2026-03-04.pdf"
+
+<pdf binary>
+```
+
+**Exemplo de uso com cURL:**
+```bash
+curl -X POST https://api.complianceos.com.br/v1/alert-cases/export \\
+  -H "Authorization: Bearer $TOKEN" \\
+  -H "Content-Type: application/json" \\
+  -d '{"severity":["CRITICAL","HIGH"]}' \\
+  --output relatorio-alertas.pdf
+```
+
+> Base legal: COAF Res. 36/2021 · Art. 11 da Lei nº 9.613/1998 (retenção mínima de 5 anos).
+
+---
+
+## 8. Dashboard — `/dashboard` (P2 · Dados em Tempo Real)
 
 ### `GET /v1/dashboard/summary`
 
-**Permissão:** Todos os roles
+**Permissão:** Todos os roles  
+**Cache:** Redis TTL 60s (atualizado automaticamente a cada nova operação)
 
 ```json
 // Response 200
@@ -678,32 +832,103 @@ GET /v1/audit/events?from=2026-01-01T00:00:00Z&to=2026-02-28T23:59:59Z&module=PL
   "data": {
     "entities": {
       "total": 142,
-      "byRisk": {
-        "CRITICAL": 3,
-        "HIGH": 18,
-        "MEDIUM": 67,
-        "LOW": 48,
-        "UNKNOWN": 6
-      },
+      "byRisk": { "CRITICAL": 3, "HIGH": 18, "MEDIUM": 67, "LOW": 48, "UNKNOWN": 6 },
       "active": 138,
-      "blocked": 4
+      "blocked": 4,
+      "trend": { "delta": 5, "dir": "up", "pct": 4 }  // vs mês anterior
     },
     "checklists": {
       "overdue": 7,
-      "dueSoon": 12,          // vencendo em ≤30 dias
+      "dueSoon": 12,
       "completedThisMonth": 34,
-      "inProgress": 3
+      "inProgress": 3,
+      "trend": { "delta": 8, "dir": "up", "pct": 31 }  // concluídos vs mês anterior
     },
     "documents": {
       "generatedThisMonth": 8,
-      "expiringSoon": 2       // validade ≤60 dias
+      "expiringSoon": 2
     },
     "alerts": {
       "critical": 1,
       "warning": 5,
-      "unread": 4
+      "unread": 4,
+      "openCases": 3,
+      "criticalCases": 1,
+      "trend": { "delta": 2, "dir": "up", "pct": null }  // alert cases esta semana vs semana anterior
     },
-    "lastUpdated": "2026-02-15T14:00:00Z"
+    "recentActivities": [
+      { "entity": "Acme Fintech", "action": "Atualização de status", "user": "Maria Silva", "time": "há pouco", "risk": "HIGH" }
+    ],
+    "criticalEntities": [
+      { "name": "Acme Pagamentos", "cnpj": "12345678000195", "type": "CLIENTE", "risk": "CRITICAL", "score": 18, "lastCheck": "2026-03-01T..." }
+    ],
+    "lastUpdated": "2026-03-04T22:00:00Z"
+  }
+}
+```
+
+### `GET /v1/dashboard/stream` (P2 · SSE em Tempo Real)
+
+**Permissão:** Todos os roles  
+**Protocolo:** Server-Sent Events (SSE)
+
+Conecta o cliente ao stream de atualizações do dashboard em tempo real. O servidor envia eventos quando os KPIs mudam (detectado por hash do cache Redis), e heartbeats a cada 30s para manter a conexão viva.
+
+```http
+GET /v1/dashboard/stream
+Accept: text/event-stream
+Authorization: Bearer <token>
+```
+
+**Eventos emitidos:**
+
+| Evento | Quando | Payload |
+|---|---|---|
+| `connected` | Imediatamente após conectar | `{ tenantId, timestamp }` |
+| `summary` | Ao conectar (estado inicial) e quando KPIs mudam | Mesmo schema de `/summary` |
+| `heartbeat` | A cada 30s sem mudanças | `{ timestamp }` |
+
+**Exemplo de stream:**
+```
+event: connected
+data: {"tenantId":"uuid","timestamp":"2026-03-04T22:00:00Z"}
+
+event: summary
+data: {"entities":{...},"checklists":{...},...}
+
+event: heartbeat
+data: {"timestamp":"2026-03-04T22:00:30Z"}
+```
+
+**Reconexão:** Em caso de desconexão, o cliente deve aguardar 15s e reconectar. O frontend do dashboard implementa essa lógica automaticamente.
+
+### `GET /v1/dashboard/compliance-readiness`
+
+**Permissão:** Todos os roles
+
+```json
+// Response 200
+{
+  "data": {
+    "frameworks": [
+      {
+        "name": "SOC2 Type II",
+        "score": 85,
+        "controls": [
+          { "id": "CC6.1", "name": "Logical Access", "status": "COMPLIANT", "feature": "MFA + JWT" },
+          { "id": "CC7.1", "name": "System Operations", "status": "COMPLIANT", "feature": "Audit Chaining SHA-256" }
+        ]
+      },
+      {
+        "name": "ISO 27001",
+        "score": 92,
+        "controls": [
+          { "id": "A.12.4.1", "name": "Event Logging", "status": "COMPLIANT", "feature": "Audit Trail" },
+          { "id": "A.18.1.1", "name": "Applicable Legislation", "status": "COMPLIANT", "feature": "LGPD Module" }
+        ]
+      }
+    ],
+    "summary": { "overallReadiness": "HIGH", "lastAssessment": "2026-03-04T22:00:00Z" }
   }
 }
 ```
