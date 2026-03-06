@@ -17,6 +17,8 @@ export const app = Fastify({
     trustProxy: true,
 });
 
+import { runSyncJob } from './services/sync.service.js';
+
 async function start() {
     await app.register(fastifyRateLimit, {
         max: 100,
@@ -31,9 +33,6 @@ async function start() {
     await app.register(cnpjRoutes, { prefix: '/cnpj' });
     await app.register(searchRoutes, { prefix: '/search' });
 
-    // Job trigger protegido
-    // await app.register(syncTriggerRoutes, { prefix: '/sync' });
-
     app.setErrorHandler((error, request, reply) => {
         if (error.statusCode === 429) {
             reply.status(429).send({ error: 'Too Many Requests', message: 'Rate limit exceeded' });
@@ -46,6 +45,11 @@ async function start() {
     try {
         await app.listen({ port, host });
         app.log.info(`🚀 CNPJ Service rodando em http://${host}:${port}`);
+
+        // Trigger background RFB sync job
+        runSyncJob().catch((err) => {
+            app.log.error({ err }, 'Background sync job failed');
+        });
     } catch (err) {
         app.log.error(err);
         process.exit(1);
