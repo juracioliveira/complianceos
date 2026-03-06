@@ -184,7 +184,7 @@ export default function LoginPage() {
                                         <label htmlFor="password" className="text-sm font-medium text-foreground">
                                             Senha
                                         </label>
-                                        <button type="button" className="text-xs text-primary hover:underline">
+                                        <button type="button" className="text-xs text-brand-600 font-semibold hover:text-brand-700 transition-colors">
                                             Esqueci a senha
                                         </button>
                                     </div>
@@ -203,7 +203,7 @@ export default function LoginPage() {
                                             type="button"
                                             tabIndex={-1}
                                             onClick={() => setShowPassword((s) => !s)}
-                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-brand-600 transition-colors"
                                         >
                                             {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                                         </button>
@@ -247,7 +247,7 @@ export default function LoginPage() {
                         <button
                             type="submit"
                             disabled={isPending}
-                            className="btn-primary w-full py-2.5 mt-2"
+                            className="inline-flex items-center justify-center gap-2 w-full py-3.5 mt-4 bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold rounded-full shadow-lg shadow-brand-600/25 transition-all hover:shadow-brand-600/40 hover:-translate-y-0.5 disabled:opacity-50 disabled:pointer-events-none"
                         >
                             {isPending ? (
                                 <>
