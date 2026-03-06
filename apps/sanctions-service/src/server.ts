@@ -6,6 +6,9 @@ import { screeningRoutes } from './routes/screening.route.js';
 import { entityRoutes } from './routes/entity.route.js';
 import { searchRoutes } from './routes/search.route.js';
 import { syncRoutes } from './routes/sync.route.js';
+import { setupSchedules } from './jobs/scheduler.js';
+import './jobs/sync.job.js'; // Inicializa o worker do BullMQ
+
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -48,6 +51,12 @@ const start = async () => {
     try {
         await server.listen({ port: PORT, host: '0.0.0.0' });
         console.log(`Sanctions Service running on port ${PORT}`);
+
+        // Configura os agendamentos e garante que o Worker inicie
+        if (process.env.DISABLE_SYNC_WORKER !== 'true') {
+            await setupSchedules();
+            logger.info('Sanctions Sync schedules initialized and Worker is running');
+        }
     } catch (err) {
         server.log.error(err);
         process.exit(1);
