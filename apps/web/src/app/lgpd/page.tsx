@@ -36,29 +36,30 @@ export default function LgpdPage() {
             />
             <div className="max-w-7xl mx-auto px-6 py-20">
                 <section className="mb-20">
-                    <h2 className="font-semibold text-lg text-slate-900 mb-8 pb-3 border-b border-slate-200">
+                    <h2 className="font-display text-3xl text-slate-900 mb-8 pb-3 border-b border-slate-200">
                         Módulos de Adequação LGPD
                     </h2>
-                    <div className="grid md:grid-cols-2 gap-px bg-slate-200 border border-slate-200 rounded-xl overflow-hidden">
+                    <div className="grid md:grid-cols-2 gap-6">
                         {MODULES.map(m => (
-                            <div key={m.title} className="bg-white p-8 hover:bg-slate-50 transition-colors">
-                                <div className="font-semibold text-[0.9375rem] text-brand-600 mb-3">{m.title}</div>
-                                <div className="text-[0.9375rem] text-slate-600 leading-relaxed">{m.desc}</div>
+                            <div key={m.title} className="bg-white p-8 rounded-2xl border border-slate-200/60 shadow-sm hover:shadow-md hover:shadow-brand-600/5 hover:-translate-y-0.5 transition-all">
+                                <div className="font-display text-xl text-brand-600 mb-3">{m.title}</div>
+                                <div className="text-[0.9375rem] text-slate-600 leading-relaxed font-sans">{m.desc}</div>
                             </div>
                         ))}
                     </div>
                 </section>
 
                 <section className="mb-20">
-                    <h2 className="font-semibold text-lg text-slate-900 mb-8 pb-3 border-b border-slate-200">
+                    <h2 className="font-display text-3xl text-slate-900 mb-8 pb-3 border-b border-slate-200">
                         Direitos dos Titulares — Art. 18 LGPD
                     </h2>
-                    <div className="grid md:grid-cols-3 gap-px bg-slate-200 border border-slate-200 rounded-xl overflow-hidden">
+                    <div className="grid md:grid-cols-3 gap-6">
                         {RIGHTS.map(r => (
-                            <div key={r.code} className="bg-white p-6 hover:bg-slate-50 transition-colors">
-                                <div className="font-mono text-[0.65rem] font-medium text-slate-500 mb-2 tracking-wide uppercase">{r.code}</div>
-                                <div className="font-semibold text-[0.9375rem] text-slate-900 mb-2">{r.right}</div>
-                                <div className="text-[0.875rem] text-slate-600 leading-relaxed">{r.desc}</div>
+                            <div key={r.code} className="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm hover:border-brand-200 transition-all overflow-hidden relative group">
+                                <div className="absolute top-0 right-0 w-16 h-16 bg-brand-50 rounded-bl-3xl -translate-y-2 translate-x-2 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                <div className="font-mono text-[0.65rem] font-bold text-slate-400 mb-2 tracking-wide uppercase">{r.code}</div>
+                                <div className="font-display text-lg text-slate-900 mb-2">{r.right}</div>
+                                <div className="text-[0.875rem] text-slate-600 leading-relaxed font-sans">{r.desc}</div>
                             </div>
                         ))}
                     </div>
@@ -69,7 +70,7 @@ export default function LgpdPage() {
                         <div className="font-semibold text-base text-slate-900 mb-2">Precisa do Data Processing Agreement?</div>
                         <p className="text-[0.9375rem] text-slate-600">O DPA do ComplianceOS está disponível para todos os planos. Acesse pelo dashboard ou solicite via e-mail.</p>
                     </div>
-                    <Link href="/dashboard" className="shrink-0 inline-flex items-center justify-center px-6 py-3 bg-brand-600 text-white font-medium text-[0.875rem] rounded-lg shadow-sm shadow-brand-600/20 hover:bg-brand-700 transition-colors">
+                    <Link href="/dashboard" className="shrink-0 inline-flex items-center justify-center px-8 py-3.5 bg-brand-600 text-white font-semibold text-sm rounded-full shadow-lg shadow-brand-600/20 hover:bg-brand-700 hover:shadow-brand-600/30 transition-all">
                         Acessar DPA →
                     </Link>
                 </div>

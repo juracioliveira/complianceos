@@ -17,8 +17,8 @@ export function PublicNav() {
                     ))}
                 </div>
                 <div className="flex items-center gap-3">
-                    <Link href="/login" className="px-4 py-2 text-sm font-medium text-slate-700 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors">Entrar</Link>
-                    <Link href="/dashboard" className="px-4 py-2 bg-brand-600 text-white text-sm font-medium rounded-lg hover:bg-brand-700 transition-colors shadow-sm shadow-brand-600/20">Acessar →</Link>
+                    <Link href="/login" className="px-6 py-2 text-[13px] font-semibold text-slate-600 rounded-full border border-slate-200 hover:bg-slate-50 transition-all">Entrar</Link>
+                    <Link href="/dashboard" className="px-6 py-2 bg-brand-600 text-white text-[13px] font-semibold rounded-full hover:bg-brand-700 transition-all shadow-lg shadow-brand-600/20 hover:shadow-brand-600/30">Acessar →</Link>
                 </div>
             </div>
         </nav>
@@ -88,7 +88,7 @@ export function PublicFooter() {
                     <p className="text-sm text-slate-400">© 2026 Chuangxin Tecnologia da Informação Ltda. Todos os direitos reservados.</p>
                     <div className="flex gap-2">
                         {['ISO 27001 Ready', 'AWS Partner', 'SOC 2'].map(badge => (
-                            <span key={badge} className="px-2 py-1 bg-slate-50 border border-slate-200 rounded text-xs text-slate-500 font-medium">
+                            <span key={badge} className="px-2 py-1 bg-slate-50 border border-slate-200 rounded-md text-xs text-slate-500 font-medium">
                                 {badge}
                             </span>
                         ))}
@@ -101,38 +101,20 @@ export function PublicFooter() {
 
 export function PageHero({ breadcrumb, title, subtitle }: { breadcrumb: string; title: string; subtitle: string }) {
     return (
-        <section className="pt-32 pb-20 border-b border-slate-200 relative bg-slate-50">
-            {/* Grid Pattern */}
-            <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)', backgroundSize: '60px 60px' }} />
+        <section className="pt-32 pb-20 border-b border-slate-200 relative bg-slate-50 overflow-hidden">
+            {/* Grid Pattern Pattern Synthesis */}
+            <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-grid" />
             <div className="max-w-7xl mx-auto px-6 relative z-10">
                 <p className="font-mono text-xs font-bold text-slate-400 uppercase tracking-widest mb-6">
                     <Link href="/" className="hover:text-brand-600 transition-colors">ComplianceOS</Link>
-                    {' / '}{breadcrumb}
+                    <span className="opacity-50">{' / '}</span>
+                    {breadcrumb}
                 </p>
-                <h1 className="font-display text-4xl md:text-5xl lg:text-6xl text-slate-900 mb-6 max-w-3xl leading-tight">{title}</h1>
+                <h1 className="font-display text-4xl md:text-5xl lg:text-6xl text-slate-900 mb-6 max-w-3xl leading-[1.1] tracking-tight">{title}</h1>
                 <p className="text-lg text-slate-600 max-w-2xl leading-relaxed">{subtitle}</p>
             </div>
         </section>
     )
 }
-
-export const pageStyle = {
-    // Legacy export, safely ignored if fully swapped
-}
-
-export const contentWrap = {
-    // Legacy export
-}
-
-export const CYAN = '#1E5DB8'
-export const BG = '#F8FAFC'
-export const SURFACE = '#F1F5F9'
-export const LINE = '#E2E8F0'
-export const TEXT = '#0F172A'
-export const MUTED = '#64748B'
-export const UI = "ui-sans-serif, system-ui, sans-serif"
-export const MONO = "ui-monospace, SFMono-Regular, monospace"
-export const LINE_STRONG = 'rgba(0,0,0,0.12)'
-export const SERIF = "'DM Serif Display', serif"
 
 

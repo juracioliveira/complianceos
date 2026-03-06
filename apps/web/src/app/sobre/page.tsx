@@ -28,18 +28,21 @@ export default function SobrePage() {
                             Apenas os grandes bancos possuíam tecnologia de ponta para prevenção de lavagem de dinheiro (PLD-FT). Decidimos mudar isso criando um motor de compliance em nuvem, pronto para plugar via API em qualquer operação financeira.
                         </p>
                     </div>
-                    <div className="bg-brand-600 rounded-3xl p-10 text-white relative overflow-hidden shadow-2xl shadow-brand-600/20">
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 blur-3xl rounded-full translate-x-1/2 -translate-y-1/2" />
-                        <ShieldCheck className="w-16 h-16 text-brand-200 mb-8" strokeWidth={1.5} />
-                        <h3 className="text-2xl font-bold mb-4">Nossa Missão</h3>
-                        <p className="text-brand-100 leading-relaxed text-lg">
-                            Proteger o ecossistema financeiro brasileiro através de tecnologia acessível, automatizando 100% da esteira de compliance e permitindo que empreendedores foquem no que importa: crescimento e inovação.
-                        </p>
+                    <div className="bg-white border border-slate-200/60 rounded-3xl p-10 relative overflow-hidden shadow-2xl shadow-slate-200/50 group hover:scale-[1.01] transition-transform duration-500">
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-brand-500/10 blur-3xl rounded-full translate-x-1/2 -translate-y-1/2" />
+                        <div className="relative z-10">
+                            <ShieldCheck className="w-16 h-16 text-brand-600 mb-8 animate-pulse" strokeWidth={1.5} />
+                            <h3 className="font-display text-3xl text-slate-900 mb-4">Nossa Missão</h3>
+                            <p className="text-slate-600 leading-relaxed text-lg">
+                                Proteger o ecossistema financeiro brasileiro através de tecnologia acessível, automatizando 100% da esteira de compliance e permitindo que empreendedores foquem no que importa: <span className="text-brand-600 font-semibold text-accent">crescimento e inovação.</span>
+                            </p>
+                        </div>
                     </div>
                 </div>
 
                 <div className="py-16">
-                    <h2 className="text-center font-display text-3xl mb-12">Nossos Valores Base</h2>
+                    <h2 className="text-center font-display text-4xl mb-4">Nossos Valores Base</h2>
+                    <p className="text-center text-slate-500 mb-16 max-w-xl mx-auto font-sans">A cultura que molda cada linha de código do ComplianceOS.</p>
                     <div className="grid md:grid-cols-3 gap-8">
                         <div className="bg-white border border-slate-200 p-8 rounded-2xl shadow-sm text-center">
                             <div className="w-12 h-12 bg-rose-50 rounded-full flex items-center justify-center mx-auto mb-6">

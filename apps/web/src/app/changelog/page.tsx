@@ -69,20 +69,23 @@ export default function ChangelogPage() {
                                         {release.badge}
                                     </span>
                                 </div>
-                                <div className="md:col-span-3 bg-white border border-slate-200 rounded-2xl p-8 shadow-sm">
-                                    <h2 className="text-xl font-bold text-slate-900 mb-3">{release.title}</h2>
-                                    <p className="text-slate-600 mb-6 leading-relaxed">
+                                <div className="md:col-span-3 bg-white border border-slate-200/60 rounded-3xl p-10 shadow-xl shadow-slate-200/30 hover:shadow-2xl hover:shadow-brand-600/5 hover:-translate-y-1 transition-all group/card overflow-hidden relative">
+                                    <div className="absolute top-0 right-0 w-32 h-32 bg-brand-500/5 blur-3xl rounded-full translate-x-10 -translate-y-10" />
+                                    <h2 className="font-display text-2xl lg:text-3xl text-slate-900 mb-4 tracking-tight group-hover/card:text-brand-600 transition-colors">{release.title}</h2>
+                                    <p className="text-[15px] text-slate-600 mb-8 leading-relaxed font-sans">
                                         {release.description}
                                     </p>
-                                    <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4">Atualizações principais</h4>
-                                    <ul className="space-y-3">
-                                        {release.features.map((feature, i) => (
-                                            <li key={i} className="flex items-start gap-3 text-sm text-slate-700">
-                                                <div className="w-1.5 h-1.5 rounded-full bg-brand-400 mt-1.5 shrink-0" />
-                                                <span className="leading-relaxed">{feature}</span>
-                                            </li>
-                                        ))}
-                                    </ul>
+                                    <div className="pt-8 border-t border-slate-100">
+                                        <h4 className="font-mono text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-6">Atualizações principais</h4>
+                                        <ul className="space-y-4">
+                                            {release.features.map((feature, i) => (
+                                                <li key={i} className="flex items-start gap-3.5 text-sm text-slate-700">
+                                                    <div className="w-1.5 h-1.5 rounded-full bg-brand-500 mt-[7px] shrink-0" />
+                                                    <span className="leading-relaxed font-medium">{feature}</span>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
                         </div>

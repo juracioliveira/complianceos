@@ -54,26 +54,29 @@ export default function SegurancaPage() {
                 title="Segurança por design, não por adesivo"
                 subtitle="Infraestrutura enterprise-grade construída desde o primeiro dia para dados regulatórios críticos. Zero concessões em segurança."
             />
-            <div className="max-w-7xl mx-auto px-6 py-20">
+            <div className="max-w-7xl mx-auto px-6 py-20 pb-32">
                 {CONTROLS.map(c => (
-                    <div key={c.category} className="mb-16">
-                        <h2 className="font-semibold text-lg text-slate-900 mb-6 pb-3 border-b border-slate-200">{c.category}</h2>
-                        <div className="grid md:grid-cols-2 gap-px bg-slate-200 border border-slate-200 rounded-xl overflow-hidden">
+                    <div key={c.category} className="mb-20">
+                        <h2 className="font-display text-2xl text-slate-900 mb-8 pb-3 border-b border-slate-200/80">{c.category}</h2>
+                        <div className="grid md:grid-cols-2 gap-6">
                             {c.items.map(item => (
-                                <div key={item.title} className="bg-white p-6 hover:bg-slate-50 transition-colors">
-                                    <div className="font-mono text-[0.75rem] font-medium text-brand-600 mb-2">{item.title}</div>
-                                    <div className="text-[0.875rem] text-slate-600 leading-relaxed">{item.desc}</div>
+                                <div key={item.title} className="bg-white p-8 rounded-2xl border border-slate-200/60 shadow-sm hover:shadow-md hover:shadow-brand-600/5 hover:-translate-y-0.5 transition-all group">
+                                    <div className="font-mono text-[10px] font-bold text-brand-600 mb-3 tracking-widest uppercase group-hover:text-brand-700 transition-colors">{item.title}</div>
+                                    <div className="text-[15px] text-slate-600 leading-relaxed font-sans">{item.desc}</div>
                                 </div>
                             ))}
                         </div>
                     </div>
                 ))}
 
-                <div className="p-8 border border-brand-100 bg-brand-50/50 rounded-xl">
-                    <div className="font-mono text-[0.7rem] font-semibold text-brand-600 uppercase tracking-widest mb-3">Reporte uma vulnerabilidade</div>
-                    <p className="text-[0.875rem] text-slate-600 leading-relaxed max-w-3xl">
-                        Se você encontrou uma vulnerabilidade de segurança no ComplianceOS, entre em contato de forma responsável via <span className="text-brand-600 font-medium">security@complianceos.com.br</span>. Comprometemo-nos a responder em até 72 horas e a tratar o relato com confidencialidade.
-                    </p>
+                <div className="p-10 border border-brand-100 bg-brand-50/20 backdrop-blur-sm rounded-[2rem] relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 w-40 h-40 bg-brand-500/5 blur-3xl rounded-full translate-x-10 -translate-y-10 group-hover:scale-110 transition-transform duration-700" />
+                    <div className="relative z-10">
+                        <div className="font-mono text-[10px] font-bold text-brand-600 uppercase tracking-[0.2em] mb-4">Reporte uma vulnerabilidade</div>
+                        <p className="text-lg text-slate-700 leading-relaxed max-w-4xl font-sans">
+                            Se você encontrou uma vulnerabilidade de segurança no ComplianceOS, entre em contato de forma responsável via <span className="text-brand-600 font-bold underline decoration-brand-200 underline-offset-4">security@complianceos.com.br</span>. Comprometemo-nos a responder em até 72 horas e a tratar o relato com confidencialidade extrema.
+                        </p>
+                    </div>
                 </div>
             </div>
             <PublicFooter />

@@ -78,9 +78,9 @@ export default function PrivacidadePage() {
                     {/* Content */}
                     <div className="flex-1 flex flex-col gap-10">
                         {SECTIONS.map(s => (
-                            <div key={s.title} id={s.title.replace(/\s/g, '-').toLowerCase()} className="pb-10 border-b border-slate-200 last:border-0">
-                                <h2 className="font-semibold text-base text-slate-900 mb-4">{s.title}</h2>
-                                <p className="text-[0.9375rem] text-slate-600 leading-relaxed">{s.content}</p>
+                            <div key={s.title} id={s.title.replace(/\s/g, '-').toLowerCase()} className="pb-10 border-b border-slate-200 last:border-0 border-dashed">
+                                <h2 className="font-display text-2xl text-slate-900 mb-4">{s.title}</h2>
+                                <p className="text-[0.9375rem] text-slate-600 leading-relaxed font-sans">{s.content}</p>
                             </div>
                         ))}
                     </div>

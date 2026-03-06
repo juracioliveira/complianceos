@@ -49,20 +49,20 @@ const NAV = [
 /* ─── HELPERS ─── */
 function Tag({ method }: { method: string }) {
     const colors: Record<string, string> = {
-        GET: 'text-green-600 bg-green-50 border-green-200',
-        POST: 'text-sky-600 bg-sky-50 border-sky-200',
-        PATCH: 'text-amber-600 bg-amber-50 border-amber-200',
-        DELETE: 'text-red-600 bg-red-50 border-red-200',
-        PUT: 'text-amber-600 bg-amber-50 border-amber-200'
+        GET: 'text-emerald-600 bg-emerald-50 border-emerald-200/50',
+        POST: 'text-brand-600 bg-brand-50 border-brand-200/50',
+        PATCH: 'text-amber-600 bg-amber-50 border-amber-200/50',
+        DELETE: 'text-rose-600 bg-rose-50 border-rose-200/50',
+        PUT: 'text-amber-600 bg-amber-50 border-amber-200/50'
     }
     return (
-        <span className={`font-mono text-[0.6rem] font-semibold px-2 py-0.5 border rounded ${colors[method]}`}>{method}</span>
+        <span className={`font-mono text-[10px] font-bold px-2 py-0.5 border rounded-md shadow-sm ${colors[method]}`}>{method}</span>
     )
 }
 
 function Code({ children }: { children: string }) {
     return (
-        <pre className="font-mono text-[0.78rem] leading-relaxed p-5 bg-slate-900 text-slate-200 overflow-x-auto my-4 whitespace-pre-wrap break-all rounded-lg">
+        <pre className="font-mono text-[13px] leading-relaxed p-6 bg-slate-900 text-slate-300 overflow-x-auto my-6 whitespace-pre-wrap break-all rounded-2xl border border-slate-800 shadow-2xl">
             <code>{children}</code>
         </pre>
     )
@@ -70,21 +70,21 @@ function Code({ children }: { children: string }) {
 
 function Badge({ label, type = 'brand' }: { label: string; type?: 'brand' | 'success' | 'warning' | 'danger' | 'info' | 'muted' }) {
     const styles = {
-        brand: 'bg-brand-50 text-brand-600 border-brand-200',
-        success: 'bg-green-50 text-green-600 border-green-200',
-        warning: 'bg-amber-50 text-amber-600 border-amber-200',
-        danger: 'bg-red-50 text-red-600 border-red-200',
-        info: 'bg-sky-50 text-sky-600 border-sky-200',
-        muted: 'bg-slate-100 text-slate-500 border-slate-200',
+        brand: 'bg-brand-50 text-brand-600 border-brand-200/50',
+        success: 'bg-emerald-50 text-emerald-600 border-emerald-200/50',
+        warning: 'bg-amber-50 text-amber-600 border-amber-200/50',
+        danger: 'bg-rose-50 text-rose-600 border-rose-200/50',
+        info: 'bg-sky-50 text-sky-600 border-sky-200/50',
+        muted: 'bg-slate-100 text-slate-500 border-slate-200/50',
     }
     return (
-        <span className={`font-mono text-[0.6rem] px-2 py-0.5 border rounded ${styles[type]}`}>{label}</span>
+        <span className={`font-mono text-[10px] font-bold px-2.5 py-1 border rounded-full uppercase tracking-tight ${styles[type]}`}>{label}</span>
     )
 }
 
 function SectionTitle({ id, children }: { id: string; children: React.ReactNode }) {
     return (
-        <h2 id={id} className="font-serif text-[clamp(1.35rem,2vw,1.75rem)] text-slate-900 mb-4 pb-3 border-b border-slate-200 scroll-mt-24">
+        <h2 id={id} className="font-display text-4xl text-slate-900 mb-6 pb-4 border-b border-slate-200/80 scroll-mt-24 tracking-tight">
             {children}
         </h2>
     )
@@ -129,12 +129,12 @@ function DataTable({ headers, rows }: { headers: string[]; rows: React.ReactNode
 
 function Endpoint({ method, path, permission, description }: { method: string; path: string; permission?: string; description?: string }) {
     return (
-        <div className="flex items-start gap-3 p-4 bg-white border border-slate-200 rounded-lg mb-3 shadow-sm">
+        <div className="flex items-start gap-4 p-5 bg-white border border-slate-200/60 rounded-2xl mb-4 shadow-sm hover:shadow-md hover:border-brand-100 transition-all group">
             <Tag method={method} />
             <div className="flex-1">
-                <code className="font-mono text-[0.8125rem] text-slate-900 font-medium">{path}</code>
-                {permission && <div className="text-[0.75rem] text-slate-500 mt-1">Permissão: <strong className="text-slate-700">{permission}</strong></div>}
-                {description && <div className="text-[0.8125rem] text-slate-600 mt-1 leading-relaxed">{description}</div>}
+                <code className="font-mono text-[13px] text-slate-900 font-bold tracking-tight bg-slate-50 px-2 py-1 rounded border border-slate-100 group-hover:bg-brand-50/50 transition-colors">{path}</code>
+                {permission && <div className="font-mono text-[10px] text-slate-400 mt-2 uppercase tracking-widest font-bold">Permissão: <strong className="text-brand-600">{permission}</strong></div>}
+                {description && <div className="text-[14px] text-slate-600 mt-2 leading-relaxed font-sans">{description}</div>}
             </div>
         </div>
     )
@@ -170,22 +170,24 @@ export function DocsPageClient() {
             <PublicNav />
 
             {/* HERO */}
-            <section className="pt-32 pb-16 border-b border-slate-200" style={{
-                backgroundImage: `linear-gradient(#e2e8f0 1px,transparent 1px),linear-gradient(90deg,#e2e8f0 1px,transparent 1px)`,
-                backgroundSize: '80px 80px',
-            }}>
-                <div className="max-w-7xl mx-auto px-6 md:px-12">
-                    <p className="font-mono text-[0.7rem] text-slate-500 uppercase tracking-widest mb-6">
-                        <Link href="/" className="hover:text-brand-600 transition-colors">ComplianceOS</Link>{' / '}Documentação
+            <section className="pt-32 pb-20 border-b border-slate-200 relative bg-slate-50 overflow-hidden">
+                <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-grid" />
+                <div className="max-w-7xl mx-auto px-6 relative z-10">
+                    <p className="font-mono text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-6">
+                        <Link href="/" className="hover:text-brand-600 transition-colors">ComplianceOS</Link>
+                        <span className="opacity-50 mx-2">/</span>
+                        Documentação
                     </p>
-                    <h1 className="font-serif text-[clamp(2rem,4vw,3.25rem)] text-slate-900 mb-4 max-w-3xl leading-tight">
+                    <h1 className="font-display text-4xl md:text-5xl lg:text-6xl text-slate-900 mb-6 max-w-3xl leading-[1.1] tracking-tight">
                         Documentação Técnica
                     </h1>
-                    <p className="text-[1.0625rem] text-slate-600 max-w-2xl leading-relaxed mb-8">
+                    <p className="text-lg text-slate-600 max-w-2xl leading-relaxed mb-10">
                         Referência completa da API REST, guias de integração e documentação dos módulos de compliance.
-                        Base URL: <code className="font-mono text-[0.85em] text-brand-600 bg-brand-50 px-1.5 py-0.5 rounded">https://api.complianceos.com.br</code>
+                        <span className="block mt-4 text-sm font-mono text-brand-600 bg-white border border-brand-100 rounded-xl px-4 py-2 w-fit shadow-sm">
+                            Base URL: <span className="font-bold underline decoration-brand-200 underline-offset-4">https://api.complianceos.com.br</span>
+                        </span>
                     </p>
-                    <div className="flex gap-3 flex-wrap">
+                    <div className="flex gap-2.5 flex-wrap">
                         {[['v1 — Estável', 'success'], ['JWT RS256', 'brand'], ['RFC 7807', 'info'], ['OpenAPI 3.1', 'info']].map(([label, type]) => (
                             <Badge key={label as string} label={label as string} type={type as any} />
                         ))}
@@ -618,7 +620,7 @@ Metadata:  https://api.complianceos.com.br/auth/saml/metadata.xml`}</Code>
                             <div className="font-semibold text-base text-slate-900 mb-2">Precisa de ajuda?</div>
                             <p className="text-[0.9375rem] text-slate-600">Nossa equipe está disponível para integrações complexas e customizações.</p>
                         </div>
-                        <Link href="/contato" className="shrink-0 inline-flex items-center justify-center px-6 py-3 bg-brand-600 text-white font-medium text-[0.875rem] rounded-lg shadow-sm shadow-brand-600/20 hover:bg-brand-700 transition-colors uppercase tracking-wide">
+                        <Link href="/contato" className="shrink-0 inline-flex items-center justify-center px-8 py-3.5 bg-brand-600 text-white font-bold text-sm rounded-full shadow-lg shadow-brand-600/20 hover:bg-brand-700 hover:shadow-brand-600/30 transition-all uppercase tracking-widest">
                             Falar com especialista →
                         </Link>
                     </div>
