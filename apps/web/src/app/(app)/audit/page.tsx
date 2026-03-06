@@ -162,7 +162,7 @@ export default function AuditPage() {
                                         <td className="px-6 py-4">
                                             <div className="flex flex-col">
                                                 <span className="font-mono text-[11px] text-muted-foreground">{timeFormatted}</span>
-                                                <span className="text-[10px] font-bold uppercase text-primary/70">{e.id.substring(0, 8)}</span>
+                                                <span className="text-[10px] font-bold uppercase text-primary/70">{(e.eventId || e.id || '').substring(0, 8)}</span>
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">

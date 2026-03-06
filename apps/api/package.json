@@ -7,7 +7,7 @@
     "scripts": {
         "dev": "tsx watch --env-file=../../.env.local src/server.ts",
         "build": "tsup",
-        "start": "node dist/server.js",
+        "start": "tsx src/infra/db/migrate.ts && node dist/server.js",
         "typecheck": "tsc --noEmit",
         "lint": "eslint src --ext .ts",
         "test": "vitest run",
