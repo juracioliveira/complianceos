@@ -1,414 +1,351 @@
 import Link from 'next/link'
-import { ShieldCheck, Lock, FileText, BarChart3, ArrowRight, CheckCircle, Server, Key, Activity } from 'lucide-react'
+import { ShieldCheck, Lock, FileText, BarChart3, ArrowRight, CheckCircle, Server, Key, Activity, ArrowUpRight, Check } from 'lucide-react'
 
-/* ─── Design tokens ─────────────────────────────── */
-const BG = '#FFFFFF'
-const SURFACE = '#F9FAFB'
-const SURFACE2 = '#F3F4F6'
-const CYAN = '#00A3BF'
-const AMBER = '#D97706'
-const TEXT = '#0F172A'
-const MUTED = '#475569'
-const LINE = 'rgba(0,0,0,0.06)'
-const LINE_STRONG = 'rgba(0,0,0,0.12)'
-const MONO = "'IBM Plex Mono', monospace"
-const SERIF = "'DM Serif Display', serif"
-const UI = "'IBM Plex Sans', sans-serif"
-const GREEN = '#10B981'
-const RED = '#EF4444'
-
-/* ─── Shared styles ──────────────────────────────── */
-const S = {
-    section: { borderTop: `1px solid ${LINE}`, padding: '7rem 0' } as React.CSSProperties,
-    wrap: { maxWidth: 1200, margin: '0 auto', padding: '0 3rem' } as React.CSSProperties,
-    pre: { fontFamily: MONO, fontSize: '.7rem', color: MUTED, textTransform: 'uppercase' as const, letterSpacing: '.12em', marginBottom: '1.25rem' },
-    h2: { fontFamily: SERIF, fontSize: 'clamp(1.75rem,3vw,2.75rem)', color: TEXT, marginBottom: '1rem', fontWeight: 'normal' as const, lineHeight: 1.15 },
-    p: { color: MUTED, fontSize: '.9375rem', lineHeight: 1.75 },
-    btnFill: {
-        display: 'inline-flex' as const, alignItems: 'center' as const, gap: '.5rem',
-        padding: '.625rem 1.25rem', background: CYAN, color: '#FFFFFF',
-        border: `1px solid ${CYAN}`, fontFamily: UI, fontWeight: 500,
-        fontSize: '.8125rem', letterSpacing: '.04em', textTransform: 'uppercase' as const,
-        textDecoration: 'none', transition: 'all .18s',
-    },
-    btnLine: {
-        display: 'inline-flex' as const, alignItems: 'center' as const, gap: '.5rem',
-        padding: '.625rem 1.25rem', background: 'transparent', color: TEXT,
-        border: `1px solid ${LINE_STRONG}`, fontFamily: UI, fontWeight: 500,
-        fontSize: '.8125rem', letterSpacing: '.04em', textTransform: 'uppercase' as const,
-        textDecoration: 'none', transition: 'all .18s',
-    },
-}
-
-/* ─── SVG icon helpers ───────────────────────────── */
-function IconBox({ icon, color = CYAN }: { icon: React.ReactNode; color?: string }) {
-    return (
-        <div style={{
-            width: 44, height: 44, border: `1px solid ${LINE_STRONG}`,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            marginBottom: '1.5rem', color,
-        }}>
-            {icon}
-        </div>
-    )
-}
-
-/* ─── HERO ───────────────────────────────────────── */
-function Hero() {
-    return (
-        <section style={{
-            minHeight: '100vh', padding: '10rem 0 6rem',
-            display: 'flex', alignItems: 'center', position: 'relative', overflow: 'hidden',
-            backgroundImage: `linear-gradient(${LINE} 1px,transparent 1px),linear-gradient(90deg,${LINE} 1px,transparent 1px)`,
-            backgroundSize: '80px 80px',
-        }}>
-            <div style={S.wrap}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6rem', alignItems: 'center' }}>
-                    <div>
-                        <p style={{ ...S.pre, display: 'flex', alignItems: 'center', gap: '.75rem', marginBottom: '2rem' }}>
-                            <span style={{ display: 'block', width: 24, height: 1, background: CYAN }} />
-                            Plataforma regulatória · BACEN / COAF / ANPD
-                        </p>
-                        <h1 style={{ fontFamily: SERIF, fontSize: 'clamp(2.5rem,4.5vw,4rem)', color: TEXT, marginBottom: '1.75rem', fontWeight: 'normal', lineHeight: 1.1 }}>
-                            Conformidade regulatória.<br />
-                            <em style={{ color: CYAN, fontStyle: 'italic' }}>Sem travar<br />sua operação.</em>
-                        </h1>
-                        <p style={{ ...S.p, maxWidth: 480, marginBottom: '2.5rem' }}>
-                            O ComplianceOS automatiza PLD-FT, LGPD e Anticorrupção para fintechs e PMEs brasileiras — do KYC ao relatório COAF, com trilha de auditoria imutável.
-                        </p>
-                        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-                            <Link href="/dashboard" style={S.btnFill}>Começar Grátis <ArrowRight size={14} /></Link>
-                            <Link href="#solutions" style={S.btnLine}>Ver a Plataforma</Link>
-                        </div>
-                    </div>
-
-                    {/* Entity table */}
-                    <div style={{ background: SURFACE, border: `1px solid ${LINE_STRONG}`, overflow: 'hidden' }}>
-                        <div style={{ padding: '.875rem 1.25rem', borderBottom: `1px solid ${LINE}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <span style={{ fontFamily: MONO, fontSize: '.7rem', color: MUTED, textTransform: 'uppercase', letterSpacing: '.06em' }}>Entidades Monitoradas</span>
-                            <span style={{ fontFamily: MONO, fontSize: '.65rem', color: CYAN, display: 'flex', alignItems: 'center', gap: '.375rem' }}>
-                                <span style={{ width: 5, height: 5, borderRadius: '50%', background: CYAN, display: 'inline-block' }} />
-                                Tempo real
-                            </span>
-                        </div>
-                        {/* Column headers */}
-                        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', padding: '.5rem 1.25rem', borderBottom: `1px solid ${LINE}` }}>
-                            {['Entidade', 'Score', 'PEP', 'Status'].map(c => (
-                                <span key={c} style={{ fontFamily: MONO, fontSize: '.65rem', color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '.06em' }}>{c}</span>
-                            ))}
-                        </div>
-                        {/* Rows */}
-                        {[
-                            { name: 'Acme Fintech Ltda.', cnpj: '35.123.456/0001-78', score: 91, pep: false, status: 'ok' },
-                            { name: 'Beta Holdings S.A.', cnpj: '12.987.654/0001-22', score: 64, pep: true, status: 'warn' },
-                            { name: 'LATAM Holdings Int.', cnpj: '98.765.432/0001-01', score: 23, pep: false, status: 'crit' },
-                            { name: 'NovaPay Serviços', cnpj: '55.443.221/0001-90', score: 88, pep: false, status: 'ok' },
-                        ].map(row => (
-                            <div key={row.cnpj} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', padding: '.75rem 1.25rem', borderBottom: `1px solid ${LINE}`, alignItems: 'center' }}>
-                                <div>
-                                    <div style={{ fontSize: '.8125rem', color: TEXT }}>{row.name}</div>
-                                    <div style={{ fontFamily: MONO, fontSize: '.65rem', color: MUTED }}>{row.cnpj}</div>
-                                </div>
-                                <span style={{ fontFamily: MONO, fontSize: '.75rem', fontWeight: 500, color: row.score >= 80 ? GREEN : row.score >= 50 ? AMBER : RED }}>{row.score}</span>
-                                <span style={{ fontFamily: MONO, fontSize: '.7rem', color: row.pep ? AMBER : '#94A3B8' }}>{row.pep ? 'PEP' : 'Não'}</span>
-                                <span style={{ width: 8, height: 8, borderRadius: '50%', background: row.status === 'ok' ? GREEN : row.status === 'warn' ? AMBER : RED, display: 'inline-block' }} />
-                            </div>
-                        ))}
-                        <div style={{ padding: '.75rem 1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <span style={{ fontFamily: MONO, fontSize: '.65rem', color: '#94A3B8' }}>847 entidades · 3 alertas ativos</span>
-                            <Link href="/dashboard" style={{ fontFamily: MONO, fontSize: '.65rem', color: CYAN, textDecoration: 'none' }}>Ver todas →</Link>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-    )
-}
-
-/* ─── STATS ──────────────────────────────────────── */
-function Stats() {
-    const items = [
-        { num: '70', sup: '%', label: 'Redução no tempo de onboarding KYC/KYB' },
-        { num: '12', sup: '+', label: 'Frameworks regulatórios cobertos' },
-        { num: '99', sup: '.9%', label: 'Disponibilidade SLA com infra AWS' },
-        { num: '0', sup: '', label: 'Planilhas manuais no processo de PLD' },
-    ]
-    return (
-        <section style={{ borderTop: `1px solid ${LINE}`, padding: '4rem 0' }}>
-            <div style={S.wrap}>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)' }}>
-                    {items.map((s, i) => (
-                        <div key={i} style={{ padding: '2.5rem 2rem', borderRight: i < 3 ? `1px solid ${LINE}` : undefined }}>
-                            <div style={{ fontFamily: SERIF, fontSize: '3rem', color: TEXT, lineHeight: 1, marginBottom: '.5rem' }}>
-                                {s.num}<sup style={{ fontFamily: UI, fontSize: '1rem', color: MUTED, fontWeight: 300 }}>{s.sup}</sup>
-                            </div>
-                            <div style={{ fontSize: '.8125rem', color: MUTED, maxWidth: 160, lineHeight: 1.5 }}>{s.label}</div>
-                        </div>
-                    ))}
-                </div>
-            </div>
-        </section>
-    )
-}
-
-/* ─── SOLUTIONS ──────────────────────────────────── */
-function Solutions() {
-    const cards = [
-        {
-            num: '01', icon: <ShieldCheck size={18} strokeWidth={1.5} />, title: 'PLD-FT & Sanções',
-            desc: 'Monitoramento contínuo de listas restritivas, identificação de PEPs e cálculo de risco automatizado — alinhado à Lei 9.613/98 e Res. BCB 50.',
-            tags: ['Screening OFAC / ONU / COAF', 'Detecção PEP nacional e internacional', 'Score de risco em tempo real', 'Workflow de investigação integrado'],
-            color: CYAN,
-        },
-        {
-            num: '02', icon: <Lock size={18} strokeWidth={1.5} />, title: 'Privacidade LGPD',
-            desc: 'Registro de operações de tratamento, gestão de consentimento, resposta a titulares e adequação para multas ANPD — conforme Lei 13.709/18.',
-            tags: ['RAT — Registro de Atividades de Tratamento', 'Relatórios de Impacto (RIPD)', 'Fluxo de exclusão de dados', 'Logs imutáveis por titular'],
-            color: CYAN,
-        },
-        {
-            num: '03', icon: <FileText size={18} strokeWidth={1.5} />, title: 'Governança & Anticorrupção',
-            desc: 'Due diligence de fornecedores B2B, scoring de risco e trilha de auditoria imutável — exigida pela Lei Anticorrupção 12.846/13.',
-            tags: ['Due diligence estruturada de fornecedores', 'Exportação PDF certificada para auditores', 'Checklists personalizados por setor', 'Audit Trail criptograficamente seguro'],
-            color: AMBER,
-        },
-    ]
-    return (
-        <section id="solutions" style={S.section}>
-            <div style={S.wrap}>
-                <p style={S.pre}>Três módulos. Um centro de controle.</p>
-                <h2 style={S.h2}>O cenário regulatório brasileiro é complexo.<br />Nós tornamos gerenciável.</h2>
-                <p style={{ ...S.p, maxWidth: 580, marginBottom: '4rem' }}>
-                    Conformidade não é opcional para fintechs e PMEs sob escrutínio do BACEN, COAF e ANPD.
-                </p>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', border: `1px solid ${LINE}` }}>
-                    {cards.map((c, i) => (
-                        <div key={c.num} style={{ padding: '2.5rem', borderRight: i < 2 ? `1px solid ${LINE}` : undefined }}>
-                            <div style={{ height: 1, background: LINE, marginBottom: '2rem', transition: 'background .2s' }} />
-                            <span style={{ fontFamily: MONO, fontSize: '.65rem', color: '#94A3B8', letterSpacing: '.08em', marginBottom: '1.5rem', display: 'block' }}>{c.num}</span>
-                            <IconBox icon={c.icon} color={c.color} />
-                            <div style={{ fontFamily: UI, fontWeight: 600, fontSize: '1.0625rem', color: TEXT, marginBottom: '.875rem' }}>{c.title}</div>
-                            <p style={{ ...S.p, fontSize: '.9rem', marginBottom: '1.75rem' }}>{c.desc}</p>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '.375rem' }}>
-                                {c.tags.map(t => (
-                                    <span key={t} style={{ fontFamily: MONO, fontSize: '.7rem', color: '#94A3B8', paddingLeft: '.875rem', position: 'relative' }}>
-                                        <span style={{ position: 'absolute', left: 0 }}>—</span>{t}
-                                    </span>
-                                ))}
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </div>
-        </section>
-    )
-}
-
-/* ─── STACK ──────────────────────────────────────── */
-function Stack() {
-    const items = [
-        { icon: <Key size={20} strokeWidth={1.5} />, name: 'Isolamento de Dados', desc: 'Multi-tenant com RLS no PostgreSQL. Sem compartilhamento entre tenants.' },
-        { icon: <Server size={20} strokeWidth={1.5} />, name: 'Alta Disponibilidade', desc: 'SLA 99,9% · AWS ECS Fargate · Multi-AZ · Auto-scaling.' },
-        { icon: <ShieldCheck size={20} strokeWidth={1.5} />, name: 'Segurança Zero-Trust', desc: 'JWT RS256 · MFA TOTP · WAF + Shield · Criptografia end-to-end.' },
-        { icon: <Activity size={20} strokeWidth={1.5} />, name: 'Observabilidade', desc: 'Datadog APM · Audit logs imutáveis · SOC 2 ready.' },
-    ]
-    return (
-        <section style={{ ...S.section, background: SURFACE }}>
-            <div style={S.wrap}>
-                <p style={S.pre}>Infraestrutura</p>
-                <h2 style={S.h2}>Enterprise-grade, sem overhead enterprise.</h2>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: '2rem', marginTop: '4rem' }}>
-                    {items.map(s => (
-                        <div key={s.name} style={{ padding: '2rem', border: `1px solid ${LINE}`, background: BG }}>
-                            <div style={{ color: CYAN, marginBottom: '1rem' }}>{s.icon}</div>
-                            <div style={{ fontFamily: UI, fontWeight: 600, fontSize: '.9375rem', color: TEXT, marginBottom: '.5rem' }}>{s.name}</div>
-                            <div style={{ fontFamily: MONO, fontSize: '.8rem', color: MUTED, lineHeight: 1.5 }}>{s.desc}</div>
-                        </div>
-                    ))}
-                </div>
-            </div>
-        </section>
-    )
-}
-
-/* ─── PRICING ────────────────────────────────────── */
-function Pricing() {
-    const plans = [
-        {
-            tier: 'Starter', price: 'R$ 890', period: '/ mês',
-            desc: 'Para PMEs iniciando a jornada de conformidade regulatória.',
-            features: ['Até 100 entidades monitoradas', 'Módulos PLD-FT e LGPD', 'Screening básico OFAC/ONU', 'Audit Trail padrão', 'Exportação PDF', 'Suporte por e-mail'],
-            featured: false,
-        },
-        {
-            tier: 'Growth', price: 'R$ 2.490', period: '/ mês',
-            desc: 'Para fintechs e empresas com operação regulatória madura e times dedicados.',
-            features: ['Até 1.000 entidades + API pública', 'Todos os módulos regulatórios', 'Screening completo + PEP nacional', 'Case Management de investigações', 'Exportação BACEN/COAF', 'Webhooks e integrações', 'Suporte prioritário'],
-            featured: true,
-        },
-        {
-            tier: 'Enterprise', price: 'Sob consulta', period: '',
-            desc: 'Para grupos financeiros com exigências avançadas de segurança e escala.',
-            features: ['Entidades ilimitadas', 'SLA dedicado + suporte 24/7', 'SAML SSO + SCIM provisioning', 'Deploy on-premise disponível', 'Integrações customizadas via API', 'Treinamento da equipe de compliance'],
-            featured: false,
-        },
-    ]
-    return (
-        <section id="pricing" style={S.section}>
-            <div style={S.wrap}>
-                <p style={S.pre}>Preços</p>
-                <h2 style={S.h2}>Transparente. Sem surpresas.</h2>
-                <p style={{ ...S.p, marginBottom: '4rem' }}>Cancelamento a qualquer momento. Sem taxa de setup. Migração assistida inclusa.</p>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', border: `1px solid ${LINE}` }}>
-                    {plans.map((p, i) => (
-                        <div key={p.tier} style={{
-                            padding: '2.5rem', display: 'flex', flexDirection: 'column',
-                            borderRight: i < 2 ? `1px solid ${LINE}` : undefined,
-                            background: p.featured ? SURFACE2 : undefined,
-                        }}>
-                            <div style={{ fontFamily: MONO, fontSize: '.7rem', color: MUTED, textTransform: 'uppercase', letterSpacing: '.1em', marginBottom: '1.25rem' }}>
-                                {p.tier}{p.featured && <span style={{ color: CYAN, marginLeft: '.75rem' }}>▲ Popular</span>}
-                            </div>
-                            <div style={{ fontFamily: SERIF, fontSize: p.price === 'Sob consulta' ? '1.75rem' : '2.5rem', color: TEXT, lineHeight: 1, marginBottom: '.25rem' }}>{p.price}</div>
-                            <div style={{ fontFamily: MONO, fontSize: '.7rem', color: '#94A3B8', marginBottom: '1.5rem' }}>{p.period || '\u00a0'}</div>
-                            <div style={{ height: 1, background: LINE, marginBottom: '1.5rem' }} />
-                            <p style={{ ...S.p, fontSize: '.875rem', marginBottom: '2rem', lineHeight: 1.6 }}>{p.desc}</p>
-                            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '.625rem', marginBottom: '2.5rem' }}>
-                                {p.features.map(f => (
-                                    <li key={f} style={{ fontSize: '.8125rem', color: MUTED, display: 'flex', gap: '.625rem', alignItems: 'flex-start' }}>
-                                        <CheckCircle size={13} stroke={CYAN} style={{ flexShrink: 0, marginTop: '.15rem' }} />
-                                        {f}
-                                    </li>
-                                ))}
-                            </ul>
-                            <div style={{ marginTop: 'auto' }}>
-                                <Link href="/dashboard" style={{
-                                    ...p.featured ? S.btnFill : S.btnLine,
-                                    width: '100%', justifyContent: 'center',
-                                }}>
-                                    {p.price === 'Sob consulta' ? 'Falar com a Equipe' : 'Começar Agora'}
-                                </Link>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-                <p style={{ textAlign: 'center', fontSize: '.8125rem', color: '#94A3B8', marginTop: '2rem' }}>
-                    Preços em BRL · Cancelamento a qualquer momento · Sem taxa de setup
-                </p>
-            </div>
-        </section>
-    )
-}
-
-/* ─── QUOTE + CTA ────────────────────────────────── */
-function QuoteCTA() {
-    return (
-        <section style={{ ...S.section, padding: '8rem 0' }}>
-            <div style={S.wrap}>
-                <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '8rem', alignItems: 'start' }}>
-                    <div>
-                        <div style={{ fontFamily: SERIF, fontSize: '5rem', color: LINE_STRONG, lineHeight: .5, marginBottom: '1.5rem' }}>"</div>
-                        <p style={{ fontFamily: SERIF, fontSize: 'clamp(1.5rem,2.5vw,2.25rem)', color: TEXT, lineHeight: 1.4, fontStyle: 'italic', marginBottom: '2rem', fontWeight: 'normal' }}>
-                            Reduzimos em 70% o tempo de onboarding KYC/KYB e eliminamos planilhas do processo de PLD. O ComplianceOS virou infraestrutura crítica para nós.
-                        </p>
-                        <div style={{ fontFamily: MONO, fontSize: '.7rem', color: MUTED, letterSpacing: '.04em' }}>
-                            <strong style={{ display: 'block', color: TEXT, marginBottom: '.25rem' }}>Rafael M.</strong>
-                            CCO · Acme Fintech &nbsp;|&nbsp; São Paulo, SP
-                        </div>
-                    </div>
-                    <div style={{ padding: '2.5rem', border: `1px solid ${LINE}` }}>
-                        <h3 style={{ fontFamily: SERIF, fontSize: '1.375rem', color: TEXT, marginBottom: '.875rem', fontWeight: 'normal' }}>Pronto para automatizar seu compliance?</h3>
-                        <p style={{ ...S.p, fontSize: '.875rem', marginBottom: '2rem', lineHeight: 1.65 }}>
-                            Agende uma demonstração com nossa equipe e veja como o ComplianceOS se adapta ao seu contexto regulatório.
-                        </p>
-                        <Link href="/dashboard" style={{ ...S.btnFill, width: '100%', justifyContent: 'center' }}>
-                            Agendar Demonstração Gratuita →
-                        </Link>
-                        <p style={{ marginTop: '1rem', fontSize: '.75rem', color: '#94A3B8', textAlign: 'center' }}>
-                            Sem compromisso. Resposta em até 24h úteis.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </section>
-    )
-}
-
-/* ─── FOOTER ─────────────────────────────────────── */
-function Footer() {
-    return (
-        <footer style={{ borderTop: `1px solid ${LINE}`, padding: '3rem 0', background: BG }}>
-            <div style={S.wrap}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '3rem', flexWrap: 'wrap' }}>
-                    <div style={{ maxWidth: 260 }}>
-                        <strong style={{ display: 'block', color: TEXT, fontFamily: UI, fontWeight: 500, marginBottom: '.5rem' }}>ComplianceOS</strong>
-                        <p style={{ ...S.p, fontSize: '.875rem', lineHeight: 1.6 }}>
-                            Plataforma de Compliance &amp; Governança para fintechs e PMEs brasileiras.
-                        </p>
-                        <p style={{ ...S.p, fontSize: '.825rem', marginTop: '.5rem' }}>Desenvolvido por Chuangxin · Grupo Guinle</p>
-                    </div>
-                    {[
-                        { label: 'Produto', links: [{ l: 'Módulos', h: '#solutions' }, { l: 'Plataforma', h: '#features' }, { l: 'Preços', h: '#pricing' }, { l: 'API Reference', h: '/docs' }, { l: 'Status', h: '#' }] },
-                        { label: 'Regulatório', links: [{ l: 'Cobertura', h: '/cobertura' }, { l: 'Documentação', h: '/docs' }, { l: 'LGPD', h: '/lgpd' }, { l: 'Segurança', h: '/seguranca' }] },
-                        { label: 'Legal', links: [{ l: 'Privacidade', h: '/privacidade' }, { l: 'Termos de Uso', h: '/termos' }, { l: 'Cookies', h: '/cookies' }, { l: 'Contato', h: '/contato' }] },
-                    ].map(g => (
-                        <div key={g.label}>
-                            <span style={{ fontFamily: MONO, fontSize: '.65rem', textTransform: 'uppercase', letterSpacing: '.1em', color: '#94A3B8', display: 'block', marginBottom: '.75rem' }}>{g.label}</span>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '.5rem' }}>
-                                {g.links.map(link => <Link key={link.l} href={link.h} style={{ fontSize: '.8125rem', color: MUTED, textDecoration: 'none' }}>{link.l}</Link>)}
-                            </div>
-                        </div>
-                    ))}
-                </div>
-                <div style={{ marginTop: '3rem', paddingTop: '1.5rem', borderTop: `1px solid ${LINE}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-                    <span style={{ fontSize: '.75rem', color: '#94A3B8' }}>© 2026 Chuangxin Tecnologia da Informação Ltda.</span>
-                    <div style={{ display: 'flex', gap: '.75rem' }}>
-                        {['LGPD', 'ISO 27001 Ready', 'AWS Partner', 'SOC 2'].map(b => (
-                            <span key={b} style={{ fontFamily: MONO, fontSize: '.65rem', color: '#94A3B8', border: `1px solid ${LINE}`, padding: '.25rem .625rem' }}>{b}</span>
-                        ))}
-                    </div>
-                </div>
-            </div>
-        </footer>
-    )
-}
-
-/* ─── PAGE ───────────────────────────────────────── */
 export default function LandingPage() {
     return (
-        <div style={{ background: BG, color: TEXT, fontFamily: UI, overflowX: 'hidden' }}>
-            <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
-        *{margin:0;padding:0;box-sizing:border-box;-webkit-font-smoothing:antialiased;}
-        a{color:inherit;text-decoration:none;}
-      `}</style>
-
+        <div className="min-h-screen bg-slate-50 text-slate-900 font-sans overflow-hidden selection:bg-brand-500 selection:text-white">
             {/* Navbar */}
-            <nav style={{ position: 'fixed', top: 0, width: '100%', zIndex: 100, borderBottom: `1px solid ${LINE}`, background: `rgba(255,255,255,.92)`, backdropFilter: 'blur(16px)' }}>
-                <div style={{ ...S.wrap, height: 60, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '.625rem', fontSize: '1rem', fontWeight: 600, letterSpacing: '-.02em', color: TEXT, textDecoration: 'none' }}>
-                        <ShieldCheck size={20} stroke={CYAN} strokeWidth={1.5} />
-                        Compliance<span style={{ color: CYAN }}>OS</span>
+            <nav className="fixed top-0 w-full z-50 border-b border-slate-200/80 bg-white/80 backdrop-blur-md transition-all">
+                <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+                    <Link href="/" className="flex items-center gap-2 text-xl font-bold tracking-tight text-slate-900 group">
+                        <div className="p-1.5 bg-brand-50 rounded-lg group-hover:bg-brand-100 transition-colors">
+                            <ShieldCheck className="w-5 h-5 text-brand-600" strokeWidth={2} />
+                        </div>
+                        Compliance<span className="text-brand-600">OS</span>
                     </Link>
-                    <div style={{ display: 'flex', gap: '2.5rem' }}>
-                        {([['#solutions', 'Produto'], ['#pricing', 'Preços'], ['/dashboard', 'Plataforma']] as [string, string][]).map(([h, l]) => (
-                            <Link key={l} href={h} style={{ fontSize: '.8125rem', color: MUTED, textDecoration: 'none' }}>{l}</Link>
+                    <div className="hidden md:flex items-center gap-8">
+                        {[
+                            ['#solutions', 'Produto'],
+                            ['#pricing', 'Preços'],
+                            ['/docs', 'API']
+                        ].map(([href, label]) => (
+                            <Link key={label} href={href} className="text-sm font-medium text-slate-600 hover:text-brand-600 transition-colors">
+                                {label}
+                            </Link>
                         ))}
                     </div>
-                    <div style={{ display: 'flex', gap: '.75rem' }}>
-                        <Link href="/login" style={S.btnLine}>Entrar</Link>
-                        <Link href="/dashboard" style={S.btnFill}>Agendar Demo →</Link>
+                    <div className="flex items-center gap-4">
+                        <Link href="/login" className="hidden md:block text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">
+                            Entrar
+                        </Link>
+                        <Link href="/dashboard" className="inline-flex items-center gap-2 px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium rounded-full shadow-sm shadow-brand-600/20 transition-all hover:-translate-y-0.5">
+                            Agendar Demo <ArrowRight className="w-4 h-4" />
+                        </Link>
                     </div>
                 </div>
             </nav>
 
-            <Hero />
-            <Stats />
-            <Solutions />
-            <Stack />
-            <Pricing />
-            <QuoteCTA />
-            <Footer />
+            {/* Hero Section */}
+            <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 flex items-center min-h-[90vh]">
+                {/* Background glow effects */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] bg-brand-400/20 blur-[120px] rounded-full pointer-events-none" />
+
+                <div className="max-w-7xl mx-auto px-6 relative z-10 w-full">
+                    <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
+                        <div className="max-w-2xl">
+                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-50 border border-brand-100 text-brand-700 text-xs font-semibold tracking-wide uppercase mb-6 shadow-sm">
+                                <span className="w-2 h-2 rounded-full bg-brand-500 animate-pulse" />
+                                Plataforma regulatória · BACEN / COAF / ANPD
+                            </div>
+                            <h1 className="font-display text-5xl md:text-6xl lg:text-7xl leading-[1.1] text-slate-900 mb-6 tracking-tight">
+                                Conformidade regulatória.<br />
+                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-cyan-500">Sem travar sua operação.</span>
+                            </h1>
+                            <p className="text-lg text-slate-600 mb-8 leading-relaxed max-w-xl">
+                                O ComplianceOS automatiza PLD-FT, LGPD e Anticorrupção para fintechs e PMEs brasileiras — do KYC ao relatório COAF, com trilha de auditoria criptograficamente segura.
+                            </p>
+                            <div className="flex flex-col sm:flex-row gap-4">
+                                <Link href="/dashboard" className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold rounded-full shadow-lg shadow-brand-600/25 transition-all hover:shadow-brand-600/40 hover:-translate-y-0.5">
+                                    Começar Grátis <ArrowRight className="w-4 h-4" />
+                                </Link>
+                                <Link href="#solutions" className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-white hover:bg-slate-50 text-slate-700 text-sm font-semibold rounded-full border border-slate-200 shadow-sm transition-all hover:-translate-y-0.5">
+                                    Ver a Plataforma
+                                </Link>
+                            </div>
+                        </div>
+
+                        {/* Interactive UI Mockup */}
+                        <div className="relative">
+                            <div className="absolute inset-0 bg-gradient-to-tr from-brand-100 to-cyan-50 transform rotate-3 rounded-[2rem] shadow-inner" />
+                            <div className="relative bg-white border border-slate-200 rounded-2xl shadow-xl shadow-slate-200/50 overflow-hidden flex flex-col">
+                                <div className="px-5 py-3 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+                                    <div className="flex items-center gap-2">
+                                        <div className="flex gap-1.5">
+                                            <div className="w-3 h-3 rounded-full bg-slate-200" />
+                                            <div className="w-3 h-3 rounded-full bg-slate-200" />
+                                            <div className="w-3 h-3 rounded-full bg-slate-200" />
+                                        </div>
+                                        <span className="ml-4 text-xs font-mono text-slate-500 uppercase tracking-widest">Live Monitor</span>
+                                    </div>
+                                    <div className="flex items-center gap-1.5 px-2 py-1 bg-green-50 text-green-700 rounded-md text-[10px] font-bold uppercase tracking-wider border border-green-200/50">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                                        Tempo Real
+                                    </div>
+                                </div>
+                                <div className="p-5 flex-1">
+                                    <div className="grid grid-cols-12 gap-4 pb-3 border-b border-slate-100 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                                        <div className="col-span-6">Entidade</div>
+                                        <div className="col-span-2 text-center">Score</div>
+                                        <div className="col-span-2 text-center">PEP</div>
+                                        <div className="col-span-2 text-right">Status</div>
+                                    </div>
+                                    <div className="flex flex-col divide-y divide-slate-50">
+                                        {[
+                                            { name: 'Acme Fintech Ltda.', cnpj: '35.123.456/0001-78', score: 91, pep: false, status: 'ok' },
+                                            { name: 'Beta Holdings S.A.', cnpj: '12.987.654/0001-22', score: 64, pep: true, status: 'warn' },
+                                            { name: 'LATAM Holdings Int.', cnpj: '98.765.432/0001-01', score: 23, pep: false, status: 'crit' },
+                                            { name: 'NovaPay Serviços', cnpj: '55.443.221/0001-90', score: 88, pep: false, status: 'ok' },
+                                        ].map((row, i) => (
+                                            <div key={i} className="grid grid-cols-12 gap-4 py-3 items-center hover:bg-slate-50/80 transition-colors -mx-2 px-2 rounded-lg cursor-default">
+                                                <div className="col-span-6">
+                                                    <div className="text-sm font-medium text-slate-900 truncate">{row.name}</div>
+                                                    <div className="text-xs font-mono text-slate-500">{row.cnpj}</div>
+                                                </div>
+                                                <div className="col-span-2 flex justify-center">
+                                                    <span className={`inline-flex items-center justify-center px-2 py-0.5 rounded text-xs font-bold font-mono ${row.score >= 80 ? 'bg-green-50 text-green-700' :
+                                                        row.score >= 50 ? 'bg-amber-50 text-amber-700' : 'bg-red-50 text-red-700'
+                                                        }`}>
+                                                        {row.score}
+                                                    </span>
+                                                </div>
+                                                <div className="col-span-2 flex justify-center">
+                                                    {row.pep ? (
+                                                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-100/50 text-amber-700 border border-amber-200/50">PEP</span>
+                                                    ) : (
+                                                        <span className="text-xs text-slate-300">-</span>
+                                                    )}
+                                                </div>
+                                                <div className="col-span-2 flex justify-end pr-2">
+                                                    <div className={`w-2.5 h-2.5 rounded-full ${row.status === 'ok' ? 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.4)]' :
+                                                        row.status === 'warn' ? 'bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.4)]' :
+                                                            'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.4)]'
+                                                        }`} />
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div className="bg-slate-50/80 border-t border-slate-100 px-5 py-3 flex items-center justify-between">
+                                    <div className="text-xs text-slate-500 font-medium">847 entidades monitoradas</div>
+                                    <Link href="/dashboard" className="text-xs font-bold text-brand-600 hover:text-brand-700 flex items-center gap-1 group">
+                                        Ver Painel Completo <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+                                    </Link>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Stats */}
+            <section className="border-y border-slate-200 bg-white">
+                <div className="max-w-7xl mx-auto px-6">
+                    <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-y md:divide-y-0 divide-slate-100">
+                        {[
+                            { num: '70', sup: '%', label: 'Redução no tempo de onboarding KYC/KYB' },
+                            { num: '12', sup: '+', label: 'Frameworks regulatórios cobertos nativamente' },
+                            { num: '99', sup: '.9%', label: 'Disponibilidade SLA com infraestrutura AWS' },
+                            { num: '0', sup: '', label: 'Planilhas manuais no seu processo de PLD' },
+                        ].map((s, i) => (
+                            <div key={i} className="p-8 lg:p-10 flex flex-col items-center text-center">
+                                <div className="font-display text-4xl lg:text-5xl text-slate-900 mb-2 flex items-baseline">
+                                    {s.num}<span className="text-xl lg:text-2xl text-brand-600 font-sans font-medium">{s.sup}</span>
+                                </div>
+                                <p className="text-sm text-slate-500 leading-snug">{s.label}</p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* Solutions */}
+            <section id="solutions" className="py-24 bg-slate-50 relative">
+                <div className="max-w-7xl mx-auto px-6">
+                    <div className="max-w-3xl mb-16">
+                        <h2 className="text-brand-600 font-bold uppercase tracking-wider text-sm mb-3">Módulos Inteligentes</h2>
+                        <h3 className="font-display text-4xl md:text-5xl text-slate-900 mb-6 leading-tight">
+                            O cenário regulatório é complexo.<br />
+                            Nós o tornamos gerenciável.
+                        </h3>
+                        <p className="text-lg text-slate-600">
+                            Conformidade não é opcional para fintechs e PMEs sob escrutínio do BACEN, COAF e ANPD. Centralize todas as suas obrigações em uma única plataforma.
+                        </p>
+                    </div>
+
+                    <div className="grid md:grid-cols-3 gap-8">
+                        {[
+                            {
+                                icon: ShieldCheck, title: 'PLD-FT & Sanções', color: 'text-blue-600', bg: 'bg-blue-50', border: 'border-blue-100',
+                                desc: 'Monitoramento contínuo de listas restritivas, identificação de PEPs e cálculo de risco automatizado (Lei 9.613/98 e Res. BCB 50).',
+                                tags: ['Screening OFAC / ONU / COAF', 'Detecção PEP inteligente', 'Score de risco em tempo real']
+                            },
+                            {
+                                icon: Lock, title: 'Privacidade LGPD', color: 'text-brand-600', bg: 'bg-brand-50', border: 'border-brand-100',
+                                desc: 'Registro de operações de tratamento, gestão de consentimento e adequação processual completa para evitar multas da ANPD.',
+                                tags: ['RAT Automatizado', 'Relatórios de Impacto (RIPD)', 'Fluxo de exclusão de dados']
+                            },
+                            {
+                                icon: FileText, title: 'Governança & Anticorrupção', color: 'text-amber-600', bg: 'bg-amber-50', border: 'border-amber-100',
+                                desc: 'Due diligence de fornecedores B2B, scoring de risco de terceiros e trilha de auditoria imutável (Lei Anticorrupção 12.846/13).',
+                                tags: ['Due diligence de fornecedores', 'Exportação PDF certificada', 'Audit Trail criptografado']
+                            },
+                        ].map((c, i) => (
+                            <div key={i} className="bg-white rounded-2xl p-8 border border-slate-200 shadow-sm hover:shadow-md transition-all hover:-translate-y-1 group">
+                                <div className={`w-14 h-14 rounded-xl ${c.bg} ${c.border} border flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}>
+                                    <c.icon className={`w-7 h-7 ${c.color}`} strokeWidth={1.5} />
+                                </div>
+                                <h4 className="text-xl font-bold text-slate-900 mb-3">{c.title}</h4>
+                                <p className="text-slate-600 text-sm leading-relaxed mb-6">{c.desc}</p>
+                                <ul className="space-y-3">
+                                    {c.tags.map(t => (
+                                        <li key={t} className="flex items-start gap-3 text-sm text-slate-600">
+                                            <Check className={`w-4 h-4 mt-0.5 shrink-0 ${c.color}`} />
+                                            {t}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* Stack */}
+            <section className="py-24 bg-slate-900 text-white relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-brand-500/10 blur-[100px] rounded-full" />
+                <div className="max-w-7xl mx-auto px-6 relative z-10">
+                    <div className="text-center max-w-2xl mx-auto mb-16">
+                        <h2 className="text-brand-400 font-bold uppercase tracking-wider text-sm mb-3">Infraestrutura</h2>
+                        <h3 className="font-display text-4xl md:text-5xl mb-6">Enterprise-grade, sem o overhead.</h3>
+                        <p className="text-slate-400 text-lg">Construímos nossa arquitetura para atender aos requisitos mais rígidos de bancos centrais e órgãos reguladores globais.</p>
+                    </div>
+
+                    <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        {[
+                            { icon: Key, title: 'Isolamento de Dados', desc: 'Arquitetura multi-tenant com RLS rígido no PostgreSQL. Sem vazamento.' },
+                            { icon: Server, title: 'Alta Disponibilidade', desc: 'AWS ECS Fargate com auto-scaling automático e redundância Multi-AZ.' },
+                            { icon: ShieldCheck, title: 'Zero-Trust Security', desc: 'MFA Opcional, tokens JWT RS256 de curta duração e WAF integrado.' },
+                            { icon: Activity, title: 'Observabilidade', desc: 'Trilhas de auditoria imutáveis (apend-only) integradas com Datadog.' },
+                        ].map((s, i) => (
+                            <div key={i} className="p-6 rounded-2xl bg-slate-800/50 border border-slate-700 hover:bg-slate-800 transition-colors">
+                                <s.icon className="w-8 h-8 text-brand-400 mb-4" />
+                                <h4 className="font-semibold text-lg mb-2">{s.title}</h4>
+                                <p className="text-sm text-slate-400 leading-relaxed">{s.desc}</p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* Pricing */}
+            <section id="pricing" className="py-24 bg-slate-50">
+                <div className="max-w-7xl mx-auto px-6">
+                    <div className="text-center max-w-3xl mx-auto mb-16">
+                        <h2 className="text-brand-600 font-bold uppercase tracking-wider text-sm mb-3">Planos e Preços</h2>
+                        <h3 className="font-display text-4xl md:text-5xl text-slate-900 mb-6">Transparente. Sem surpresas.</h3>
+                        <p className="text-lg text-slate-600 mb-6">Assinatura mensal com tudo que sua operação de compliance precisa.</p>
+                        <div className="flex flex-wrap items-center justify-center gap-3 text-sm font-medium">
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-50 text-brand-700 border border-brand-100/50">15% OFF no plano anual pré-pago</span>
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-700 border border-slate-200/50">Trial de 14 dias (sem cartão)</span>
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100/50">Setup grátis (anual Professional+)</span>
+                        </div>
+                    </div>
+
+                    <div className="grid lg:grid-cols-3 gap-8 max-w-6xl mx-auto items-stretch">
+                        {[
+                            {
+                                name: 'Starter', price: 'R$ 1.490', period: '/mês',
+                                desc: 'Para operações iniciais.',
+                                features: ['Até 100 entidades monitoradas', '3 usuários inclusos', 'KYC/KYB Onboarding', 'Checklists Regulatórios', 'Screening de Sanções', 'Trilha de Auditoria', 'Motor de Score Básico', 'SLA 99,5%', 'Onboarding Self-service'],
+                                popular: false
+                            },
+                            {
+                                name: 'Professional', price: 'R$ 3.900', period: '/mês',
+                                desc: 'Para operações maduras e times dedicados.',
+                                features: ['Até 500 entidades monitoradas', '10 usuários inclusos', 'KYC/KYB Onboarding', 'Checklists Regulatórios', 'Screening de Sanções (Tempo Real)', 'Trilha de Auditoria (Imutável)', 'Case Management', 'Motor de Score Avançado', 'Geração de Documentos', 'SLA 99,9%', 'Onboarding Guiado (4h)'],
+                                popular: true
+                            },
+                            {
+                                name: 'Enterprise', price: 'Sob medida', period: '',
+                                desc: 'Para instituições com exigências complexas.',
+                                features: ['Entidades e usuários ilimitados', 'KYC/KYB Onboarding', 'Checklists Regulatórios', 'Screening de Sanções (Tempo Real)', 'Trilha de Auditoria (Imutável)', 'Case Management', 'Motor de Score Configurável', 'Geração de Documentos', 'API Pública', 'SSO SAML / LDAP', 'SLA 99,95% + suporte dedicado', 'Onboarding Dedicado (20h)'],
+                                popular: false
+                            }
+                        ].map((p, i) => (
+                            <div key={i} className={`relative rounded-3xl p-8 bg-white border flex flex-col ${p.popular ? 'border-brand-500 shadow-2xl shadow-brand-500/10 scale-105 z-10' : 'border-slate-200 shadow-sm'}`}>
+                                {p.popular && (
+                                    <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-brand-500 text-white text-xs font-bold uppercase tracking-wider py-1 px-3 rounded-full">
+                                        Mais Escolhido
+                                    </div>
+                                )}
+                                <h4 className="text-lg font-semibold text-slate-900 mb-2">{p.name}</h4>
+                                <div className="flex items-baseline gap-1 mb-4">
+                                    <span className="font-display text-4xl text-slate-900">{p.price}</span>
+                                    {p.period && <span className="text-slate-500 font-medium">{p.period}</span>}
+                                </div>
+                                <p className="text-sm text-slate-600 mb-6 h-10">{p.desc}</p>
+                                <ul className="space-y-4 mb-8 flex-1">
+                                    {p.features.map(f => (
+                                        <li key={f} className="flex items-start gap-3 text-sm text-slate-700">
+                                            <CheckCircle className={`w-5 h-5 shrink-0 ${p.popular ? 'text-brand-500' : 'text-slate-400'}`} />
+                                            {f}
+                                        </li>
+                                    ))}
+                                </ul>
+                                <Link href="/dashboard" className={`block w-full py-3 px-4 rounded-xl text-center text-sm font-semibold transition-all mt-auto ${p.popular
+                                    ? 'bg-brand-600 text-white hover:bg-brand-700 shadow-md hover:shadow-lg'
+                                    : 'bg-slate-50 text-slate-900 border border-slate-200 hover:bg-slate-100'
+                                    }`}>
+                                    Começar Agora
+                                </Link>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* Footer */}
+            <footer className="bg-white border-t border-slate-200 pt-16 pb-8">
+                <div className="max-w-7xl mx-auto px-6">
+                    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 mb-16">
+                        <div className="col-span-2 lg:col-span-2">
+                            <Link href="/" className="flex items-center gap-2 text-xl font-bold tracking-tight text-slate-900 mb-4">
+                                <ShieldCheck className="w-6 h-6 text-brand-600" strokeWidth={2.5} />
+                                Compliance<span className="text-brand-600">OS</span>
+                            </Link>
+                            <p className="text-slate-500 text-sm leading-relaxed mb-6 max-w-sm">
+                                A infraestrutura regulatória inteligente para empresas que movem a economia do Brasil.
+                            </p>
+                        </div>
+                        {[
+                            { title: 'Produto', links: ['Plataforma', 'Preços', 'Soluções', 'Changelog'] },
+                            { title: 'Regulatório', links: ['Bacen & COAF', 'LGPD / ANPD', 'Segurança', 'Due Diligence'] },
+                            { title: 'Empresa', links: ['Sobre nós', 'Contato', 'Privacidade', 'Termos de Uso'] }
+                        ].map(group => (
+                            <div key={group.title}>
+                                <h4 className="font-semibold text-slate-900 mb-4">{group.title}</h4>
+                                <ul className="space-y-3">
+                                    {group.links.map(l => (
+                                        <li key={l}>
+                                            <Link href="#" className="text-sm text-slate-500 hover:text-brand-600 transition-colors">{l}</Link>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        ))}
+                    </div>
+                    <div className="pt-8 border-t border-slate-100 flex flex-col md:flex-row items-center justify-between gap-4">
+                        <p className="text-sm text-slate-400">© 2026 Chuangxin Tecnologia da Informação Ltda. Todos os direitos reservados.</p>
+                        <div className="flex gap-2">
+                            {['ISO 27001 Ready', 'AWS Partner', 'SOC 2'].map(badge => (
+                                <span key={badge} className="px-2 py-1 bg-slate-50 border border-slate-200 rounded text-xs text-slate-500 font-medium">
+                                    {badge}
+                                </span>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </footer>
         </div>
     )
 }
