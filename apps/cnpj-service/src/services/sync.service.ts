@@ -17,11 +17,18 @@ export async function runSyncJob() {
     const concurrency = Number(process.env.RFB_DOWNLOAD_CONCURRENCY || 3);
     const limit = pLimit(concurrency);
 
-    let targetCompetencia = process.env.SYNC_FORCE_COMPETENCIA;
+    let envCompetencia = process.env.SYNC_FORCE_COMPETENCIA;
+    const isOfflineMode = process.env.RFB_OFFLINE_MODE === 'true';
 
-    if (!targetCompetencia) {
+    let targetCompetencia: string;
+
+    if (!envCompetencia && !isOfflineMode) {
         targetCompetencia = await getLatestCompetencia();
         logger.info(`Detected latest RFB folder: ${targetCompetencia}`);
+    } else if (!envCompetencia && isOfflineMode) {
+        throw new Error('In offline mode, process.env.SYNC_FORCE_COMPETENCIA must be set to the folder name (e.g. 2024-02).');
+    } else {
+        targetCompetencia = envCompetencia as string;
     }
 
     // Check if it was already processed successfully
@@ -51,7 +58,17 @@ export async function runSyncJob() {
             const fileUrl = `${baseUrl}/${targetCompetencia}/${fileName}`;
             logger.info(`Processing ${fileUrl}`);
 
-            const zipLocalPath = await downloadFile(fileUrl, downloadDir, fileName);
+            let zipLocalPath: string;
+
+            if (isOfflineMode) {
+                zipLocalPath = path.join(downloadDir, targetCompetencia, fileName);
+                if (!fs.existsSync(zipLocalPath)) {
+                    logger.warn(`Offline mode: File not found at ${zipLocalPath}, skipping...`);
+                    return;
+                }
+            } else {
+                zipLocalPath = await downloadFile(fileUrl, downloadDir, fileName);
+            }
 
             const extraction = await getExtractedStream(zipLocalPath);
 
@@ -67,8 +84,8 @@ export async function runSyncJob() {
                 }
             }
 
-            // Cleanup
-            if (fs.existsSync(zipLocalPath)) {
+            // Cleanup only if downloaded dynamically
+            if (!isOfflineMode && fs.existsSync(zipLocalPath)) {
                 fs.unlinkSync(zipLocalPath);
                 logger.info(`Cleaned up temp ZIP: ${zipLocalPath}`);
             }
