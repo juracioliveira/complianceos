@@ -1,16 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { useState } from 'react'
-import { PublicNav, PublicFooter, pageStyle, CYAN, SURFACE, LINE, TEXT, MUTED, UI, MONO } from '@/components/public/PublicLayout'
-
-/* ─── TOKENS ─── */
-const SERIF = "'DM Serif Display', serif"
-const SURFACE2 = '#F3F4F6'
-const LINE_S = 'rgba(0,0,0,0.10)'
-const SUCCESS = '#16A34A'
-const WARNING = '#D97706'
-const DANGER = '#DC2626'
-const INFO = '#0284C7'
+import { PublicNav, PublicFooter } from '@/components/public/PublicLayout'
 
 /* ─── SIDEBAR SECTIONS ─── */
 const NAV = [
@@ -57,43 +48,43 @@ const NAV = [
 
 /* ─── HELPERS ─── */
 function Tag({ method }: { method: string }) {
-    const colors: Record<string, string> = { GET: SUCCESS, POST: INFO, PATCH: WARNING, DELETE: DANGER, PUT: WARNING }
+    const colors: Record<string, string> = {
+        GET: 'text-green-600 bg-green-50 border-green-200',
+        POST: 'text-sky-600 bg-sky-50 border-sky-200',
+        PATCH: 'text-amber-600 bg-amber-50 border-amber-200',
+        DELETE: 'text-red-600 bg-red-50 border-red-200',
+        PUT: 'text-amber-600 bg-amber-50 border-amber-200'
+    }
     return (
-        <span style={{
-            fontFamily: MONO, fontSize: '.6rem', fontWeight: 600, padding: '.15rem .45rem',
-            background: colors[method] + '18', color: colors[method], border: `1px solid ${colors[method]}40`,
-        }}>{method}</span>
+        <span className={`font-mono text-[0.6rem] font-semibold px-2 py-0.5 border rounded ${colors[method]}`}>{method}</span>
     )
 }
 
 function Code({ children }: { children: string }) {
     return (
-        <pre style={{
-            fontFamily: MONO, fontSize: '.78rem', lineHeight: 1.7, padding: '1.25rem 1.5rem',
-            background: '#0F172A', color: '#E2E8F0', overflowX: 'auto',
-            margin: '1rem 0', whiteSpace: 'pre-wrap', wordBreak: 'break-all' as const,
-        }}>
+        <pre className="font-mono text-[0.78rem] leading-relaxed p-5 bg-slate-900 text-slate-200 overflow-x-auto my-4 whitespace-pre-wrap break-all rounded-lg">
             <code>{children}</code>
         </pre>
     )
 }
 
-function Badge({ label, color = CYAN }: { label: string; color?: string }) {
+function Badge({ label, type = 'brand' }: { label: string; type?: 'brand' | 'success' | 'warning' | 'danger' | 'info' | 'muted' }) {
+    const styles = {
+        brand: 'bg-brand-50 text-brand-600 border-brand-200',
+        success: 'bg-green-50 text-green-600 border-green-200',
+        warning: 'bg-amber-50 text-amber-600 border-amber-200',
+        danger: 'bg-red-50 text-red-600 border-red-200',
+        info: 'bg-sky-50 text-sky-600 border-sky-200',
+        muted: 'bg-slate-100 text-slate-500 border-slate-200',
+    }
     return (
-        <span style={{
-            fontFamily: MONO, fontSize: '.6rem', padding: '.15rem .5rem',
-            background: color + '15', color, border: `1px solid ${color}30`,
-        }}>{label}</span>
+        <span className={`font-mono text-[0.6rem] px-2 py-0.5 border rounded ${styles[type]}`}>{label}</span>
     )
 }
 
 function SectionTitle({ id, children }: { id: string; children: React.ReactNode }) {
     return (
-        <h2 id={id} style={{
-            fontFamily: SERIF, fontSize: 'clamp(1.35rem,2vw,1.75rem)', color: TEXT, fontWeight: 'normal',
-            marginBottom: '1rem', paddingBottom: '.875rem', borderBottom: `1px solid ${LINE}`,
-            scrollMarginTop: '6rem',
-        }}>
+        <h2 id={id} className="font-serif text-[clamp(1.35rem,2vw,1.75rem)] text-slate-900 mb-4 pb-3 border-b border-slate-200 scroll-mt-24">
             {children}
         </h2>
     )
@@ -101,35 +92,32 @@ function SectionTitle({ id, children }: { id: string; children: React.ReactNode 
 
 function SubTitle({ children, id }: { children: React.ReactNode; id?: string }) {
     return (
-        <h3 id={id} style={{
-            fontFamily: UI, fontWeight: 600, fontSize: '1rem', color: TEXT,
-            marginTop: '2rem', marginBottom: '.75rem', scrollMarginTop: '6rem',
-        }}>
+        <h3 id={id} className="font-semibold text-base text-slate-900 mt-8 mb-3 scroll-mt-24">
             {children}
         </h3>
     )
 }
 
 function P({ children }: { children: React.ReactNode }) {
-    return <p style={{ fontFamily: UI, fontSize: '.875rem', color: MUTED, lineHeight: 1.8, marginBottom: '.75rem' }}>{children}</p>
+    return <p className="text-[0.875rem] text-slate-600 leading-relaxed mb-3">{children}</p>
 }
 
 function DataTable({ headers, rows }: { headers: string[]; rows: React.ReactNode[][] }) {
     return (
-        <div style={{ overflowX: 'auto', margin: '1rem 0' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: UI, fontSize: '.8125rem' }}>
+        <div className="overflow-x-auto my-4 border border-slate-200 rounded-lg">
+            <table className="w-full border-collapse text-[0.8125rem] text-left">
                 <thead>
-                    <tr>
+                    <tr className="bg-slate-100 border-b border-slate-200">
                         {headers.map(h => (
-                            <th key={h} style={{ textAlign: 'left', padding: '.625rem 1rem', background: SURFACE2, color: TEXT, fontWeight: 600, borderBottom: `1px solid ${LINE_S}` }}>{h}</th>
+                            <th key={h} className="p-3 font-semibold text-slate-900">{h}</th>
                         ))}
                     </tr>
                 </thead>
                 <tbody>
                     {rows.map((row, i) => (
-                        <tr key={i} style={{ borderBottom: `1px solid ${LINE}` }}>
+                        <tr key={i} className="border-b border-slate-200 last:border-0 bg-white">
                             {row.map((cell, j) => (
-                                <td key={j} style={{ padding: '.625rem 1rem', color: MUTED, verticalAlign: 'top' }}>{cell}</td>
+                                <td key={j} className="p-3 text-slate-600 align-top">{cell}</td>
                             ))}
                         </tr>
                     ))}
@@ -141,12 +129,12 @@ function DataTable({ headers, rows }: { headers: string[]; rows: React.ReactNode
 
 function Endpoint({ method, path, permission, description }: { method: string; path: string; permission?: string; description?: string }) {
     return (
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '.75rem', padding: '1rem', background: SURFACE, border: `1px solid ${LINE}`, marginBottom: '.75rem' }}>
+        <div className="flex items-start gap-3 p-4 bg-white border border-slate-200 rounded-lg mb-3 shadow-sm">
             <Tag method={method} />
-            <div style={{ flex: 1 }}>
-                <code style={{ fontFamily: MONO, fontSize: '.8125rem', color: TEXT, fontWeight: 500 }}>{path}</code>
-                {permission && <div style={{ fontFamily: UI, fontSize: '.75rem', color: MUTED, marginTop: '.25rem' }}>Permissão: <strong>{permission}</strong></div>}
-                {description && <div style={{ fontFamily: UI, fontSize: '.8125rem', color: MUTED, marginTop: '.25rem' }}>{description}</div>}
+            <div className="flex-1">
+                <code className="font-mono text-[0.8125rem] text-slate-900 font-medium">{path}</code>
+                {permission && <div className="text-[0.75rem] text-slate-500 mt-1">Permissão: <strong className="text-slate-700">{permission}</strong></div>}
+                {description && <div className="text-[0.8125rem] text-slate-600 mt-1 leading-relaxed">{description}</div>}
             </div>
         </div>
     )
@@ -154,15 +142,15 @@ function Endpoint({ method, path, permission, description }: { method: string; p
 
 function AlertBox({ type, children }: { type: 'info' | 'warning' | 'danger' | 'success'; children: React.ReactNode }) {
     const cfg = {
-        info: { color: INFO, icon: 'ℹ', label: 'Nota' },
-        warning: { color: WARNING, icon: '⚠', label: 'Atenção' },
-        danger: { color: DANGER, icon: '✕', label: 'Crítico' },
-        success: { color: SUCCESS, icon: '✓', label: 'Dica' },
+        info: { styles: 'bg-sky-50 border-sky-500 text-sky-600', icon: 'ℹ', text: 'text-slate-700' },
+        warning: { styles: 'bg-amber-50 border-amber-500 text-amber-600', icon: '⚠', text: 'text-slate-700' },
+        danger: { styles: 'bg-red-50 border-red-500 text-red-600', icon: '✕', text: 'text-slate-700' },
+        success: { styles: 'bg-green-50 border-green-500 text-green-600', icon: '✓', text: 'text-slate-700' },
     }[type]
     return (
-        <div style={{ display: 'flex', gap: '.75rem', padding: '1rem 1.25rem', background: cfg.color + '08', borderLeft: `3px solid ${cfg.color}`, margin: '1rem 0' }}>
-            <span style={{ fontFamily: MONO, fontSize: '.9rem', color: cfg.color, lineHeight: 1.6, flexShrink: 0 }}>{cfg.icon}</span>
-            <div style={{ fontFamily: UI, fontSize: '.8125rem', color: MUTED, lineHeight: 1.75 }}>{children}</div>
+        <div className={`flex gap-3 p-4 my-4 border-l-4 rounded-r-lg ${cfg.styles}`}>
+            <span className="font-mono text-[0.9rem] leading-relaxed shrink-0">{cfg.icon}</span>
+            <div className={`text-[0.8125rem] leading-relaxed ${cfg.text}`}>{children}</div>
         </div>
     )
 }
@@ -177,75 +165,55 @@ export function DocsPageClient() {
         if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
     }
 
-    const mono = { fontFamily: MONO, fontSize: '.85em' as const, color: CYAN }
-
     return (
-        <div style={pageStyle}>
-            <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
-        *{margin:0;padding:0;box-sizing:border-box;-webkit-font-smoothing:antialiased;}
-        a{color:inherit;text-decoration:none;}
-        html{scroll-behavior:smooth;}
-        ::-webkit-scrollbar{width:4px;height:4px;}
-        ::-webkit-scrollbar-track{background:transparent;}
-        ::-webkit-scrollbar-thumb{background:rgba(0,0,0,.09);border-radius:2px;}
-      `}</style>
-
+        <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-brand-500 selection:text-white">
             <PublicNav />
 
             {/* HERO */}
-            <section style={{
-                paddingTop: '8rem', paddingBottom: '4rem', borderBottom: `1px solid ${LINE}`,
-                backgroundImage: `linear-gradient(${LINE} 1px,transparent 1px),linear-gradient(90deg,${LINE} 1px,transparent 1px)`,
+            <section className="pt-32 pb-16 border-b border-slate-200" style={{
+                backgroundImage: `linear-gradient(#e2e8f0 1px,transparent 1px),linear-gradient(90deg,#e2e8f0 1px,transparent 1px)`,
                 backgroundSize: '80px 80px',
             }}>
-                <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 3rem' }}>
-                    <p style={{ fontFamily: MONO, fontSize: '.7rem', color: MUTED, textTransform: 'uppercase' as const, letterSpacing: '.12em', marginBottom: '1.5rem' }}>
-                        <Link href="/" style={{ color: MUTED }}>ComplianceOS</Link>{' / '}Documentação
+                <div className="max-w-7xl mx-auto px-6 md:px-12">
+                    <p className="font-mono text-[0.7rem] text-slate-500 uppercase tracking-widest mb-6">
+                        <Link href="/" className="hover:text-brand-600 transition-colors">ComplianceOS</Link>{' / '}Documentação
                     </p>
-                    <h1 style={{ fontFamily: SERIF, fontSize: 'clamp(2rem,4vw,3.25rem)', color: TEXT, fontWeight: 'normal', marginBottom: '1rem', maxWidth: 680 }}>
+                    <h1 className="font-serif text-[clamp(2rem,4vw,3.25rem)] text-slate-900 mb-4 max-w-3xl leading-tight">
                         Documentação Técnica
                     </h1>
-                    <p style={{ fontFamily: UI, fontSize: '1.0625rem', color: MUTED, maxWidth: 560, lineHeight: 1.75, marginBottom: '2rem' }}>
+                    <p className="text-[1.0625rem] text-slate-600 max-w-2xl leading-relaxed mb-8">
                         Referência completa da API REST, guias de integração e documentação dos módulos de compliance.
-                        Base URL: <code style={mono}>https://api.complianceos.com.br</code>
+                        Base URL: <code className="font-mono text-[0.85em] text-brand-600 bg-brand-50 px-1.5 py-0.5 rounded">https://api.complianceos.com.br</code>
                     </p>
-                    <div style={{ display: 'flex', gap: '.75rem', flexWrap: 'wrap' as const }}>
-                        {([['v1 — Estável', SUCCESS], ['JWT RS256', CYAN], ['RFC 7807', INFO], ['OpenAPI 3.1', INFO]] as [string, string][]).map(([label, color]) => (
-                            <Badge key={label} label={label} color={color} />
+                    <div className="flex gap-3 flex-wrap">
+                        {[['v1 — Estável', 'success'], ['JWT RS256', 'brand'], ['RFC 7807', 'info'], ['OpenAPI 3.1', 'info']].map(([label, type]) => (
+                            <Badge key={label as string} label={label as string} type={type as any} />
                         ))}
                     </div>
                 </div>
             </section>
 
             {/* LAYOUT */}
-            <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: '220px 1fr', minHeight: '80vh' }}>
+            <div className="max-w-7xl mx-auto flex flex-col md:flex-row min-h-[80vh]">
 
                 {/* SIDEBAR */}
-                <aside style={{ borderRight: `1px solid ${LINE}`, padding: '2.5rem 0', position: 'sticky', top: 60, height: 'calc(100vh - 60px)', overflowY: 'auto' }}>
+                <aside className="md:w-[260px] md:shrink-0 md:border-r border-slate-200 py-10 md:sticky md:top-16 md:h-[calc(100vh-4rem)] md:overflow-y-auto">
                     {NAV.map(section => (
-                        <div key={section.group} style={{ marginBottom: '2rem' }}>
-                            <div style={{ fontFamily: MONO, fontSize: '.6rem', textTransform: 'uppercase' as const, letterSpacing: '.12em', color: '#94A3B8', padding: '0 1.5rem', marginBottom: '.5rem' }}>
+                        <div key={section.group} className="mb-8">
+                            <div className="font-mono text-[0.65rem] font-bold text-slate-400 uppercase tracking-widest px-6 mb-3">
                                 {section.group}
                             </div>
                             {section.items.map(item =>
                                 (item as any).href
                                     ? (
-                                        <Link key={item.id} href={(item as any).href} style={{
-                                            display: 'block', padding: '.45rem 1.5rem', fontFamily: UI, fontSize: '.8125rem',
-                                            color: CYAN, background: 'transparent',
-                                            borderLeft: '2px solid transparent', transition: 'all .15s',
-                                        }}>{item.label}</Link>
+                                        <Link key={item.id} href={(item as any).href} className="block px-6 py-2 text-[0.8125rem] font-medium text-slate-600 hover:text-brand-600 hover:bg-slate-100 transition-colors border-l-2 border-transparent hover:border-brand-500">
+                                            {item.label}
+                                        </Link>
                                     )
                                     : (
-                                        <button key={item.id} onClick={() => scrollTo(item.id)} style={{
-                                            display: 'block', width: '100%', textAlign: 'left' as const,
-                                            padding: '.45rem 1.5rem', fontFamily: UI, fontSize: '.8125rem',
-                                            color: active === item.id ? CYAN : MUTED,
-                                            background: active === item.id ? CYAN + '08' : 'transparent',
-                                            border: 'none', borderLeft: active === item.id ? `2px solid ${CYAN}` : '2px solid transparent',
-                                            cursor: 'pointer', transition: 'all .15s',
-                                        }}>{item.label}</button>
+                                        <button key={item.id} onClick={() => scrollTo(item.id)} className={`block w-full text-left px-6 py-2 text-[0.8125rem] font-medium transition-colors border-l-2 border-transparent ${active === item.id ? 'text-brand-600 bg-brand-50 border-brand-500' : 'text-slate-600 hover:text-brand-600 hover:bg-slate-100'}`}>
+                                            {item.label}
+                                        </button>
                                     )
                             )}
                         </div>
@@ -253,27 +221,27 @@ export function DocsPageClient() {
                 </aside>
 
                 {/* CONTENT */}
-                <main style={{ padding: '3rem 3.5rem 6rem', maxWidth: 860 }}>
+                <main className="flex-1 py-12 px-6 md:px-14 max-w-4xl">
 
                     {/* INTRO */}
-                    <section style={{ marginBottom: '4rem' }}>
+                    <section className="mb-16">
                         <SectionTitle id="intro">Visão Geral da API</SectionTitle>
-                        <P>A API ComplianceOS é uma interface REST autenticada via JWT (RS256) que expõe todos os recursos da plataforma. Todos os endpoints seguem o versionamento <code style={mono}>/v1/</code> e retornam JSON.</P>
+                        <P>A API ComplianceOS é uma interface REST autenticada via JWT (RS256) que expõe todos os recursos da plataforma. Todos os endpoints seguem o versionamento <code className="font-mono text-[0.85em] text-brand-600 bg-brand-50 px-1 py-0.5 rounded">/v1/</code> e retornam JSON.</P>
                         <P>A solução é desenvolvida e operada por <strong>CHUANGXIN TECNOLOGIA DA INFORMACAO LTDA</strong> (CNPJ <strong>65.089.671/0001-16</strong>), em conformidade com a LGPD e normas do BACEN.</P>
                         <AlertBox type="info">
-                            <strong>Sandbox disponível:</strong> Use <code style={{ fontFamily: MONO }}>https://sandbox-api.complianceos.com.br</code> para testes sem afetar dados de produção.
+                            <strong>Sandbox disponível:</strong> Use <code className="font-mono">https://sandbox-api.complianceos.com.br</code> para testes sem afetar dados de produção.
                         </AlertBox>
                         <DataTable
                             headers={['Ambiente', 'Base URL', 'Status']}
                             rows={[
-                                ['Produção', <code key="p" style={{ fontFamily: MONO, fontSize: '.8rem' }}>https://api.complianceos.com.br</code>, <Badge key="ps" label="Estável" color={SUCCESS} />],
-                                ['Sandbox', <code key="s" style={{ fontFamily: MONO, fontSize: '.8rem' }}>https://sandbox-api.complianceos.com.br</code>, <Badge key="ss" label="Disponível" color={INFO} />],
+                                ['Produção', <code key="p" className="font-mono text-[0.8rem] text-slate-800">https://api.complianceos.com.br</code>, <Badge key="ps" label="Estável" type="success" />],
+                                ['Sandbox', <code key="s" className="font-mono text-[0.8rem] text-slate-800">https://sandbox-api.complianceos.com.br</code>, <Badge key="ss" label="Disponível" type="info" />],
                             ]}
                         />
                     </section>
 
                     {/* QUICK START */}
-                    <section style={{ marginBottom: '4rem' }}>
+                    <section className="mb-16">
                         <SectionTitle id="quickstart">Quick Start — 5 minutos</SectionTitle>
                         <P>3 passos para realizar sua primeira due diligence via API.</P>
                         <SubTitle>Passo 1 — Autenticar</SubTitle>
@@ -326,9 +294,9 @@ curl -X POST https://api.complianceos.com.br/v1/checklists/run \\
                     </section>
 
                     {/* AUTH */}
-                    <section style={{ marginBottom: '4rem' }}>
+                    <section className="mb-16">
                         <SectionTitle id="auth">Autenticação</SectionTitle>
-                        <P>Todos os endpoints (exceto <code style={mono}>/v1/auth/*</code>) requerem Bearer Token JWT RS256 com expiração de <strong>15 minutos</strong>.</P>
+                        <P>Todos os endpoints (exceto <code className="font-mono text-[0.85em] text-brand-600 bg-brand-50 px-1 py-0.5 rounded">/v1/auth/*</code>) requerem Bearer Token JWT RS256 com expiração de <strong>15 minutos</strong>.</P>
                         <Code>{`Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...`}</Code>
                         <SubTitle>Payload do JWT</SubTitle>
                         <Code>{`{
@@ -344,11 +312,11 @@ curl -X POST https://api.complianceos.com.br/v1/checklists/run \\
                         <DataTable
                             headers={['Role', 'Descrição', 'Acesso']}
                             rows={[
-                                [<Badge key="a" label="ADMIN" color={DANGER} />, 'Administrador do tenant', 'Completo'],
-                                [<Badge key="b" label="COMPLIANCE_OFFICER" color={CYAN} />, 'Responsável de compliance', 'Leitura/Escrita'],
-                                [<Badge key="c" label="ANALYST" color={INFO} />, 'Analista de compliance', 'Leitura/Escrita limitado'],
-                                [<Badge key="d" label="AUDITOR" color={WARNING} />, 'Auditor externo', 'Somente leitura + Audit Trail'],
-                                [<Badge key="e" label="READONLY" color={MUTED} />, 'Visualização', 'Somente leitura'],
+                                [<Badge key="a" label="ADMIN" type="danger" />, 'Administrador do tenant', 'Completo'],
+                                [<Badge key="b" label="COMPLIANCE_OFFICER" type="brand" />, 'Responsável de compliance', 'Leitura/Escrita'],
+                                [<Badge key="c" label="ANALYST" type="info" />, 'Analista de compliance', 'Leitura/Escrita limitado'],
+                                [<Badge key="d" label="AUDITOR" type="warning" />, 'Auditor externo', 'Somente leitura + Audit Trail'],
+                                [<Badge key="e" label="READONLY" type="muted" />, 'Visualização', 'Somente leitura'],
                             ]}
                         />
                         <SubTitle>Renovação de Token</SubTitle>
@@ -358,7 +326,7 @@ curl -X POST https://api.complianceos.com.br/v1/checklists/run \\
                     </section>
 
                     {/* ERRORS */}
-                    <section style={{ marginBottom: '4rem' }}>
+                    <section className="mb-16">
                         <SectionTitle id="errors">Formato de Erros (RFC 7807)</SectionTitle>
                         <P>Todos os erros seguem o padrão Problem Details (RFC 7807) para interoperabilidade.</P>
                         <Code>{`{
@@ -388,7 +356,7 @@ curl -X POST https://api.complianceos.com.br/v1/checklists/run \\
                     </section>
 
                     {/* PAGINATION */}
-                    <section style={{ marginBottom: '4rem' }}>
+                    <section className="mb-16">
                         <SectionTitle id="pagination">Paginação (Cursor-based)</SectionTitle>
                         <Code>{`GET /v1/entities?cursor=01HQ7XK...&limit=25&sort=created_at:desc
 
@@ -405,14 +373,14 @@ curl -X POST https://api.complianceos.com.br/v1/checklists/run \\
                     </section>
 
                     {/* RATE LIMITS */}
-                    <section style={{ marginBottom: '4rem' }}>
+                    <section className="mb-16">
                         <SectionTitle id="rate-limits">Rate Limits</SectionTitle>
                         <DataTable
                             headers={['Plano', 'Req/minuto', 'Burst']}
                             rows={[
-                                [<Badge key="s" label="Starter" color={MUTED} />, '120', '20 req/s'],
-                                [<Badge key="p" label="Professional" color={CYAN} />, '600', '50 req/s'],
-                                [<Badge key="e" label="Enterprise" color={INFO} />, '3.000', '200 req/s'],
+                                [<Badge key="s" label="Starter" type="muted" />, '120', '20 req/s'],
+                                [<Badge key="p" label="Professional" type="brand" />, '600', '50 req/s'],
+                                [<Badge key="e" label="Enterprise" type="info" />, '3.000', '200 req/s'],
                             ]}
                         />
                         <Code>{`# Headers de resposta
@@ -423,7 +391,7 @@ Retry-After: 45   # apenas quando 429`}</Code>
                     </section>
 
                     {/* API ENTITIES */}
-                    <section style={{ marginBottom: '4rem' }}>
+                    <section className="mb-16">
                         <SectionTitle id="api-entities">API — Entidades</SectionTitle>
                         <P>Gerencie o portfólio de entidades (clientes, fornecedores, parceiros) sujeitas à due diligence.</P>
                         <Endpoint method="GET" path="/v1/entities" permission="ANALYST, COMPLIANCE_OFFICER, ADMIN, AUDITOR, READONLY" description="Lista com filtros: ?filter[risk_level]=HIGH&filter[status]=ACTIVE&search=acme" />
@@ -432,14 +400,14 @@ Retry-After: 45   # apenas quando 429`}</Code>
                         <Endpoint method="PATCH" path="/v1/entities/:id" permission="COMPLIANCE_OFFICER, ADMIN" description="Atualiza dados. Alteração de CNPJ dispara novo KYB." />
                         <Endpoint method="POST" path="/v1/entities/:id/screen" permission="COMPLIANCE_OFFICER, ADMIN" description="Screening de sanções imediato." />
                         <Endpoint method="GET" path="/v1/entities/:id/risk-assessments" permission="ANALYST, COMPLIANCE_OFFICER, ADMIN, AUDITOR" description="Histórico de avaliações de risco com fatores detalhados por módulo." />
-                        <div style={{ marginTop: '1.5rem', padding: '1rem', background: CYAN + '06', border: `1px solid ${CYAN}20` }}>
-                            <Link href="/docs/api/entities" style={{ fontFamily: UI, fontSize: '.875rem', color: CYAN, fontWeight: 500 }}>Ver documentação completa de Entidades →</Link>
-                            <p style={{ fontFamily: UI, fontSize: '.8rem', color: MUTED, marginTop: '.375rem' }}>Schema completo, exemplos de erro, parâmetros de filtro e notas de implementação (RLS, scoring, full-text).</p>
+                        <div className="mt-6 p-5 bg-brand-50 border border-brand-200 rounded-lg">
+                            <Link href="/docs/api/entities" className="font-semibold text-[0.875rem] text-brand-600 hover:text-brand-700">Ver documentação completa de Entidades →</Link>
+                            <p className="text-[0.8125rem] text-slate-600 mt-2">Schema completo, exemplos de erro, parâmetros de filtro e notas de implementação (RLS, scoring, full-text).</p>
                         </div>
                     </section>
 
                     {/* API CHECKLISTS */}
-                    <section style={{ marginBottom: '4rem' }}>
+                    <section className="mb-16">
                         <SectionTitle id="api-checklists">API — Checklists</SectionTitle>
                         <P>Execute due diligences baseadas nas regulamentações Lei 9.613/98, Lei 12.846/13 e LGPD.</P>
                         <Endpoint method="GET" path="/v1/checklists" permission="Todos os roles" description="Lista templates. Parâmetro: ?module=PLD_FT|LGPD|ANTICORRUPCAO" />
@@ -447,16 +415,16 @@ Retry-After: 45   # apenas quando 429`}</Code>
                         <Endpoint method="PATCH" path="/v1/checklist-runs/:id" permission="ANALYST, COMPLIANCE_OFFICER, ADMIN" description="Atualiza respostas parciais (autosave a cada 30s)." />
                         <Endpoint method="POST" path="/v1/checklist-runs/:id/complete" permission="COMPLIANCE_OFFICER, ADMIN" description="Finaliza. Score calculado e risco atualizado automaticamente." />
                         <AlertBox type="warning">
-                            <strong>Imutabilidade:</strong> Execuções <code style={{ fontFamily: MONO }}>COMPLETED</code> são imutáveis por garantia regulatória (trigger no banco).
+                            <strong>Imutabilidade:</strong> Execuções <code className="font-mono">COMPLETED</code> são imutáveis por garantia regulatória (trigger no banco).
                         </AlertBox>
-                        <div style={{ marginTop: '1.5rem', padding: '1rem', background: CYAN + '06', border: `1px solid ${CYAN}20` }}>
-                            <Link href="/docs/api/checklists" style={{ fontFamily: UI, fontSize: '.875rem', color: CYAN, fontWeight: 500 }}>Ver documentação completa de Checklists →</Link>
-                            <p style={{ fontFamily: UI, fontSize: '.8rem', color: MUTED, marginTop: '.375rem' }}>Schema de ChecklistItem e ChecklistRun, algoritmo de score, catálogo de templates por módulo e autosave.</p>
+                        <div className="mt-6 p-5 bg-brand-50 border border-brand-200 rounded-lg">
+                            <Link href="/docs/api/checklists" className="font-semibold text-[0.875rem] text-brand-600 hover:text-brand-700">Ver documentação completa de Checklists →</Link>
+                            <p className="text-[0.8125rem] text-slate-600 mt-2">Schema de ChecklistItem e ChecklistRun, algoritmo de score, catálogo de templates por módulo e autosave.</p>
                         </div>
                     </section>
 
                     {/* API DOCUMENTS */}
-                    <section style={{ marginBottom: '4rem' }}>
+                    <section className="mb-16">
                         <SectionTitle id="api-documents">API — Documentos</SectionTitle>
                         <P>Gere documentos regulatórios em PDF com assinatura digital (PKCS#7/PAdES) e carimbo de tempo (TSA).</P>
                         <Endpoint method="POST" path="/v1/documents/generate" permission="COMPLIANCE_OFFICER, ADMIN" description="Geração assíncrona. Retorna jobId para polling." />
@@ -473,20 +441,20 @@ Retry-After: 45   # apenas quando 429`}</Code>
                     </section>
 
                     {/* API AUDIT */}
-                    <section style={{ marginBottom: '4rem' }}>
+                    <section className="mb-16">
                         <SectionTitle id="api-audit">API — Audit Trail</SectionTitle>
                         <AlertBox type="danger">Acesso restrito a <strong>AUDITOR</strong> e <strong>ADMIN</strong>. Consultas de audit são registradas para meta-auditoria.</AlertBox>
                         <Endpoint method="GET" path="/v1/audit/events" permission="AUDITOR, ADMIN" description="Consulta com filtros: ?from=ISO&to=ISO&module=PLD_FT&limit=100" />
                         <Endpoint method="POST" path="/v1/exports/regulators" permission="COMPLIANCE_OFFICER, ADMIN" description="Exportação para ANPD, BACEN, CGU, COAF em PDF/XLSX/JSON." />
                         <Endpoint method="GET" path="/v1/audit/chain/verify" permission="ADMIN" description="Verifica integridade do hash chain do tenant." />
-                        <div style={{ marginTop: '1.5rem', padding: '1rem', background: CYAN + '06', border: `1px solid ${CYAN}20` }}>
-                            <Link href="/docs/api/audit" style={{ fontFamily: UI, fontSize: '.875rem', color: CYAN, fontWeight: 500 }}>Ver documentação completa de Audit Trail →</Link>
-                            <p style={{ fontFamily: UI, fontSize: '.8rem', color: MUTED, marginTop: '.375rem' }}>Hash chain, catálogo de actions, exportação para reguladores e política de retenção de 5 anos.</p>
+                        <div className="mt-6 p-5 bg-brand-50 border border-brand-200 rounded-lg">
+                            <Link href="/docs/api/audit" className="font-semibold text-[0.875rem] text-brand-600 hover:text-brand-700">Ver documentação completa de Audit Trail →</Link>
+                            <p className="text-[0.8125rem] text-slate-600 mt-2">Hash chain, catálogo de actions, exportação para reguladores e política de retenção de 5 anos.</p>
                         </div>
                     </section>
 
                     {/* API USERS */}
-                    <section style={{ marginBottom: '4rem' }}>
+                    <section className="mb-16">
                         <SectionTitle id="api-users">API — Usuários</SectionTitle>
                         <Endpoint method="GET" path="/v1/users" permission="ADMIN" description="Lista todos os usuários do tenant." />
                         <Endpoint method="POST" path="/v1/users/invite" permission="ADMIN" description="Convida usuário por e-mail. Convite expira em 48h." />
@@ -494,7 +462,7 @@ Retry-After: 45   # apenas quando 429`}</Code>
                     </section>
 
                     {/* API DASHBOARD */}
-                    <section style={{ marginBottom: '4rem' }}>
+                    <section className="mb-16">
                         <SectionTitle id="api-dashboard">API — Dashboard</SectionTitle>
                         <Endpoint method="GET" path="/v1/dashboard/summary" permission="Todos os roles" description="Resumo: entidades por nível de risco, checklists vencidos, alertas." />
                         <Code>{`// Response 200
@@ -508,7 +476,7 @@ Retry-After: 45   # apenas quando 429`}</Code>
                     </section>
 
                     {/* WEBHOOKS */}
-                    <section style={{ marginBottom: '4rem' }}>
+                    <section className="mb-16">
                         <SectionTitle id="webhooks">Webhooks (Enterprise)</SectionTitle>
                         <P>Receba notificações em tempo real no seu sistema. Disponível no plano <strong>Enterprise</strong>.</P>
                         <DataTable
@@ -547,7 +515,7 @@ function verifyWebhook(rawBody: string, signature: string, secret: string): bool
                     </section>
 
                     {/* CNPJ API */}
-                    <section style={{ marginBottom: '4rem' }}>
+                    <section className="mb-16">
                         <SectionTitle id="cnpj-api">Integração — API de CNPJ</SectionTitle>
                         <AlertBox type="info">
                             O serviço interno processa mensalmente o dump da Receita Federal (~55 GB). Nenhuma consulta externa é feita em tempo real.
@@ -571,7 +539,7 @@ function verifyWebhook(rawBody: string, signature: string, secret: string): bool
                     </section>
 
                     {/* SANCTIONS */}
-                    <section style={{ marginBottom: '4rem' }}>
+                    <section className="mb-16">
                         <SectionTitle id="sanctions">Integração — Screening de Sanções</SectionTitle>
                         <DataTable
                             headers={['Lista', 'Fonte', 'Atualização']}
@@ -588,10 +556,10 @@ function verifyWebhook(rawBody: string, signature: string, secret: string): bool
                     </section>
 
                     {/* SSO */}
-                    <section style={{ marginBottom: '4rem' }}>
+                    <section className="mb-16">
                         <SectionTitle id="sso">SAML SSO (Enterprise)</SectionTitle>
                         <AlertBox type="warning">
-                            Disponível exclusivamente no plano Enterprise. <Link href="/contato" style={{ color: CYAN }}>Fale com a equipe</Link> para ativação.
+                            Disponível exclusivamente no plano Enterprise. <Link href="/contato" className="text-amber-700 hover:text-amber-800 underline">Fale com a equipe</Link> para ativação.
                         </AlertBox>
                         <P>Suporte a SAML 2.0 com Okta, Azure AD, Google Workspace e Auth0.</P>
                         <Code>{`Entity ID: https://api.complianceos.com.br/auth/saml/metadata
@@ -600,7 +568,7 @@ Metadata:  https://api.complianceos.com.br/auth/saml/metadata.xml`}</Code>
                     </section>
 
                     {/* MOD PLD */}
-                    <section style={{ marginBottom: '4rem' }}>
+                    <section className="mb-16">
                         <SectionTitle id="mod-pld">Módulo — PLD/FT</SectionTitle>
                         <P>Prevenção à Lavagem de Dinheiro. Baseado na <strong>Lei 9.613/98</strong>, Res. <strong>BACEN 4.753/2019</strong> e Circular <strong>BACEN 3.978/2020</strong>.</P>
                         <DataTable
@@ -613,7 +581,7 @@ Metadata:  https://api.complianceos.com.br/auth/saml/metadata.xml`}</Code>
                     </section>
 
                     {/* MOD LGPD */}
-                    <section style={{ marginBottom: '4rem' }}>
+                    <section className="mb-16">
                         <SectionTitle id="mod-lgpd">Módulo — LGPD</SectionTitle>
                         <P>Conformidade com a <strong>Lei 13.709/18</strong> e Resoluções da ANPD.</P>
                         <DataTable
@@ -629,7 +597,7 @@ Metadata:  https://api.complianceos.com.br/auth/saml/metadata.xml`}</Code>
                     </section>
 
                     {/* MOD ANTICORRUPCAO */}
-                    <section style={{ marginBottom: '4rem' }}>
+                    <section className="mb-16">
                         <SectionTitle id="mod-anticorrupcao">Módulo — Anticorrupção</SectionTitle>
                         <P>Programa de Integridade baseado na <strong>Lei 12.846/13</strong> e <strong>Decreto 11.129/2022</strong> — 5 pilares da CGU.</P>
                         <DataTable
@@ -645,12 +613,12 @@ Metadata:  https://api.complianceos.com.br/auth/saml/metadata.xml`}</Code>
                     </section>
 
                     {/* CTA */}
-                    <div style={{ padding: '2rem', border: `1px solid ${LINE}`, background: SURFACE, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap' as const, gap: '1.5rem' }}>
+                    <div className="p-8 border border-slate-200 bg-white rounded-xl shadow-sm flex flex-col md:flex-row justify-between md:items-center gap-6 mt-8">
                         <div>
-                            <div style={{ fontFamily: UI, fontWeight: 600, fontSize: '1rem', color: TEXT, marginBottom: '.375rem' }}>Precisa de ajuda?</div>
-                            <p style={{ fontFamily: UI, fontSize: '.875rem', color: MUTED }}>Nossa equipe está disponível para integrações complexas e customizações.</p>
+                            <div className="font-semibold text-base text-slate-900 mb-2">Precisa de ajuda?</div>
+                            <p className="text-[0.9375rem] text-slate-600">Nossa equipe está disponível para integrações complexas e customizações.</p>
                         </div>
-                        <Link href="/contato" style={{ display: 'inline-flex', alignItems: 'center', padding: '.625rem 1.25rem', background: CYAN, color: '#FFFFFF', fontFamily: UI, fontWeight: 500, fontSize: '.8125rem', letterSpacing: '.04em', textTransform: 'uppercase' as const, textDecoration: 'none' }}>
+                        <Link href="/contato" className="shrink-0 inline-flex items-center justify-center px-6 py-3 bg-brand-600 text-white font-medium text-[0.875rem] rounded-lg shadow-sm shadow-brand-600/20 hover:bg-brand-700 transition-colors uppercase tracking-wide">
                             Falar com especialista →
                         </Link>
                     </div>

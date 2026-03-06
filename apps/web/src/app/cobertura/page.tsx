@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
-import { PublicNav, PublicFooter, PageHero, pageStyle, contentWrap, CYAN, SURFACE, LINE, LINE_STRONG, TEXT, MUTED, MUTED as SECONDARY, UI, MONO, SERIF } from '@/components/public/PublicLayout'
+import { PublicNav, PublicFooter, PageHero } from '@/components/public/PublicLayout'
+import { CYAN } from '@/components/public/PublicLayout'
 
 export const metadata: Metadata = {
     title: 'Cobertura Regulatória | ComplianceOS',
@@ -48,35 +49,34 @@ const FRAMEWORKS = [
 
 export default function CoberturaPage() {
     return (
-        <div style={pageStyle}>
-            <style>{`@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');*{margin:0;padding:0;box-sizing:border-box;}`}</style>
+        <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-brand-500 selection:text-white">
             <PublicNav />
             <PageHero
                 breadcrumb="Regulatório / Cobertura"
                 title="Framework regulatório brasileiro completo"
                 subtitle="O ComplianceOS cobre mais de 15 normas e regulamentos, atualizados automaticamente conforme novas resoluções do BACEN, COAF e ANPD."
             />
-            <div style={contentWrap}>
+            <div className="max-w-7xl mx-auto px-6 py-20">
                 {FRAMEWORKS.map(f => (
-                    <div key={f.category} style={{ marginBottom: '4rem' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem', paddingBottom: '.875rem', borderBottom: `1px solid ${LINE}` }}>
-                            <span style={{ display: 'block', width: 3, height: 18, background: f.color }} />
-                            <h2 style={{ fontFamily: UI, fontWeight: 600, fontSize: '1rem', color: TEXT }}>{f.category}</h2>
+                    <div key={f.category} className="mb-16">
+                        <div className="flex items-center gap-4 mb-6 pb-3 border-b border-slate-200">
+                            <span className="block w-1.5 h-6 rounded-full" style={{ background: f.color }} />
+                            <h2 className="font-semibold text-lg text-slate-900">{f.category}</h2>
                         </div>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(380px,1fr))', gap: '1px', background: LINE }}>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-slate-200 border border-slate-200 rounded-xl overflow-hidden">
                             {f.items.map(item => (
-                                <div key={item.code} style={{ background: SURFACE, padding: '1.5rem 2rem' }}>
-                                    <div style={{ fontFamily: MONO, fontSize: '.8rem', color: CYAN, marginBottom: '.5rem' }}>{item.code}</div>
-                                    <div style={{ fontFamily: UI, fontSize: '.875rem', color: MUTED, lineHeight: 1.65 }}>{item.desc}</div>
+                                <div key={item.code} className="bg-white p-6 hover:bg-slate-50 transition-colors">
+                                    <div className="font-mono text-[0.8rem] font-medium text-brand-600 mb-2">{item.code}</div>
+                                    <div className="text-[0.875rem] text-slate-600 leading-relaxed">{item.desc}</div>
                                 </div>
                             ))}
                         </div>
                     </div>
                 ))}
 
-                <div style={{ marginTop: '4rem', padding: '2rem', border: `1px solid ${LINE_STRONG}`, background: SURFACE }}>
-                    <div style={{ fontFamily: MONO, fontSize: '.7rem', color: MUTED, textTransform: 'uppercase' as const, letterSpacing: '.1em', marginBottom: '.875rem' }}>Atualização contínua</div>
-                    <p style={{ fontFamily: UI, fontSize: '.9375rem', color: MUTED, lineHeight: 1.75, maxWidth: 700 }}>
+                <div className="mt-16 p-8 border border-slate-200 bg-white rounded-xl shadow-sm">
+                    <div className="font-mono text-[0.7rem] font-medium text-slate-500 uppercase tracking-widest mb-3">Atualização contínua</div>
+                    <p className="text-[0.9375rem] text-slate-600 leading-relaxed max-w-3xl">
                         O ComplianceOS monitora e incorpora automaticamente novas resoluções publicadas pelo BACEN, ANPD, COAF e demais órgãos reguladores. Nosso time jurídico avalia cada nova norma e atualiza os workflows, checklists e relatórios da plataforma dentro de 30 dias da publicação no Diário Oficial.
                     </p>
                 </div>

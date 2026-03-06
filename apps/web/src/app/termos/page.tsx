@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { PublicNav, PublicFooter, PageHero, pageStyle, contentWrap, LINE, TEXT, MUTED, UI, MONO } from '@/components/public/PublicLayout'
+import { PublicNav, PublicFooter, PageHero } from '@/components/public/PublicLayout'
 
 export const metadata: Metadata = {
     title: 'Termos de Uso | ComplianceOS',
@@ -21,26 +21,25 @@ const SECTIONS = [
 
 export default function TermosPage() {
     return (
-        <div style={pageStyle}>
-            <style>{`@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');*{margin:0;padding:0;box-sizing:border-box;}`}</style>
+        <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-brand-500 selection:text-white">
             <PublicNav />
             <PageHero breadcrumb="Legal / Termos de Uso" title="Termos de Uso" subtitle="Condições que regem o uso da plataforma ComplianceOS." />
-            <div style={contentWrap}>
-                <div style={{ display: 'grid', gridTemplateColumns: '260px 1fr', gap: '5rem', alignItems: 'start' }}>
-                    <div style={{ position: 'sticky', top: '6rem' }}>
-                        <div style={{ fontFamily: MONO, fontSize: '.65rem', color: '#94A3B8', textTransform: 'uppercase' as const, letterSpacing: '.1em', marginBottom: '1rem' }}>Índice</div>
-                        <div style={{ display: 'flex', flexDirection: 'column' as const, gap: '.5rem' }}>
-                            {SECTIONS.map(s => <a key={s.title} href="#" style={{ fontFamily: UI, fontSize: '.8125rem', color: MUTED, textDecoration: 'none' }}>{s.title}</a>)}
+            <div className="max-w-7xl mx-auto px-6 py-20">
+                <div className="flex flex-col md:flex-row gap-16 md:gap-20 items-start">
+                    <div className="hidden md:block w-64 shrink-0 sticky top-24">
+                        <div className="font-mono text-[0.65rem] font-bold text-slate-400 uppercase tracking-widest mb-4">Índice</div>
+                        <div className="flex flex-col gap-2">
+                            {SECTIONS.map(s => <a key={s.title} href="#" className="text-[0.8125rem] text-slate-500 hover:text-brand-600 transition-colors">{s.title}</a>)}
                         </div>
-                        <div style={{ marginTop: '2rem', paddingTop: '1.5rem', borderTop: `1px solid ${LINE}`, fontFamily: MONO, fontSize: '.65rem', color: '#94A3B8' }}>
+                        <div className="mt-8 pt-6 border-t border-slate-200 font-mono text-[0.65rem] text-slate-400">
                             Última atualização:<br />03 Mar 2026
                         </div>
                     </div>
-                    <div style={{ display: 'flex', flexDirection: 'column' as const, gap: '2.5rem' }}>
+                    <div className="flex-1 flex flex-col gap-10">
                         {SECTIONS.map(s => (
-                            <div key={s.title} style={{ paddingBottom: '2.5rem', borderBottom: `1px solid ${LINE}` }}>
-                                <h2 style={{ fontFamily: UI, fontWeight: 600, fontSize: '1rem', color: TEXT, marginBottom: '1rem' }}>{s.title}</h2>
-                                <p style={{ fontFamily: UI, fontSize: '.9375rem', color: MUTED, lineHeight: 1.8 }}>{s.content}</p>
+                            <div key={s.title} className="pb-10 border-b border-slate-200 last:border-0">
+                                <h2 className="font-semibold text-base text-slate-900 mb-4">{s.title}</h2>
+                                <p className="text-[0.9375rem] text-slate-600 leading-relaxed">{s.content}</p>
                             </div>
                         ))}
                     </div>

@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { PublicNav, PublicFooter, PageHero, pageStyle, contentWrap, CYAN, SURFACE, LINE, LINE_STRONG, TEXT, MUTED, UI, MONO } from '@/components/public/PublicLayout'
+import { PublicNav, PublicFooter, PageHero } from '@/components/public/PublicLayout'
 
 export const metadata: Metadata = {
     title: 'Segurança | ComplianceOS',
@@ -47,33 +47,32 @@ const CONTROLS = [
 
 export default function SegurancaPage() {
     return (
-        <div style={pageStyle}>
-            <style>{`@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');*{margin:0;padding:0;box-sizing:border-box;}`}</style>
+        <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-brand-500 selection:text-white">
             <PublicNav />
             <PageHero
                 breadcrumb="Regulatório / Segurança"
                 title="Segurança por design, não por adesivo"
                 subtitle="Infraestrutura enterprise-grade construída desde o primeiro dia para dados regulatórios críticos. Zero concessões em segurança."
             />
-            <div style={contentWrap}>
+            <div className="max-w-7xl mx-auto px-6 py-20">
                 {CONTROLS.map(c => (
-                    <div key={c.category} style={{ marginBottom: '4rem' }}>
-                        <h2 style={{ fontFamily: UI, fontWeight: 600, fontSize: '1rem', color: TEXT, marginBottom: '1.5rem', paddingBottom: '.875rem', borderBottom: `1px solid ${LINE}` }}>{c.category}</h2>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: '1px', background: LINE }}>
+                    <div key={c.category} className="mb-16">
+                        <h2 className="font-semibold text-lg text-slate-900 mb-6 pb-3 border-b border-slate-200">{c.category}</h2>
+                        <div className="grid md:grid-cols-2 gap-px bg-slate-200 border border-slate-200 rounded-xl overflow-hidden">
                             {c.items.map(item => (
-                                <div key={item.title} style={{ background: SURFACE, padding: '1.5rem 2rem' }}>
-                                    <div style={{ fontFamily: MONO, fontSize: '.75rem', color: CYAN, marginBottom: '.5rem' }}>{item.title}</div>
-                                    <div style={{ fontFamily: UI, fontSize: '.875rem', color: MUTED, lineHeight: 1.65 }}>{item.desc}</div>
+                                <div key={item.title} className="bg-white p-6 hover:bg-slate-50 transition-colors">
+                                    <div className="font-mono text-[0.75rem] font-medium text-brand-600 mb-2">{item.title}</div>
+                                    <div className="text-[0.875rem] text-slate-600 leading-relaxed">{item.desc}</div>
                                 </div>
                             ))}
                         </div>
                     </div>
                 ))}
 
-                <div style={{ padding: '2rem', border: `1px solid rgba(0,200,224,0.2)`, background: 'rgba(0,200,224,0.03)' }}>
-                    <div style={{ fontFamily: MONO, fontSize: '.7rem', color: CYAN, textTransform: 'uppercase' as const, letterSpacing: '.1em', marginBottom: '.875rem' }}>Reporte uma vulnerabilidade</div>
-                    <p style={{ fontFamily: UI, fontSize: '.875rem', color: MUTED, lineHeight: 1.75, maxWidth: 700 }}>
-                        Se você encontrou uma vulnerabilidade de segurança no ComplianceOS, entre em contato de forma responsável via <span style={{ color: CYAN }}>security@complianceos.com.br</span>. Comprometemo-nos a responder em até 72 horas e a tratar o relato com confidencialidade.
+                <div className="p-8 border border-brand-100 bg-brand-50/50 rounded-xl">
+                    <div className="font-mono text-[0.7rem] font-semibold text-brand-600 uppercase tracking-widest mb-3">Reporte uma vulnerabilidade</div>
+                    <p className="text-[0.875rem] text-slate-600 leading-relaxed max-w-3xl">
+                        Se você encontrou uma vulnerabilidade de segurança no ComplianceOS, entre em contato de forma responsável via <span className="text-brand-600 font-medium">security@complianceos.com.br</span>. Comprometemo-nos a responder em até 72 horas e a tratar o relato com confidencialidade.
                     </p>
                 </div>
             </div>

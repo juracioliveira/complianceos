@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { PublicFooter } from '@/components/public/PublicLayout'
 import { ShieldCheck, Lock, FileText, BarChart3, ArrowRight, CheckCircle, Server, Key, Activity, ArrowUpRight, Check } from 'lucide-react'
 
 export default function LandingPage() {
@@ -305,47 +306,7 @@ export default function LandingPage() {
             </section>
 
             {/* Footer */}
-            <footer className="bg-white border-t border-slate-200 pt-16 pb-8">
-                <div className="max-w-7xl mx-auto px-6">
-                    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 mb-16">
-                        <div className="col-span-2 lg:col-span-2">
-                            <Link href="/" className="flex items-center gap-2 text-xl font-bold tracking-tight text-slate-900 mb-4">
-                                <ShieldCheck className="w-6 h-6 text-brand-600" strokeWidth={2.5} />
-                                Compliance<span className="text-brand-600">OS</span>
-                            </Link>
-                            <p className="text-slate-500 text-sm leading-relaxed mb-6 max-w-sm">
-                                A infraestrutura regulatória inteligente para empresas que movem a economia do Brasil.
-                            </p>
-                        </div>
-                        {[
-                            { title: 'Produto', links: ['Plataforma', 'Preços', 'Soluções', 'Changelog'] },
-                            { title: 'Regulatório', links: ['Bacen & COAF', 'LGPD / ANPD', 'Segurança', 'Due Diligence'] },
-                            { title: 'Empresa', links: ['Sobre nós', 'Contato', 'Privacidade', 'Termos de Uso'] }
-                        ].map(group => (
-                            <div key={group.title}>
-                                <h4 className="font-semibold text-slate-900 mb-4">{group.title}</h4>
-                                <ul className="space-y-3">
-                                    {group.links.map(l => (
-                                        <li key={l}>
-                                            <Link href="#" className="text-sm text-slate-500 hover:text-brand-600 transition-colors">{l}</Link>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        ))}
-                    </div>
-                    <div className="pt-8 border-t border-slate-100 flex flex-col md:flex-row items-center justify-between gap-4">
-                        <p className="text-sm text-slate-400">© 2026 Chuangxin Tecnologia da Informação Ltda. Todos os direitos reservados.</p>
-                        <div className="flex gap-2">
-                            {['ISO 27001 Ready', 'AWS Partner', 'SOC 2'].map(badge => (
-                                <span key={badge} className="px-2 py-1 bg-slate-50 border border-slate-200 rounded text-xs text-slate-500 font-medium">
-                                    {badge}
-                                </span>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            </footer>
+            <PublicFooter />
         </div>
     )
 }

@@ -4,6 +4,7 @@
   "private": true,
   "description": "ComplianceOS — SaaS de Compliance & Governança | Chuangxin Tecnologia",
   "scripts": {
+    "start": "turbo run start",
     "dev": "turbo run dev",
     "build": "turbo run build",
     "lint": "turbo run lint",

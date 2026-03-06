@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { PublicNav, PublicFooter, PageHero, pageStyle, contentWrap, CYAN, SURFACE, LINE, LINE_STRONG, TEXT, MUTED, UI, MONO } from '@/components/public/PublicLayout'
+import { PublicNav, PublicFooter, PageHero } from '@/components/public/PublicLayout'
 
 export const metadata: Metadata = {
     title: 'LGPD — Adequação & Privacidade | ComplianceOS',
@@ -27,50 +27,49 @@ const MODULES = [
 
 export default function LgpdPage() {
     return (
-        <div style={pageStyle}>
-            <style>{`@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');*{margin:0;padding:0;box-sizing:border-box;}`}</style>
+        <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-brand-500 selection:text-white">
             <PublicNav />
             <PageHero
                 breadcrumb="Regulatório / LGPD"
                 title="Adequação à LGPD sem fricção operacional"
                 subtitle="O ComplianceOS automatiza os requisitos práticos da Lei 13.709/18 — do RAT ao atendimento de titulares, com trilha imutável para a ANPD."
             />
-            <div style={contentWrap}>
-                <section style={{ marginBottom: '5rem' }}>
-                    <h2 style={{ fontFamily: UI, fontWeight: 600, fontSize: '1.0625rem', color: TEXT, marginBottom: '2rem', paddingBottom: '.875rem', borderBottom: `1px solid ${LINE}` }}>
+            <div className="max-w-7xl mx-auto px-6 py-20">
+                <section className="mb-20">
+                    <h2 className="font-semibold text-lg text-slate-900 mb-8 pb-3 border-b border-slate-200">
                         Módulos de Adequação LGPD
                     </h2>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: '1px', background: LINE }}>
+                    <div className="grid md:grid-cols-2 gap-px bg-slate-200 border border-slate-200 rounded-xl overflow-hidden">
                         {MODULES.map(m => (
-                            <div key={m.title} style={{ background: SURFACE, padding: '2rem' }}>
-                                <div style={{ fontFamily: UI, fontWeight: 600, fontSize: '.9rem', color: CYAN, marginBottom: '.625rem' }}>{m.title}</div>
-                                <div style={{ fontFamily: UI, fontSize: '.875rem', color: MUTED, lineHeight: 1.7 }}>{m.desc}</div>
+                            <div key={m.title} className="bg-white p-8 hover:bg-slate-50 transition-colors">
+                                <div className="font-semibold text-[0.9375rem] text-brand-600 mb-3">{m.title}</div>
+                                <div className="text-[0.9375rem] text-slate-600 leading-relaxed">{m.desc}</div>
                             </div>
                         ))}
                     </div>
                 </section>
 
-                <section style={{ marginBottom: '5rem' }}>
-                    <h2 style={{ fontFamily: UI, fontWeight: 600, fontSize: '1.0625rem', color: TEXT, marginBottom: '2rem', paddingBottom: '.875rem', borderBottom: `1px solid ${LINE}` }}>
+                <section className="mb-20">
+                    <h2 className="font-semibold text-lg text-slate-900 mb-8 pb-3 border-b border-slate-200">
                         Direitos dos Titulares — Art. 18 LGPD
                     </h2>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '1px', background: LINE }}>
+                    <div className="grid md:grid-cols-3 gap-px bg-slate-200 border border-slate-200 rounded-xl overflow-hidden">
                         {RIGHTS.map(r => (
-                            <div key={r.code} style={{ background: SURFACE, padding: '1.5rem' }}>
-                                <div style={{ fontFamily: MONO, fontSize: '.65rem', color: '#3A4152', marginBottom: '.25rem' }}>{r.code}</div>
-                                <div style={{ fontFamily: UI, fontWeight: 600, fontSize: '.875rem', color: TEXT, marginBottom: '.5rem' }}>{r.right}</div>
-                                <div style={{ fontFamily: UI, fontSize: '.8125rem', color: MUTED, lineHeight: 1.6 }}>{r.desc}</div>
+                            <div key={r.code} className="bg-white p-6 hover:bg-slate-50 transition-colors">
+                                <div className="font-mono text-[0.65rem] font-medium text-slate-500 mb-2 tracking-wide uppercase">{r.code}</div>
+                                <div className="font-semibold text-[0.9375rem] text-slate-900 mb-2">{r.right}</div>
+                                <div className="text-[0.875rem] text-slate-600 leading-relaxed">{r.desc}</div>
                             </div>
                         ))}
                     </div>
                 </section>
 
-                <div style={{ padding: '2rem', border: `1px solid ${LINE_STRONG}`, background: SURFACE, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap' as const, gap: '1.5rem' }}>
+                <div className="p-8 border border-slate-200 bg-white rounded-xl shadow-sm flex flex-col md:flex-row justify-between md:items-center gap-6">
                     <div>
-                        <div style={{ fontFamily: UI, fontWeight: 600, fontSize: '1rem', color: TEXT, marginBottom: '.375rem' }}>Precisa do Data Processing Agreement?</div>
-                        <p style={{ fontFamily: UI, fontSize: '.875rem', color: MUTED }}>O DPA do ComplianceOS está disponível para todos os planos. Acesse pelo dashboard ou solicite via e-mail.</p>
+                        <div className="font-semibold text-base text-slate-900 mb-2">Precisa do Data Processing Agreement?</div>
+                        <p className="text-[0.9375rem] text-slate-600">O DPA do ComplianceOS está disponível para todos os planos. Acesse pelo dashboard ou solicite via e-mail.</p>
                     </div>
-                    <Link href="/dashboard" style={{ display: 'inline-flex', padding: '.625rem 1.25rem', background: CYAN, color: '#FFFFFF', fontFamily: UI, fontWeight: 500, fontSize: '.8125rem', letterSpacing: '.04em', textTransform: 'uppercase' as const, textDecoration: 'none' }}>
+                    <Link href="/dashboard" className="shrink-0 inline-flex items-center justify-center px-6 py-3 bg-brand-600 text-white font-medium text-[0.875rem] rounded-lg shadow-sm shadow-brand-600/20 hover:bg-brand-700 transition-colors">
                         Acessar DPA →
                     </Link>
                 </div>

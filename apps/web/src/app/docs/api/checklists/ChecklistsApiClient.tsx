@@ -1,64 +1,74 @@
 'use client'
 import Link from 'next/link'
-import { PublicNav, PublicFooter, pageStyle, CYAN, SURFACE, LINE, TEXT, MUTED, UI, MONO } from '@/components/public/PublicLayout'
-
-const SERIF = "'DM Serif Display', serif"
-const SURFACE2 = '#F3F4F6'
-const SUCCESS = '#16A34A'
-const WARNING = '#D97706'
-const DANGER = '#DC2626'
-const INFO = '#0284C7'
-const LINE_S = 'rgba(0,0,0,0.10)'
+import { PublicNav, PublicFooter } from '@/components/public/PublicLayout'
 
 function Tag({ method }: { method: string }) {
-    const c: Record<string, string> = { GET: SUCCESS, POST: INFO, PATCH: WARNING, DELETE: DANGER, PUT: WARNING }
-    return <span style={{ fontFamily: MONO, fontSize: '.6rem', fontWeight: 700, padding: '.15rem .5rem', background: c[method] + '18', color: c[method], border: `1px solid ${c[method]}40` }}>{method}</span>
+    const c: Record<string, string> = {
+        GET: 'text-green-600 bg-green-50 border-green-200',
+        POST: 'text-sky-600 bg-sky-50 border-sky-200',
+        PATCH: 'text-amber-600 bg-amber-50 border-amber-200',
+        DELETE: 'text-red-600 bg-red-50 border-red-200',
+        PUT: 'text-amber-600 bg-amber-50 border-amber-200'
+    }
+    return <span className={`font-mono text-[0.6rem] font-bold px-2 py-0.5 border rounded tracking-wide ${c[method]}`}>{method}</span>
 }
-function Badge({ label, color = CYAN }: { label: string; color?: string }) {
-    return <span style={{ fontFamily: MONO, fontSize: '.6rem', padding: '.12rem .45rem', background: color + '15', color, border: `1px solid ${color}28` }}>{label}</span>
+function Badge({ label, type = 'brand' }: { label: string; type?: 'brand' | 'success' | 'warning' | 'danger' | 'info' | 'muted' }) {
+    const styles = {
+        brand: 'bg-brand-50 text-brand-600 border-brand-200',
+        success: 'bg-green-50 text-green-600 border-green-200',
+        warning: 'bg-amber-50 text-amber-600 border-amber-200',
+        danger: 'bg-red-50 text-red-600 border-red-200',
+        info: 'bg-sky-50 text-sky-600 border-sky-200',
+        muted: 'bg-slate-100 text-slate-500 border-slate-200',
+    }
+    return <span className={`font-mono text-[0.6rem] px-2 py-0.5 border rounded ${styles[type]}`}>{label}</span>
 }
 function Code({ children }: { children: string }) {
-    return <pre style={{ fontFamily: MONO, fontSize: '.775rem', lineHeight: 1.75, padding: '1.25rem 1.5rem', background: '#0F172A', color: '#E2E8F0', overflowX: 'auto', margin: '1rem 0', whiteSpace: 'pre' }}><code>{children}</code></pre>
+    return <pre className="font-mono text-[0.775rem] leading-relaxed p-5 bg-slate-900 text-slate-200 overflow-x-auto my-4 whitespace-pre rounded-lg"><code>{children}</code></pre>
 }
 function DataTable({ headers, rows }: { headers: string[]; rows: React.ReactNode[][] }) {
     return (
-        <div style={{ overflowX: 'auto', margin: '1rem 0' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: UI, fontSize: '.8125rem' }}>
-                <thead><tr>{headers.map(h => <th key={h} style={{ textAlign: 'left', padding: '.5rem .875rem', background: SURFACE2, color: TEXT, fontWeight: 600, borderBottom: `1px solid ${LINE_S}`, whiteSpace: 'nowrap' }}>{h}</th>)}</tr></thead>
-                <tbody>{rows.map((row, i) => <tr key={i} style={{ borderBottom: `1px solid ${LINE}` }}>{row.map((cell, j) => <td key={j} style={{ padding: '.5rem .875rem', color: MUTED, verticalAlign: 'top' }}>{cell}</td>)}</tr>)}</tbody>
+        <div className="overflow-x-auto my-4 border border-slate-200 rounded-lg">
+            <table className="w-full border-collapse text-[0.8125rem] text-left">
+                <thead><tr className="bg-slate-100 border-b border-slate-200">{headers.map(h => <th key={h} className="p-3 font-semibold text-slate-900 whitespace-nowrap">{h}</th>)}</tr></thead>
+                <tbody>{rows.map((row, i) => <tr key={i} className="border-b border-slate-200 last:border-0 bg-white">{row.map((cell, j) => <td key={j} className="p-3 text-slate-600 align-top">{cell}</td>)}</tr>)}</tbody>
             </table>
         </div>
     )
 }
 function AlertBox({ type, children }: { type: 'info' | 'warning' | 'danger'; children: React.ReactNode }) {
-    const c = { info: { color: INFO, icon: 'ℹ', label: '' }, warning: { color: WARNING, icon: '⚠', label: '' }, danger: { color: DANGER, icon: '✕', label: '' } }[type]
+    const cfg = {
+        info: { styles: 'bg-sky-50 border-sky-500 text-sky-600', icon: 'ℹ', text: 'text-slate-700' },
+        warning: { styles: 'bg-amber-50 border-amber-500 text-amber-600', icon: '⚠', text: 'text-slate-700' },
+        danger: { styles: 'bg-red-50 border-red-500 text-red-600', icon: '✕', text: 'text-slate-700' },
+    }[type]
     return (
-        <div style={{ display: 'flex', gap: '.75rem', padding: '1rem 1.25rem', background: c.color + '08', borderLeft: `3px solid ${c.color}`, margin: '1rem 0' }}>
-            <span style={{ fontFamily: MONO, color: c.color, lineHeight: 1.7, flexShrink: 0 }}>{c.icon}</span>
-            <div style={{ fontFamily: UI, fontSize: '.8125rem', color: MUTED, lineHeight: 1.75 }}>{children}</div>
+        <div className={`flex gap-3 p-4 my-4 border-l-4 rounded-r-lg ${cfg.styles}`}>
+            <span className="font-mono text-[0.9rem] leading-relaxed shrink-0">{cfg.icon}</span>
+            <div className={`text-[0.8125rem] leading-relaxed ${cfg.text}`}>{children}</div>
         </div>
     )
 }
 function Section({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
     return (
-        <section id={id} style={{ marginBottom: '4rem', scrollMarginTop: '6rem' }}>
-            <h2 style={{ fontFamily: SERIF, fontSize: '1.6rem', color: TEXT, fontWeight: 'normal', marginBottom: '1rem', paddingBottom: '.75rem', borderBottom: `2px solid ${LINE}` }}>{title}</h2>
+        <section id={id} className="mb-16 scroll-mt-24">
+            <h2 className="font-serif text-[1.6rem] text-slate-900 mb-4 pb-3 border-b-2 border-slate-200">{title}</h2>
             {children}
         </section>
     )
 }
 function EP({ method, path, permission, description, children }: { method: string; path: string; permission: string; description: string; children?: React.ReactNode }) {
     return (
-        <div style={{ border: `1px solid ${LINE}`, marginBottom: '2.5rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '.875rem', padding: '1rem 1.25rem', background: SURFACE, borderBottom: `1px solid ${LINE}` }}>
+        <div className="border border-slate-200 rounded-lg mb-10 overflow-hidden shadow-sm">
+            <div className="flex items-center gap-3 p-4 bg-slate-50 border-b border-slate-200">
                 <Tag method={method} />
-                <code style={{ fontFamily: MONO, fontSize: '.875rem', color: TEXT, fontWeight: 600 }}>{path}</code>
+                <code className="font-mono text-[0.875rem] text-slate-900 font-semibold">{path}</code>
             </div>
-            <div style={{ padding: '1.25rem 1.5rem' }}>
-                <p style={{ fontFamily: UI, fontSize: '.8125rem', color: MUTED, marginBottom: '.75rem', lineHeight: 1.7 }}>{description}</p>
-                <div style={{ display: 'flex', gap: '.5rem', flexWrap: 'wrap' as const, marginBottom: '1rem' }}>
-                    <span style={{ fontFamily: UI, fontSize: '.75rem', color: MUTED }}>Permissão:</span>
-                    {permission.split(',').map(p => <Badge key={p} label={p.trim()} color={p.includes('ADMIN') ? DANGER : p.includes('AUDITOR') ? WARNING : CYAN} />)}
+            <div className="p-6 bg-white">
+                <p className="text-[0.8125rem] text-slate-600 mb-2 leading-relaxed">{description}</p>
+                <div className="flex gap-2 flex-wrap mb-4 items-center">
+                    <span className="text-[0.75rem] text-slate-500 font-medium tracking-wide">Permissão:</span>
+                    {permission.split(',').map(p => <Badge key={p} label={p.trim()} type={p.includes('ADMIN') ? 'danger' : p.includes('AUDITOR') ? 'warning' : 'brand'} />)}
                 </div>
                 {children}
             </div>
@@ -66,34 +76,33 @@ function EP({ method, path, permission, description, children }: { method: strin
     )
 }
 function P({ children }: { children: React.ReactNode }) {
-    return <p style={{ fontFamily: UI, fontSize: '.875rem', color: MUTED, lineHeight: 1.8, marginBottom: '.75rem' }}>{children}</p>
+    return <p className="text-[0.875rem] text-slate-600 leading-relaxed mb-3">{children}</p>
 }
 function H3({ children }: { children: React.ReactNode }) {
-    return <h3 style={{ fontFamily: UI, fontWeight: 600, fontSize: '.9375rem', color: TEXT, marginTop: '1.5rem', marginBottom: '.625rem' }}>{children}</h3>
+    return <h3 className="font-semibold text-[0.9375rem] text-slate-900 mt-6 mb-2.5">{children}</h3>
 }
 
 export function ChecklistsApiClient() {
     return (
-        <div style={pageStyle}>
-            <style>{`@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');*{margin:0;padding:0;box-sizing:border-box;-webkit-font-smoothing:antialiased;}a{color:inherit;text-decoration:none;}`}</style>
+        <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-brand-500 selection:text-white">
             <PublicNav />
 
-            <section style={{ paddingTop: '8rem', paddingBottom: '3rem', borderBottom: `1px solid ${LINE}`, backgroundImage: `linear-gradient(${LINE} 1px,transparent 1px),linear-gradient(90deg,${LINE} 1px,transparent 1px)`, backgroundSize: '80px 80px' }}>
-                <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 3rem' }}>
-                    <p style={{ fontFamily: MONO, fontSize: '.7rem', color: MUTED, textTransform: 'uppercase' as const, letterSpacing: '.1em', marginBottom: '1rem' }}>
-                        <Link href="/" style={{ color: MUTED }}>ComplianceOS</Link> / <Link href="/docs" style={{ color: MUTED }}>Docs</Link> / Checklists
+            <section className="pt-32 pb-12 border-b border-slate-200" style={{ backgroundImage: `linear-gradient(#e2e8f0 1px,transparent 1px),linear-gradient(90deg,#e2e8f0 1px,transparent 1px)`, backgroundSize: '80px 80px' }}>
+                <div className="max-w-[1100px] mx-auto px-6 md:px-12">
+                    <p className="font-mono text-[0.7rem] text-slate-500 uppercase tracking-widest mb-4">
+                        <Link href="/" className="hover:text-brand-600 transition-colors">ComplianceOS</Link> / <Link href="/docs" className="hover:text-brand-600 transition-colors">Docs</Link> / Checklists
                     </p>
-                    <h1 style={{ fontFamily: SERIF, fontSize: 'clamp(1.75rem,3vw,2.75rem)', color: TEXT, fontWeight: 'normal', marginBottom: '.75rem' }}>API — Checklists</h1>
-                    <p style={{ fontFamily: UI, fontSize: '1rem', color: MUTED, maxWidth: 600, lineHeight: 1.75 }}>Gerencie templates de due diligence e execuções de checklists regulatórios. Execuções finalizadas são imutáveis por garantia regulatória.</p>
-                    <div style={{ display: 'flex', gap: '.625rem', marginTop: '1.25rem', flexWrap: 'wrap' as const }}>
-                        <Badge label="POST /v1/checklist-runs" color={INFO} />
-                        <Badge label="POST /v1/checklists/run" color={INFO} />
-                        <Badge label="Imutável após COMPLETED" color={DANGER} />
+                    <h1 className="font-serif text-[clamp(1.75rem,3vw,2.75rem)] text-slate-900 mb-3">API — Checklists</h1>
+                    <p className="text-base text-slate-600 max-w-2xl leading-relaxed">Gerencie templates de due diligence e execuções de checklists regulatórios. Execuções finalizadas são imutáveis por garantia regulatória.</p>
+                    <div className="flex gap-2.5 mt-5 flex-wrap">
+                        <Badge label="POST /v1/checklist-runs" type="info" />
+                        <Badge label="POST /v1/checklists/run" type="info" />
+                        <Badge label="Imutável após COMPLETED" type="danger" />
                     </div>
                 </div>
             </section>
 
-            <div style={{ maxWidth: 1100, margin: '0 auto', padding: '4rem 3rem 6rem' }}>
+            <div className="max-w-[1100px] mx-auto px-6 md:px-12 py-16">
 
                 {/* CHECKLIST ITEM SCHEMA */}
                 <Section id="schema-item" title="Schema — ChecklistItem">
@@ -192,7 +201,7 @@ export function ChecklistsApiClient() {
 
                     <EP method="POST" path="/v1/checklist-runs  (alias: /v1/checklists/run)" permission="ANALYST, COMPLIANCE_OFFICER, ADMIN" description="Inicia uma nova execução de checklist. Aceita um array de respostas inicial (pode ser vazio para modo rascunho). O autosave do frontend salva respostas parciais via PATCH.">
                         <AlertBox type="info">
-                            A URL <code style={{ fontFamily: MONO }}>/v1/checklist-runs</code> e <code style={{ fontFamily: MONO }}>/v1/checklists/run</code> são equivalentes — ambas apontam para o mesmo handler.
+                            A URL <code className="font-mono text-slate-700 bg-white/50 px-1 py-0.5 rounded">/v1/checklist-runs</code> e <code className="font-mono text-slate-700 bg-white/50 px-1 py-0.5 rounded">/v1/checklists/run</code> são equivalentes — ambas apontam para o mesmo handler.
                         </AlertBox>
                         <H3>Request Body</H3>
                         <DataTable
@@ -372,9 +381,9 @@ for item in checklist.items:
                 </Section>
 
                 {/* NAV */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '2.5rem', borderTop: `1px solid ${LINE}` }}>
-                    <Link href="/docs/api/entities" style={{ fontFamily: UI, fontSize: '.875rem', color: CYAN }}>← API de Entidades</Link>
-                    <Link href="/docs/api/audit" style={{ fontFamily: UI, fontSize: '.875rem', color: CYAN }}>API de Audit Trail →</Link>
+                <div className="flex justify-between pt-10 border-t border-slate-200">
+                    <Link href="/docs/api/entities" className="font-medium text-[0.875rem] text-brand-600 hover:text-brand-700 flex items-center gap-1.5 transition-colors">← API de Entidades</Link>
+                    <Link href="/docs/api/audit" className="font-medium text-[0.875rem] text-brand-600 hover:text-brand-700 flex items-center gap-1.5 transition-colors">API de Audit Trail →</Link>
                 </div>
             </div>
             <PublicFooter />
