@@ -80,5 +80,7 @@ export const TEXT = '#0F172A'
 export const MUTED = '#64748B'
 export const UI = "ui-sans-serif, system-ui, sans-serif"
 export const MONO = "ui-monospace, SFMono-Regular, monospace"
+export const LINE_STRONG = 'rgba(0,0,0,0.12)'
+export const SERIF = "'DM Serif Display', serif"
 
 
