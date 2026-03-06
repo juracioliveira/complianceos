@@ -4,8 +4,9 @@ import pg from 'pg';
 import dotenv from 'dotenv';
 dotenv.config();
 
+const databaseUrl = process.env.DATABASE_MIGRATOR_URL || process.env.DATABASE_URL || 'postgresql://cnpj:cnpj123@localhost:5432/cnpj_rfb';
 const pool = new pg.Pool({
-    connectionString: process.env.DATABASE_URL || 'postgresql://cnpj:cnpj123@localhost:5432/cnpj_rfb',
+    connectionString: databaseUrl,
     max: 1,
 });
 

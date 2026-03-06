@@ -15,10 +15,10 @@ export default function LandingPage() {
                     </Link>
                     <div className="hidden md:flex items-center gap-8">
                         {[
-                            ['#solutions', 'Produto'],
-                            ['#pricing', 'Preços'],
-                            ['/docs', 'API']
-                        ].map(([href, label]) => (
+                            { href: '#solutions', label: 'Produto' },
+                            { href: '#pricing', label: 'Preços' },
+                            { href: '/docs', label: 'API' }
+                        ].map(({ href, label }) => (
                             <Link key={label} href={href} className="text-sm font-medium text-slate-600 hover:text-brand-600 transition-colors">
                                 {label}
                             </Link>
