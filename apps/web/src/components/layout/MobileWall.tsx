@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { ShieldCheck } from 'lucide-react'
 
 /**
  * MobileWall — blocks access to the authenticated app on mobile devices.
@@ -56,11 +57,11 @@ export function MobileWall({ children }: { children: React.ReactNode }) {
                 <div style={{ position: 'relative', zIndex: 2, maxWidth: 360 }}>
                     {/* Logo */}
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', marginBottom: '3rem' }}>
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#00A3BF" strokeWidth="2">
-                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                        </svg>
-                        <span style={{ fontSize: '1.4rem', fontWeight: 700, color: '#0F172A', letterSpacing: '-0.5px' }}>
-                            Compliance<span style={{ color: '#00A3BF' }}>OS</span>
+                        <div className="p-1.5 bg-brand-50 rounded-lg">
+                            <ShieldCheck className="w-6 h-6 text-brand-600" strokeWidth={2.5} />
+                        </div>
+                        <span style={{ fontSize: '1.4rem', fontWeight: 700, color: '#0F172A', letterSpacing: '-0.5px' }} className="font-sans">
+                            Compliance<span className="text-brand-600">OS</span>
                         </span>
                     </div>
 
@@ -99,15 +100,8 @@ export function MobileWall({ children }: { children: React.ReactNode }) {
 
                     <a
                         href="/"
-                        style={{
-                            display: 'inline-block', padding: '0.75rem 1.5rem',
-                            background: 'transparent', border: '1px solid rgba(0,163,191,0.4)',
-                            borderRadius: 4, color: '#00A3BF',
-                            fontFamily: "'IBM Plex Sans', sans-serif",
-                            fontWeight: 600, fontSize: '0.875rem',
-                            textTransform: 'uppercase', letterSpacing: '0.5px',
-                            textDecoration: 'none',
-                        }}
+                        className="inline-flex items-center justify-center px-6 py-3 bg-brand-600 text-white font-semibold rounded-lg hover:bg-brand-700 transition-colors shadow-sm font-sans uppercase tracking-wider text-sm"
+                        style={{ textDecoration: 'none' }}
                     >
                         ← Voltar ao início
                     </a>

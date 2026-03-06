@@ -74,8 +74,8 @@ export default function LoginPage() {
             <div className="hidden lg:flex flex-col justify-between p-12 bg-slate-50 relative overflow-hidden border-right border-slate-200">
                 {/* Padrão de fundo decorativo */}
                 <div className="absolute inset-0 pointer-events-none">
-                    <div className="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] bg-blue-100/50 rounded-full blur-3xl" />
-                    <div className="absolute bottom-[-10%] right-[-10%] w-[400px] h-[400px] bg-indigo-100/50 rounded-full blur-3xl" />
+                    <div className="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] bg-brand-100/50 rounded-full blur-3xl" />
+                    <div className="absolute bottom-[-10%] right-[-10%] w-[400px] h-[400px] bg-cyan-100/50 rounded-full blur-3xl" />
                     {/* Grid sutil */}
                     <div
                         className="absolute inset-0 opacity-[0.05]"
@@ -88,12 +88,12 @@ export default function LoginPage() {
 
                 {/* Logo */}
                 <div className="relative flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-blue-100 border border-blue-200 flex items-center justify-center">
-                        <ShieldCheck className="w-5 h-5 text-blue-600" />
+                    <div className="w-10 h-10 rounded-xl bg-brand-50 border border-brand-100 flex items-center justify-center">
+                        <ShieldCheck className="w-5 h-5 text-brand-600" />
                     </div>
                     <div>
-                        <p className="font-bold text-slate-900 text-lg leading-tight">ComplianceOS</p>
-                        <p className="text-blue-600/70 text-xs">Chuangxin Tecnologia</p>
+                        <p className="font-bold text-slate-900 text-lg leading-tight">Compliance<span className="text-brand-600">OS</span></p>
+                        <p className="text-brand-600/70 text-[10px] font-mono tracking-widest uppercase mt-0.5">Governance Engine</p>
                     </div>
                 </div>
 
@@ -102,7 +102,7 @@ export default function LoginPage() {
                     <div>
                         <h1 className="text-4xl font-bold text-slate-900 leading-tight text-balance">
                             Compliance e Governança<br />
-                            <span className="text-blue-600">numa plataforma única</span>
+                            <span className="text-brand-600">numa plataforma única</span>
                         </h1>
                         <p className="mt-4 text-slate-600 text-base leading-relaxed max-w-md">
                             Gerencie PLD/FT, LGPD e Anticorrupção com rastreabilidade total,
@@ -136,11 +136,11 @@ export default function LoginPage() {
             <div className="flex items-center justify-center p-8 bg-background">
                 <div className="w-full max-w-sm animate-fade-in">
                     {/* Mobile logo */}
-                    <div className="lg:hidden flex items-center gap-2 justify-center mb-8">
-                        <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-                            <ShieldCheck className="w-4 h-4 text-white" />
+                    <div className="lg:hidden flex items-center gap-2 justify-center mb-8 text-xl font-bold tracking-tight text-slate-900">
+                        <div className="w-8 h-8 rounded-lg bg-brand-50 border border-brand-100 flex items-center justify-center">
+                            <ShieldCheck className="w-4 h-4 text-brand-600" />
                         </div>
-                        <span className="font-bold text-foreground">ComplianceOS</span>
+                        <span>Compliance<span className="text-brand-600">OS</span></span>
                     </div>
 
                     <div className="space-y-1 mb-8">
@@ -213,9 +213,9 @@ export default function LoginPage() {
                             </>
                         ) : (
                             <div className="space-y-1.5">
-                                <div className="flex items-center gap-2 mb-4 p-3.5 rounded-xl bg-blue-50 border border-blue-200">
-                                    <Smartphone className="w-4 h-4 text-blue-600 shrink-0" />
-                                    <p className="text-sm text-blue-800">
+                                <div className="flex items-center gap-2 mb-4 p-3.5 rounded-xl bg-brand-50 border border-brand-200">
+                                    <Smartphone className="w-4 h-4 text-brand-600 shrink-0" />
+                                    <p className="text-sm text-brand-800">
                                         Abra seu app autenticador (Google Authenticator, Authy) e insira o código de 6 dígitos.
                                     </p>
                                 </div>

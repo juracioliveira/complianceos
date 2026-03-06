@@ -1,36 +1,24 @@
 import Link from 'next/link'
 import { ShieldCheck } from 'lucide-react'
 
-const CYAN = '#00A3BF'
-const BG = '#FFFFFF'
-const SURFACE = '#F9FAFB'
-const LINE = 'rgba(0,0,0,0.06)'
-const TEXT = '#0F172A'
-const MUTED = '#475569'
-const UI = "'IBM Plex Sans', sans-serif"
-const MONO = "'IBM Plex Mono', monospace"
-
 export function PublicNav() {
     return (
-        <nav style={{
-            position: 'fixed', top: 0, width: '100%', zIndex: 100,
-            borderBottom: `1px solid ${LINE}`,
-            background: 'rgba(255,255,255,0.92)',
-            backdropFilter: 'blur(16px)',
-        }}>
-            <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 3rem', height: 60, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '.625rem', fontSize: '1rem', fontWeight: 600, letterSpacing: '-.02em', color: TEXT, textDecoration: 'none', fontFamily: UI }}>
-                    <ShieldCheck size={20} stroke={CYAN} strokeWidth={1.5} />
-                    <span style={{ whiteSpace: 'nowrap' }}>Compliance<span style={{ color: CYAN }}>OS</span></span>
+        <nav className="fixed top-0 w-full z-[100] border-b border-slate-200/80 bg-white/90 backdrop-blur-md">
+            <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+                <Link href="/" className="flex items-center gap-2 text-xl font-bold tracking-tight text-slate-900 group">
+                    <div className="p-1.5 bg-brand-50 rounded-lg group-hover:bg-brand-100 transition-colors">
+                        <ShieldCheck className="w-5 h-5 text-brand-600" strokeWidth={2} />
+                    </div>
+                    Compliance<span className="text-brand-600">OS</span>
                 </Link>
-                <div style={{ display: 'flex', gap: '2.5rem' }}>
+                <div className="hidden md:flex items-center gap-10">
                     {([['/', 'Produto'], ['/#pricing', 'Preços'], ['/cobertura', 'Regulações'], ['/docs', 'Docs']] as [string, string][]).map(([h, l]) => (
-                        <Link key={l} href={h} style={{ fontSize: '.8125rem', color: MUTED, textDecoration: 'none', fontFamily: UI }}>{l}</Link>
+                        <Link key={l} href={h} className="text-[13px] font-medium text-slate-600 hover:text-brand-600 transition-colors">{l}</Link>
                     ))}
                 </div>
-                <div style={{ display: 'flex', gap: '.75rem' }}>
-                    <Link href="/login" style={{ display: 'inline-flex', alignItems: 'center', padding: '.6rem 1.2rem', background: 'transparent', color: TEXT, border: `1px solid ${LINE}`, fontFamily: UI, fontWeight: 500, fontSize: '.8125rem', letterSpacing: '.04em', textTransform: 'uppercase' as const, textDecoration: 'none' }}>Entrar</Link>
-                    <Link href="/dashboard" style={{ display: 'inline-flex', alignItems: 'center', padding: '.6rem 1.2rem', background: CYAN, color: '#FFFFFF', border: `1px solid ${CYAN}`, fontFamily: UI, fontWeight: 500, fontSize: '.8125rem', letterSpacing: '.04em', textTransform: 'uppercase' as const, textDecoration: 'none' }}>Acessar →</Link>
+                <div className="flex items-center gap-3">
+                    <Link href="/login" className="px-4 py-2 text-sm font-medium text-slate-700 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors">Entrar</Link>
+                    <Link href="/dashboard" className="px-4 py-2 bg-brand-600 text-white text-sm font-medium rounded-lg hover:bg-brand-700 transition-colors shadow-sm shadow-brand-600/20">Acessar →</Link>
                 </div>
             </div>
         </nav>
@@ -39,21 +27,21 @@ export function PublicNav() {
 
 export function PublicFooter() {
     return (
-        <footer style={{ borderTop: `1px solid ${LINE}`, padding: '3rem 0', background: SURFACE }}>
-            <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 3rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.5rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '.625rem' }}>
-                    <ShieldCheck size={18} stroke={MUTED} strokeWidth={1.5} />
-                    <span style={{ fontFamily: UI, fontWeight: 600, color: TEXT, fontSize: '.9rem' }}>ComplianceOS</span>
+        <footer className="border-t border-slate-200 py-12 bg-slate-50">
+            <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
+                <div className="flex items-center gap-2 text-xl font-bold tracking-tight text-slate-900">
+                    <ShieldCheck className="w-5 h-5 text-slate-400" strokeWidth={2} />
+                    Compliance<span className="text-slate-400">OS</span>
                 </div>
-                <div style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap' }}>
+                <div className="flex flex-wrap gap-6 justify-center">
                     {([
                         ['/cobertura', 'Cobertura'], ['/docs', 'Docs'], ['/seguranca', 'Segurança'],
                         ['/privacidade', 'Privacidade'], ['/termos', 'Termos'], ['/contato', 'Contato'],
                     ] as [string, string][]).map(([h, l]) => (
-                        <Link key={l} href={h} style={{ fontFamily: UI, fontSize: '.8125rem', color: MUTED, textDecoration: 'none' }}>{l}</Link>
+                        <Link key={l} href={h} className="text-sm font-medium text-slate-500 hover:text-brand-600 transition-colors">{l}</Link>
                     ))}
                 </div>
-                <span style={{ fontFamily: MONO, fontSize: '.7rem', color: '#94A3B8' }}>© 2026 Chuangxin Tecnologia</span>
+                <span className="font-mono text-xs text-slate-400">© 2026 Chuangxin Tecnologia</span>
             </div>
         </footer>
     )
@@ -61,35 +49,36 @@ export function PublicFooter() {
 
 export function PageHero({ breadcrumb, title, subtitle }: { breadcrumb: string; title: string; subtitle: string }) {
     return (
-        <section style={{
-            paddingTop: '8rem', paddingBottom: '5rem',
-            borderBottom: `1px solid ${LINE}`,
-            backgroundImage: `linear-gradient(${LINE} 1px,transparent 1px),linear-gradient(90deg,${LINE} 1px,transparent 1px)`,
-            backgroundSize: '80px 80px',
-        }}>
-            <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 3rem' }}>
-                <p style={{ fontFamily: MONO, fontSize: '.7rem', color: MUTED, textTransform: 'uppercase' as const, letterSpacing: '.1em', marginBottom: '1.5rem' }}>
-                    <Link href="/" style={{ color: MUTED, textDecoration: 'none' }}>ComplianceOS</Link>
+        <section className="pt-32 pb-20 border-b border-slate-200 relative bg-slate-50">
+            {/* Grid Pattern */}
+            <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)', backgroundSize: '60px 60px' }} />
+            <div className="max-w-7xl mx-auto px-6 relative z-10">
+                <p className="font-mono text-xs font-bold text-slate-400 uppercase tracking-widest mb-6">
+                    <Link href="/" className="hover:text-brand-600 transition-colors">ComplianceOS</Link>
                     {' / '}{breadcrumb}
                 </p>
-                <h1 style={{ fontFamily: "'DM Serif Display', serif", fontSize: 'clamp(2rem,4vw,3.5rem)', color: TEXT, fontWeight: 'normal', marginBottom: '1rem', maxWidth: 700 }}>{title}</h1>
-                <p style={{ fontFamily: UI, fontSize: '1.0625rem', color: MUTED, maxWidth: 560, lineHeight: 1.75 }}>{subtitle}</p>
+                <h1 className="font-display text-4xl md:text-5xl lg:text-6xl text-slate-900 mb-6 max-w-3xl leading-tight">{title}</h1>
+                <p className="text-lg text-slate-600 max-w-2xl leading-relaxed">{subtitle}</p>
             </div>
         </section>
     )
 }
 
 export const pageStyle = {
-    background: BG, color: TEXT, fontFamily: UI, minHeight: '100vh',
+    // Legacy export, safely ignored if fully swapped
 }
 
 export const contentWrap = {
-    maxWidth: 1200, margin: '0 auto', padding: '5rem 3rem',
+    // Legacy export
 }
 
-export const SURFACE2 = '#F3F4F6'
-export const LINE_STRONG = 'rgba(0,0,0,0.12)'
-export const SERIF = "'DM Serif Display', serif"
+export const CYAN = '#1E5DB8'
+export const BG = '#F8FAFC'
+export const SURFACE = '#F1F5F9'
+export const LINE = '#E2E8F0'
+export const TEXT = '#0F172A'
+export const MUTED = '#64748B'
+export const UI = "ui-sans-serif, system-ui, sans-serif"
+export const MONO = "ui-monospace, SFMono-Regular, monospace"
 
-export { CYAN, BG, SURFACE, LINE, TEXT, MUTED, UI, MONO }
 
