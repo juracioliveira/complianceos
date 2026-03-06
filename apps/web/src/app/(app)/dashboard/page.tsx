@@ -151,11 +151,13 @@ export default function DashboardPage() {
         <div className="max-w-7xl mx-auto space-y-6 animate-fade-in">
 
             {/* Page header com live indicator */}
-            <div className="page-header">
+            <div className="flex items-start justify-between mb-8">
                 <div>
-                    <h1 className="page-title">Dashboard de Compliance</h1>
+                    <h1 className="font-display text-4xl md:text-5xl text-slate-900 mb-2 leading-[1.1] tracking-tight">
+                        Dashboard de <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-cyan-500">Compliance</span>
+                    </h1>
                     <div className="flex items-center gap-2 mt-1">
-                        <p className="page-subtitle">Visão executiva do programa de conformidade</p>
+                        <p className="text-sm font-medium text-slate-500 flex items-center">Visão executiva do programa de conformidade</p>
                         {mounted && (
                             <div className="flex items-center gap-1.5">
                                 <span className="text-xs text-muted-foreground">•</span>
@@ -236,7 +238,7 @@ export default function DashboardPage() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
 
                 {/* Distribuição de risco */}
-                <div className="card p-5 space-y-4">
+                <div className="card p-5 space-y-4 shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex items-center justify-between">
                         <div>
                             <h3 className="text-sm font-semibold text-foreground">Distribuição de Risco</h3>
@@ -245,9 +247,10 @@ export default function DashboardPage() {
                         <BarChart3 className="w-4 h-4 text-muted-foreground" />
                     </div>
 
-                    {/* Donut em SVG */}
-                    <div className="flex items-center justify-center py-2">
-                        <div className="relative w-28 h-28">
+                    {/* Donut em SVG com Glow */}
+                    <div className="flex items-center justify-center py-2 relative">
+                        <div className="absolute inset-0 bg-brand-500/5 rounded-full blur-2xl"></div>
+                        <div className="relative w-32 h-32 drop-shadow-md">
                             <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
                                 {(() => {
                                     if (totalEntidades === 0) {
@@ -289,7 +292,7 @@ export default function DashboardPage() {
                 </div>
 
                 {/* Alertas ativos */}
-                <div className="card p-5 space-y-3">
+                <div className="card p-5 space-y-3 shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex items-center justify-between">
                         <h3 className="text-sm font-semibold text-foreground">Alertas Ativos</h3>
                         <span className="badge badge-red">{stats.notificacoesNaoLidas} não lidas</span>
@@ -343,7 +346,7 @@ export default function DashboardPage() {
                 </div>
 
                 {/* Atividade recente */}
-                <div className="card p-5 flex flex-col">
+                <div className="card p-5 flex flex-col shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex items-center justify-between mb-4">
                         <h3 className="text-sm font-semibold text-foreground">Atividade Recente</h3>
                         <a href="/audit" className="text-xs text-primary hover:underline">Ver audit trail →</a>
@@ -368,8 +371,8 @@ export default function DashboardPage() {
             </div>
 
             {/* Entidades críticas */}
-            <div className="card">
-                <div className="flex items-center justify-between px-5 py-4 border-b border-border">
+            <div className="card shadow-sm hover:shadow-md transition-shadow overflow-hidden">
+                <div className="flex items-center justify-between px-5 py-4 border-b border-border bg-slate-50/50">
                     <div>
                         <h3 className="text-sm font-semibold text-foreground">Entidades com Risco Crítico</h3>
                         <p className="text-xs text-muted-foreground mt-0.5">Último checklist & score de risco</p>
@@ -454,11 +457,11 @@ function StatCard({
                     trend.dir === 'down' ? 'text-emerald-500' : 'text-muted-foreground'
 
     return (
-        <div className={`stat-card border-l-2 ${color === 'red' ? 'border-l-red-500' : color === 'amber' ? 'border-l-amber-500' : color === 'green' ? 'border-l-emerald-500' : 'border-l-blue-500'}`}>
+        <div className={`stat-card border-l-2 bg-white ${color === 'red' ? 'border-l-red-500 shadow-sm shadow-red-500/5' : color === 'amber' ? 'border-l-amber-500 shadow-sm shadow-amber-500/5' : color === 'green' ? 'border-l-emerald-500 shadow-sm shadow-emerald-500/5' : 'border-l-blue-500 shadow-sm shadow-blue-500/5'} hover:scale-[1.02] transition-transform`}>
             <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
-                    <p className="stat-label">{label}</p>
-                    <p className="stat-value">{value}</p>
+                    <p className="stat-label text-slate-500">{label}</p>
+                    <p className="font-display text-4xl text-slate-900 mt-2 mb-1 leading-none">{value}</p>
                     {sub && <p className="stat-sub">{sub}</p>}
                     {trend && (
                         <div className={`flex items-center gap-1 mt-2 text-xs font-medium ${trendColor}`}>

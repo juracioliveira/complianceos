@@ -91,18 +91,17 @@ export default function LoginPage() {
                     <div className="w-10 h-10 rounded-xl bg-brand-50 border border-brand-100 flex items-center justify-center">
                         <ShieldCheck className="w-5 h-5 text-brand-600" />
                     </div>
-                    <div>
-                        <p className="font-bold text-slate-900 text-lg leading-tight">Compliance<span className="text-brand-600">OS</span></p>
-                        <p className="text-brand-600/70 text-[10px] font-mono tracking-widest uppercase mt-0.5">Governance Engine</p>
+                    <div className="flex items-center gap-2 text-xl font-bold tracking-tight text-slate-900">
+                        Compliance<span className="text-brand-600">OS</span>
                     </div>
                 </div>
 
                 {/* Headline */}
                 <div className="relative space-y-6">
                     <div>
-                        <h1 className="text-4xl font-bold text-slate-900 leading-tight text-balance">
-                            Compliance e Governança<br />
-                            <span className="text-brand-600">numa plataforma única</span>
+                        <h1 className="font-display text-5xl lg:text-6xl text-slate-900 mb-6 leading-[1.1] tracking-tight text-balance">
+                            Conformidade regulatória.<br />
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-cyan-500">Sem travar sua operação.</span>
                         </h1>
                         <p className="mt-4 text-slate-600 text-base leading-relaxed max-w-md">
                             Gerencie PLD/FT, LGPD e Anticorrupção com rastreabilidade total,
@@ -118,7 +117,7 @@ export default function LoginPage() {
                             { label: 'KYC/KYB Automatizado', desc: 'Due diligence completa' },
                             { label: 'Documentos PDF', desc: 'RAT, DPIA, Relatórios' },
                         ].map((f) => (
-                            <div key={f.label} className="rounded-xl border border-slate-200 bg-white p-3.5 shadow-sm">
+                            <div key={f.label} className="rounded-xl border border-slate-200 bg-white p-3.5 shadow-sm hover:border-brand-200 hover:shadow-md transition-all">
                                 <p className="text-slate-900 text-xs font-semibold">{f.label}</p>
                                 <p className="text-slate-500 text-[11px] mt-0.5">{f.desc}</p>
                             </div>
@@ -128,7 +127,7 @@ export default function LoginPage() {
 
                 {/* Rodapé */}
                 <p className="relative text-slate-400 text-xs">
-                    © 2026 Grupo Guinle · Chuangxin Tecnologia · Uso corporativo
+                    © 2026 Chuangxin Tecnologia da Informação Ltda. Todos os direitos reservados.
                 </p>
             </div>
 
