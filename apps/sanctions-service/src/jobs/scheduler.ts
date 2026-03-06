@@ -35,13 +35,6 @@ export async function setupSchedules() {
     }
 }
 
-// execute if run standalone
-if (import.meta.url === `file://${process.argv[1]}`) {
-    setupSchedules().then(() => {
-        logger.info('Schedules applied successfully');
-        process.exit(0);
-    }).catch(e => {
-        logger.error(e, 'Failed to setup schedules');
-        process.exit(1);
-    });
-}
+// Removido o bloco de execução standalone (if import.meta.url ...)
+// porque quando o ts-node ou tsup faz o bundle para o server.js,
+// ele engana a condição e faz o Fastify dar process.exit(0) logo ao iniciar.
