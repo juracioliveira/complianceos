@@ -35,6 +35,7 @@ export function PublicFooter() {
                 </div>
                 <div className="flex flex-wrap gap-6 justify-center">
                     {([
+                        ['/sobre', 'Sobre'], ['/due-diligence', 'Due Diligence'], ['/changelog', 'Changelog'],
                         ['/cobertura', 'Cobertura'], ['/docs', 'Docs'], ['/seguranca', 'Segurança'],
                         ['/privacidade', 'Privacidade'], ['/termos', 'Termos'], ['/contato', 'Contato'],
                     ] as [string, string][]).map(([h, l]) => (
