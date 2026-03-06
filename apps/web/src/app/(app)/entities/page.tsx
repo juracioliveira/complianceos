@@ -132,37 +132,39 @@ export default function EntitiesPage() {
             </div>
 
             {/* Summary strips */}
-            <div className="grid grid-cols-4 gap-3">
+            <div className="grid grid-cols-4 gap-4">
                 {[
-                    { label: 'Crítico', count: summary.CRITICAL, color: 'border-red-200 bg-red-50', textCount: 'text-red-700' },
-                    { label: 'Alto', count: summary.HIGH, color: 'border-orange-200 bg-orange-50', textCount: 'text-orange-700' },
-                    { label: 'Médio', count: summary.MEDIUM, color: 'border-amber-200 bg-amber-50', textCount: 'text-amber-700' },
-                    { label: 'Baixo', count: summary.LOW, color: 'border-emerald-200 bg-emerald-50', textCount: 'text-emerald-700' },
+                    { label: 'Crítico', count: summary.CRITICAL, color: 'border-l-red-500 bg-red-50/50', textCount: 'text-red-700' },
+                    { label: 'Alto', count: summary.HIGH, color: 'border-l-orange-500 bg-orange-50/50', textCount: 'text-orange-700' },
+                    { label: 'Médio', count: summary.MEDIUM, color: 'border-l-amber-500 bg-amber-50/50', textCount: 'text-amber-700' },
+                    { label: 'Baixo', count: summary.LOW, color: 'border-l-emerald-500 bg-emerald-50/50', textCount: 'text-emerald-700' },
                 ].map((s) => (
-                    <div key={s.label} className={`rounded-xl border px-4 py-3 cursor-pointer hover:opacity-80 transition-opacity ${s.color}`}>
-                        <p className={`text-2xl font-bold ${s.textCount}`}>{s.count}</p>
-                        <p className="text-xs text-muted-foreground font-medium">{s.label} risco</p>
+                    <div key={s.label} className={`card p-4 border-l-4 ${s.color} hover:shadow-md transition-all cursor-pointer group`}>
+                        <p className={`text-3xl font-display font-bold ${s.textCount}`}>{s.count}</p>
+                        <p className="font-mono text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">{s.label} risco</p>
                     </div>
                 ))}
             </div>
 
             {/* Filtros */}
-            <div className="flex items-center gap-2 flex-wrap">
-                <div className="flex items-center gap-2 bg-card border border-border rounded-lg px-3 py-2 flex-1 min-w-[200px] max-w-sm">
-                    <Search className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+            <div className="flex items-center gap-3 flex-wrap">
+                <div className="flex items-center gap-2 bg-white border border-slate-200 rounded-xl px-4 py-2.5 flex-1 min-w-[200px] max-w-md shadow-sm group hover:border-brand-300 transition-colors">
+                    <Search className="w-4 h-4 text-slate-400 group-focus-within:text-brand-500 shrink-0 transition-colors" />
                     <input
                         type="text"
                         placeholder="Buscar por nome ou CNPJ..."
-                        className="bg-transparent text-sm placeholder:text-muted-foreground focus:outline-none w-full"
+                        className="bg-transparent text-sm text-slate-700 placeholder:text-slate-400 focus:outline-none w-full"
                     />
                 </div>
-                <button className="btn-secondary btn-sm gap-1.5">
-                    <SlidersHorizontal className="w-3.5 h-3.5" />
+                <button className="btn-secondary btn-sm gap-2 h-10 px-4 rounded-xl">
+                    <SlidersHorizontal className="w-4 h-4 text-brand-600" />
                     Filtros
                 </button>
-                {(['CRITICAL', 'HIGH', 'MEDIUM', 'LOW'] as const).map((level) => (
-                    <RiskBadge key={level} level={level} size="sm" className="cursor-pointer hover:opacity-70 transition-opacity" />
-                ))}
+                <div className="flex items-center gap-2 ml-auto">
+                    {(['CRITICAL', 'HIGH', 'MEDIUM', 'LOW'] as const).map((level) => (
+                        <RiskBadge key={level} level={level} size="sm" className="cursor-pointer hover:scale-105 transition-transform" />
+                    ))}
+                </div>
             </div>
 
             {/* Tabela */}

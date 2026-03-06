@@ -425,7 +425,7 @@ export default function DashboardPage() {
                     </table>
                 </div>
             </div>
-        </div>
+        </div >
     )
 }
 
@@ -441,10 +441,10 @@ function StatCard({
     trend?: { dir: 'up' | 'down' | 'flat' | 'bad' | 'good'; text: string }
 }) {
     const colors = {
-        red: { bg: 'bg-red-50', icon: 'text-red-600', iconBg: 'bg-red-100' },
-        amber: { bg: 'bg-amber-50', icon: 'text-amber-600', iconBg: 'bg-amber-100' },
-        green: { bg: 'bg-emerald-50', icon: 'text-emerald-600', iconBg: 'bg-emerald-100' },
-        blue: { bg: 'bg-blue-50', icon: 'text-blue-600', iconBg: 'bg-blue-100' },
+        red: { bg: 'bg-red-50/50', icon: 'text-red-600', iconBg: 'bg-red-100/50', border: 'border-l-red-500' },
+        amber: { bg: 'bg-amber-50/50', icon: 'text-amber-600', iconBg: 'bg-amber-100/50', border: 'border-l-amber-500' },
+        green: { bg: 'bg-emerald-50/50', icon: 'text-emerald-600', iconBg: 'bg-emerald-100/50', border: 'border-l-emerald-500' },
+        blue: { bg: 'bg-blue-50/50', icon: 'text-blue-600', iconBg: 'bg-blue-100/50', border: 'border-l-blue-500' },
     }
     const c = colors[color]
 
@@ -454,24 +454,24 @@ function StatCard({
         trend.dir === 'bad' ? 'text-red-500' :
             trend.dir === 'good' ? 'text-emerald-500' :
                 trend.dir === 'up' ? 'text-red-500' :
-                    trend.dir === 'down' ? 'text-emerald-500' : 'text-muted-foreground'
+                    trend.dir === 'down' ? 'text-emerald-500' : 'text-slate-400'
 
     return (
-        <div className={`stat-card border-l-2 bg-white ${color === 'red' ? 'border-l-red-500 shadow-sm shadow-red-500/5' : color === 'amber' ? 'border-l-amber-500 shadow-sm shadow-amber-500/5' : color === 'green' ? 'border-l-emerald-500 shadow-sm shadow-emerald-500/5' : 'border-l-blue-500 shadow-sm shadow-blue-500/5'} hover:scale-[1.02] transition-transform`}>
+        <div className={`card p-5 border-l-4 ${c.border} hover:shadow-lg transition-all duration-300 group`}>
             <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
-                    <p className="stat-label text-slate-500">{label}</p>
-                    <p className="font-display text-4xl text-slate-900 mt-2 mb-1 leading-none">{value}</p>
-                    {sub && <p className="stat-sub">{sub}</p>}
+                    <p className="font-mono text-[10px] font-bold text-slate-400 uppercase tracking-widest">{label}</p>
+                    <p className="font-display text-4xl text-slate-900 mt-2 mb-1 leading-none tracking-tight">{value}</p>
+                    {sub && <p className="text-[11px] text-slate-500 font-medium">{sub}</p>}
                     {trend && (
-                        <div className={`flex items-center gap-1 mt-2 text-xs font-medium ${trendColor}`}>
+                        <div className={`flex items-center gap-1 mt-3 px-2 py-0.5 rounded-full bg-white border border-slate-100 w-fit text-[10px] font-bold shadow-sm ${trendColor}`}>
                             <TrendIcon className="w-3 h-3" />
                             <span>{trend.text}</span>
                         </div>
                     )}
                 </div>
-                <div className={`w-10 h-10 rounded-xl shrink-0 flex items-center justify-center ${c.iconBg}`}>
-                    <Icon className={`w-5 h-5 ${c.icon}`} />
+                <div className={`w-12 h-12 rounded-2xl shrink-0 flex items-center justify-center ${c.iconBg} border border-white shadow-inner group-hover:scale-110 transition-transform duration-300`}>
+                    <Icon className={`w-6 h-6 ${c.icon}`} strokeWidth={1.5} />
                 </div>
             </div>
         </div>
