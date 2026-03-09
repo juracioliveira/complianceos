@@ -15,7 +15,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             <AuthGuard>
                 {/* Block mobile access — show desktop-required screen on <1024px */}
                 <MobileWall>
-                    <div className="flex h-screen overflow-hidden relative bg-slate-50 text-slate-900 font-sans">
+                    <div className="flex h-screen overflow-hidden relative bg-white text-slate-900 font-sans">
                         {/* Grid background — mirrors hero section in landing */}
                         <div
                             className="absolute inset-0 pointer-events-none"

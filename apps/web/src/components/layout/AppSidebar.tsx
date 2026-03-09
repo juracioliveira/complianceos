@@ -48,12 +48,12 @@ export function AppSidebar() {
     return (
         <aside className="sidebar h-screen flex flex-col animate-slide-left">
             {/* Logo */}
-            <div className="flex items-center gap-3 px-6 h-16 shrink-0 border-b border-slate-200/50 bg-white/40 backdrop-blur-md">
-                <div className="p-1.5 bg-brand-50 rounded-lg shadow-sm border border-brand-100/50">
-                    <ShieldCheck className="w-5 h-5 text-brand-600" strokeWidth={2.5} />
+            <div className="flex items-center gap-3 px-6 h-20 shrink-0 border-b border-slate-200/50 bg-white/40 backdrop-blur-md">
+                <div className="p-2 bg-brand-50 rounded-xl shadow-sm border border-brand-100/50 group-hover:bg-brand-100 transition-colors">
+                    <ShieldCheck className="w-6 h-6 text-brand-600" strokeWidth={2.5} />
                 </div>
-                <div className="text-xl font-display font-bold tracking-tight text-slate-900">
-                    Compliance<span className="text-brand-600">OS</span>
+                <div className="text-2xl font-display text-slate-900 tracking-tight">
+                    Compliance<span className="text-brand-600 font-semibold">OS</span>
                 </div>
             </div>
 

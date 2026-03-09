@@ -5,7 +5,7 @@ import { CheckCircle2, Clock, ChevronRight, Loader2, ClipboardList } from 'lucid
 import { RiskBadge } from '@/components/ui/RiskBadge'
 import { useApi } from '@/hooks/useApi'
 import { useRouter } from 'next/navigation'
-import { formatDate } from '@/lib/utils'
+import { formatDate, cn } from '@/lib/utils'
 
 interface ChecklistTimelineProps {
     id: string
@@ -38,92 +38,100 @@ export default function ChecklistTimeline({ id, limit, title, showFilters }: Che
         .filter(r => !statusFilter || r.status === statusFilter)
 
     return (
-        <div className={`card ${title ? 'p-6' : 'p-0'}`}>
+        <div className={cn("card overflow-hidden border-slate-200/60 shadow-md", title ? "p-0" : "")}>
             {title && (
-                <div className="flex items-center justify-between mb-6">
-                    <h3 className="font-bold text-lg">{title}</h3>
-                    <button className="text-xs font-bold text-primary hover:underline" onClick={() => router.push(`/entities/${id}`)}>Ver todos</button>
+                <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100 bg-slate-50/30">
+                    <h3 className="font-display text-xl text-slate-900 tracking-tight">{title}</h3>
+                    <button
+                        className="text-[10px] font-bold text-brand-600 hover:text-brand-700 uppercase tracking-widest px-3 py-1 rounded-lg hover:bg-brand-50 transition-colors"
+                        onClick={() => router.push(`/entities/${id}/checklists`)}
+                    >
+                        Ver Histórico Completo →
+                    </button>
                 </div>
             )}
 
             {showFilters && (
-                <div className="p-4 border-b border-border flex items-center gap-4 bg-muted/10">
-                    <input
-                        type="text"
-                        placeholder="Buscar por template..."
-                        className="input-field max-w-xs"
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                    />
-                    <select className="input-field max-w-[150px]" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
-                        <option value="">Todos Status</option>
-                        <option value="COMPLETED">Concluído</option>
-                        <option value="IN_PROGRESS">Em Andamento</option>
-                        <option value="CANCELLED">Cancelado</option>
-                    </select>
+                <div className="p-4 border-b border-slate-100 flex items-center gap-4 bg-slate-50/20">
+                    <div className="relative flex-1 max-w-sm">
+                        <input
+                            type="text"
+                            placeholder="Buscar por template..."
+                            className="bg-white border border-slate-200 rounded-xl px-4 py-2 text-xs w-full focus:outline-none focus:ring-2 focus:ring-brand-500/10 focus:border-brand-500 transition-all"
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                        />
+                    </div>
                 </div>
             )}
 
             {loading ? (
-                <div className="flex items-center gap-3 p-8 text-muted-foreground">
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                    <span className="text-sm">Carregando avaliações...</span>
+                <div className="flex flex-col items-center justify-center p-16 text-slate-400 gap-3">
+                    <Loader2 className="w-6 h-6 animate-spin text-brand-500" />
+                    <span className="text-[10px] font-bold uppercase tracking-widest animate-pulse">Recuperando registros...</span>
                 </div>
             ) : displayed.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-16 text-muted-foreground gap-3">
-                    <ClipboardList className="w-10 h-10 opacity-20" />
-                    <p className="text-sm">Nenhuma avaliação encontrada para esta entidade.</p>
+                <div className="flex flex-col items-center justify-center py-20 text-slate-400 gap-4 bg-slate-50/30">
+                    <div className="w-16 h-16 rounded-2xl bg-white border border-slate-100 flex items-center justify-center shadow-inner">
+                        <ClipboardList className="w-8 h-8 opacity-20" />
+                    </div>
+                    <p className="text-[11px] font-bold uppercase tracking-widest">Nenhuma avaliação registrada</p>
                 </div>
             ) : (
-                <div className="relative">
+                <div className="relative p-6">
                     {/* Vertical Line */}
-                    <div className="absolute left-[21px] top-6 bottom-6 w-px bg-border hidden md:block" />
+                    <div className="absolute left-[47px] top-6 bottom-6 w-px bg-slate-100" />
 
-                    <div className="flex flex-col gap-4">
+                    <div className="flex flex-col gap-6">
                         {displayed.map((item) => (
                             <div
                                 key={item.id}
-                                className="group relative flex items-start gap-4 p-3 md:p-4 rounded-xl hover:bg-muted/30 transition-all cursor-pointer"
+                                className="group relative flex items-start gap-6 cursor-pointer"
                                 onClick={() => router.push(`/checklists/run/${item.id}`)}
                             >
                                 {/* Timeline Dot */}
-                                <div className={`
-                                    relative z-10 w-11 h-11 rounded-full border-4 border-background flex items-center justify-center shrink-0 hidden md:flex
-                                    ${item.status === 'COMPLETED' ? 'bg-emerald-100 text-emerald-600' : 'bg-amber-100 text-amber-600'}
-                                `}>
-                                    {item.status === 'COMPLETED' ? <CheckCircle2 className="w-5 h-5" /> : <Clock className="w-5 h-5" />}
+                                <div className={cn(
+                                    "relative z-10 w-11 h-11 rounded-2xl border border-white shadow-lg flex items-center justify-center shrink-0 transition-transform group-hover:scale-110 group-hover:rotate-3",
+                                    item.status === 'COMPLETED' ? 'bg-emerald-50 text-emerald-600 shadow-emerald-500/10' : 'bg-amber-50 text-amber-600 shadow-amber-500/10'
+                                )}>
+                                    {item.status === 'COMPLETED' ? <CheckCircle2 className="w-5 h-5" strokeWidth={2.5} /> : <Clock className="w-5 h-5" strokeWidth={2.5} />}
                                 </div>
 
-                                <div className="flex-1 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                                    <div className="flex flex-col gap-1">
-                                        <div className="flex items-center gap-2">
-                                            <span className="font-bold text-foreground group-hover:text-primary transition-colors">
-                                                {item.checklistTitle ?? 'Checklist'}
-                                            </span>
-                                            {item.status === 'IN_PROGRESS' && (
-                                                <span className="text-[10px] bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded font-bold uppercase">
-                                                    Em andamento
+                                <div className="flex-1 bg-white border border-slate-100 rounded-2xl p-4 shadow-sm group-hover:shadow-xl group-hover:shadow-slate-200/50 group-hover:border-brand-200 transition-all duration-300">
+                                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                        <div className="flex flex-col gap-1">
+                                            <div className="flex items-center gap-3">
+                                                <span className="text-[13px] font-bold text-slate-900 group-hover:text-brand-700 transition-colors tracking-tight uppercase">
+                                                    {item.checklistTitle ?? 'Protocolo de Verificação'}
                                                 </span>
-                                            )}
+                                                {item.status === 'IN_PROGRESS' && (
+                                                    <span className="text-[9px] bg-amber-50 text-amber-600 border border-amber-100 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider animate-pulse">
+                                                        Em andamento
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1">
+                                                <div className="flex items-center gap-1.5 text-[11px] text-slate-400 font-bold uppercase tracking-widest font-mono">
+                                                    <Clock className="w-3 h-3 opacity-40 text-slate-500" />
+                                                    {item.completedAt ? formatDate(item.completedAt) : item.startedAt ? formatDate(item.startedAt) : '—'}
+                                                </div>
+                                                {item.executedBy && (
+                                                    <div className="flex items-center gap-1.5 text-[11px] text-slate-400 font-bold uppercase tracking-widest">
+                                                        <span className="w-1 h-1 rounded-full bg-slate-300" />
+                                                        <span>CCO: {item.executedByName ?? item.executedBy}</span>
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
-                                        <div className="flex items-center gap-3 text-xs text-muted-foreground font-medium">
-                                            <span>{item.completedAt ? formatDate(item.completedAt) : item.startedAt ? formatDate(item.startedAt) : '—'}</span>
-                                            {item.executedBy && (
-                                                <>
-                                                    <span className="w-1 h-1 rounded-full bg-border" />
-                                                    <span>Executor: {item.executedByName ?? item.executedBy}</span>
-                                                </>
-                                            )}
-                                        </div>
-                                    </div>
 
-                                    <div className="flex items-center gap-4">
-                                        {item.score != null ? (
-                                            <RiskBadge level={(item.riskLevel ?? 'UNKNOWN') as any} score={item.score} size="xs" />
-                                        ) : (
-                                            <span className="text-xs text-muted-foreground">—</span>
-                                        )}
-                                        <ChevronRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-all" />
+                                        <div className="flex items-center gap-4">
+                                            {item.score != null ? (
+                                                <RiskBadge level={(item.riskLevel ?? 'UNKNOWN') as any} score={item.score} size="xs" />
+                                            ) : (
+                                                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest border border-slate-100 px-3 py-1 rounded-lg">Cálculo Pendente</div>
+                                            )}
+                                            <ChevronRight className="w-4 h-4 text-slate-300 translate-x-0 group-hover:translate-x-1 group-hover:text-brand-500 transition-all" />
+                                        </div>
                                     </div>
                                 </div>
                             </div>

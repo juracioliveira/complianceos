@@ -73,10 +73,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 if (res.ok) {
                     const { data } = await res.json()
                     setUser(data)
+                    // Salvar role no cookie para o middleware
+                    if (data.role) {
+                        document.cookie = `user_role=${data.role}; path=/; max-age=86400`
+                    }
                 } else {
                     console.warn('[Auth] Sessão inválida ou expirada')
                     sessionStorage.removeItem('access_token')
                     document.cookie = 'access_token=; path=/; max-age=0'
+                    document.cookie = 'user_role=; path=/; max-age=0'
                 }
             } catch (err: any) {
                 if (err.name === 'AbortError') {
@@ -99,6 +104,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const logout = () => {
         sessionStorage.removeItem('access_token')
         document.cookie = 'access_token=; path=/; max-age=0'
+        document.cookie = 'user_role=; path=/; max-age=0'
         setUser(null)
         router.push('/login')
     }

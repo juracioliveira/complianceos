@@ -19,6 +19,8 @@ const RISK_COLORS: Record<string, string> = {
 
 const MONTH_FORMAT = new Intl.DateTimeFormat('pt-BR', { month: 'short' })
 
+import { cn } from '@/lib/utils'
+
 export default function RiskEvolutionChart({ id }: RiskEvolutionChartProps) {
     const { fetchWithAuth } = useApi()
     const [data, setData] = useState<{ date: string; score: number; riskLevel: string }[]>([])
@@ -30,7 +32,6 @@ export default function RiskEvolutionChart({ id }: RiskEvolutionChartProps) {
         fetchWithAuth(`/v1/entities/${id}/risk-assessments?limit=12`)
             .then((res) => {
                 const assessments: any[] = res?.data ?? []
-                // Sort oldest→newest and map to chart format
                 const sorted = [...assessments].sort(
                     (a, b) => new Date(a.calculatedAt).getTime() - new Date(b.calculatedAt).getTime()
                 )
@@ -53,86 +54,105 @@ export default function RiskEvolutionChart({ id }: RiskEvolutionChartProps) {
 
     if (loading) {
         return (
-            <div className="card p-6 flex items-center gap-3 text-muted-foreground h-[400px]">
-                <Loader2 className="w-5 h-5 animate-spin" />
-                <span className="text-sm">Carregando histórico de risco...</span>
+            <div className="card p-12 flex flex-col items-center justify-center gap-4 text-slate-400 min-h-[400px] bg-slate-50/20">
+                <Loader2 className="w-8 h-8 animate-spin text-brand-600" />
+                <span className="text-[10px] font-bold uppercase tracking-widest animate-pulse">Processando séries temporais...</span>
             </div>
         )
     }
 
     if (data.length === 0) {
         return (
-            <div className="card p-6 flex flex-col items-center justify-center text-muted-foreground h-[300px] gap-3">
-                <Minus className="w-8 h-8 opacity-20" />
-                <p className="text-sm">Nenhuma avaliação de risco registrada ainda.</p>
+            <div className="card p-12 flex flex-col items-center justify-center text-slate-400 min-h-[300px] gap-4 bg-slate-50/20">
+                <div className="w-16 h-16 rounded-2xl bg-white border border-slate-100 flex items-center justify-center shadow-inner">
+                    <Minus className="w-8 h-8 opacity-20" />
+                </div>
+                <p className="text-[11px] font-bold uppercase tracking-widest">Sem histórico de variação</p>
             </div>
         )
     }
 
     return (
-        <div className="card p-6 flex flex-col gap-6">
-            <div className="flex items-center justify-between">
-                <div className="flex flex-col gap-1">
-                    <h3 className="font-bold text-lg">Evolução de Risco</h3>
-                    <p className="text-sm text-muted-foreground">Variação do score nos últimos {data.length} meses</p>
+        <div className="card p-8 border-slate-200/60 shadow-xl bg-white relative overflow-hidden group">
+            {/* Background Grid Accent */}
+            <div className="absolute inset-0 opacity-[0.02] pointer-events-none bg-grid" />
+
+            <div className="relative z-10 flex flex-col gap-8">
+                <div className="flex items-center justify-between">
+                    <div>
+                        <h3 className="font-display text-2xl text-slate-900 tracking-tight">Evolução de <span className="text-brand-600">Conformidade</span></h3>
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Série histórica de exposição ao risco (12 meses)</p>
+                    </div>
                 </div>
-            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-2">
-                <SummaryItem label="Score Inicial" value={first != null ? `${first} pts` : '—'} sub={data[0]?.riskLevel ?? '—'} />
-                <SummaryItem label="Score Máximo" value={max != null ? `${max} pts` : '—'} sub="Pior ponto" variant={max != null && max >= 70 ? 'destructive' : undefined} />
-                <SummaryItem
-                    label="Tendência"
-                    value={trend != null ? `${trend > 0 ? '+' : ''}${trend} pts` : '—'}
-                    sub={trend != null ? (trend > 0 ? 'Crescente ↑' : trend < 0 ? 'Redução ↓' : 'Estável') : '—'}
-                    icon={trend != null && trend > 5 ? <TrendingUp className="w-4 h-4 text-red-500" /> : trend != null && trend < -5 ? <TrendingDown className="w-4 h-4 text-emerald-500" /> : <Minus className="w-4 h-4 text-muted-foreground" />}
-                />
-            </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                    <SummaryItem label="Abertura" value={first != null ? `${first}` : '—'} sub={data[0]?.riskLevel ?? '—'} />
+                    <SummaryItem
+                        label="Pico de Exposição"
+                        value={max != null ? `${max}` : '—'}
+                        sub="Maior Score"
+                        variant={max != null && max >= 70 ? 'destructive' : undefined}
+                    />
+                    <SummaryItem
+                        label="Volatilidade"
+                        value={trend != null ? `${trend > 0 ? '+' : ''}${trend}` : '—'}
+                        sub={trend != null ? (trend > 0 ? 'Exposição ↑' : trend < 0 ? 'Melhoria ↓' : 'Inalterado') : '—'}
+                        icon={trend != null && trend > 5 ? <TrendingUp className="w-4 h-4 text-red-500" /> : trend != null && trend < -5 ? <TrendingDown className="w-4 h-4 text-emerald-500" /> : <Minus className="w-4 h-4 text-slate-400" />}
+                    />
+                </div>
 
-            <div className="h-[280px] w-full mt-2">
-                <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={data}>
-                        <defs>
-                            <linearGradient id="colorScore" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.1} />
-                                <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
-                            </linearGradient>
-                        </defs>
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" opacity={0.5} />
-                        <XAxis
-                            dataKey="date"
-                            axisLine={false}
-                            tickLine={false}
-                            tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))', fontWeight: 500 }}
-                            dy={10}
-                        />
-                        <YAxis hide domain={[0, 100]} />
-                        <Tooltip
-                            content={({ active, payload }) => {
-                                if (active && payload?.length) {
-                                    const d = payload[0]?.payload
-                                    return (
-                                        <div className="bg-popover border border-border p-3 rounded-lg shadow-xl">
-                                            <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1">{d?.date}</p>
-                                            <p className="text-xl font-bold text-foreground">{d?.score} <span className="text-xs font-medium text-muted-foreground">pts</span></p>
-                                            <p className="text-xs font-bold mt-1" style={{ color: RISK_COLORS[d?.riskLevel] ?? '#94A3B8' }}>{d?.riskLevel}</p>
-                                        </div>
-                                    )
-                                }
-                                return null
-                            }}
-                        />
-                        <Area
-                            type="monotone"
-                            dataKey="score"
-                            stroke="hsl(var(--primary))"
-                            strokeWidth={3}
-                            fillOpacity={1}
-                            fill="url(#colorScore)"
-                            animationDuration={1500}
-                        />
-                    </AreaChart>
-                </ResponsiveContainer>
+                <div className="h-[280px] w-full mt-4 -ml-4">
+                    <ResponsiveContainer width="100%" height="100%">
+                        <AreaChart data={data} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
+                            <defs>
+                                <linearGradient id="colorScore" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="5%" stopColor="#0F172A" stopOpacity={0.08} />
+                                    <stop offset="95%" stopColor="#0F172A" stopOpacity={0} />
+                                </linearGradient>
+                            </defs>
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F1F5F9" />
+                            <XAxis
+                                dataKey="date"
+                                axisLine={false}
+                                tickLine={false}
+                                tick={{ fontSize: 10, fill: '#94A3B8', fontWeight: 700 }}
+                                dy={15}
+                            />
+                            <YAxis hide domain={[0, 100]} />
+                            <Tooltip
+                                content={({ active, payload }) => {
+                                    if (active && payload?.length) {
+                                        const d = payload[0]?.payload
+                                        return (
+                                            <div className="bg-white/95 backdrop-blur-md border border-slate-200 p-4 rounded-xl shadow-2xl">
+                                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 border-b border-slate-50 pb-2">{d?.date}</p>
+                                                <div className="flex items-center gap-3">
+                                                    <span className="text-3xl font-display text-slate-900">{d?.score}</span>
+                                                    <div>
+                                                        <p className="text-[10px] font-bold uppercase tracking-widest leading-tight" style={{ color: RISK_COLORS[d?.riskLevel] ?? '#94A3B8' }}>{d?.riskLevel}</p>
+                                                        <p className="text-[9px] text-slate-400 font-bold uppercase tracking-tighter">Índice Geral</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )
+                                    }
+                                    return null
+                                }}
+                            />
+                            <Area
+                                type="monotone"
+                                dataKey="score"
+                                stroke="#0F172A"
+                                strokeWidth={4}
+                                fillOpacity={1}
+                                fill="url(#colorScore)"
+                                animationDuration={2000}
+                                dot={{ fill: '#0F172A', strokeWidth: 2, r: 4, stroke: '#fff' }}
+                                activeDot={{ r: 6, strokeWidth: 0, fill: '#0055FF' }}
+                            />
+                        </AreaChart>
+                    </ResponsiveContainer>
+                </div>
             </div>
         </div>
     )
@@ -142,13 +162,16 @@ function SummaryItem({ label, value, sub, icon, variant }: {
     label: string; value: string; sub: string; icon?: React.ReactNode; variant?: 'destructive' | undefined
 }) {
     return (
-        <div className="p-4 rounded-xl border border-border/50 bg-muted/10">
-            <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1">{label}</p>
-            <div className="flex items-center gap-2">
-                <span className={`text-xl font-bold ${variant === 'destructive' ? 'text-red-600 dark:text-red-400' : 'text-foreground'}`}>{value}</span>
+        <div className="p-5 rounded-2xl border border-slate-200/60 bg-slate-50/50 shadow-inner group/item hover:bg-white hover:shadow-xl transition-all duration-500">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2">{label}</p>
+            <div className="flex items-end gap-2">
+                <span className={cn(
+                    "text-3xl font-display leading-none",
+                    variant === 'destructive' ? 'text-red-600' : 'text-slate-900'
+                )}>{value}</span>
                 {icon}
             </div>
-            <p className="text-xs font-medium text-muted-foreground mt-0.5">{sub}</p>
+            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-2">{sub}</p>
         </div>
     )
 }

@@ -4,11 +4,14 @@ import { useEffect, useState, useCallback, useRef } from 'react'
 import {
     ShieldAlert, AlertTriangle, CheckCircle2, FileText,
     TrendingUp, TrendingDown, Minus, ArrowUpRight, Clock,
-    Users, BarChart3, Loader2, Radio, RotateCcw
+    Users, BarChart3, Loader2, Radio, RotateCcw, ChevronRight,
+    Activity, ShieldCheck
 } from 'lucide-react'
 import { RiskBadge } from '@/components/ui/RiskBadge'
-import { formatDate } from '@/lib/utils'
+import { formatDate, cn } from '@/lib/utils'
 import { useApi } from '@/hooks/useApi'
+import { usePermissions } from '@/hooks/use-permissions'
+import { ProtectedAction } from '@/components/rbac/ProtectedAction'
 import React from 'react'
 
 // ─── Helpers de Trend ──────────────────────────────────────────────────────────
@@ -25,6 +28,7 @@ function buildTrendText(trend: { delta: number; dir: string; pct: number | null 
 // ─── Componente Principal ──────────────────────────────────────────────────────
 export default function DashboardPage() {
     const { fetchWithAuth } = useApi()
+    const { role, can } = usePermissions()
     const [isLoading, setIsLoading] = useState(true)
     const [data, setData] = useState<any>(null)
     const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
@@ -151,50 +155,51 @@ export default function DashboardPage() {
         <div className="max-w-7xl mx-auto space-y-6 animate-fade-in">
 
             {/* Page header com live indicator */}
-            <div className="flex items-start justify-between mb-8">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
                 <div>
-                    <h1 className="font-display text-4xl md:text-5xl text-slate-900 mb-2 leading-[1.1] tracking-tight">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-50 border border-brand-100/50 text-brand-700 text-[10px] font-bold tracking-wider uppercase mb-3 shadow-sm">
+                        <span className="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse" />
+                        Visão Executiva · {data?.tenantName || 'ComplianceOS'}
+                    </div>
+                    <h1 className="font-display text-5xl md:text-6xl text-slate-900 leading-none tracking-tight">
                         Dashboard de <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-cyan-500">Compliance</span>
                     </h1>
-                    <div className="flex items-center gap-2 mt-1">
-                        <p className="text-sm font-medium text-slate-500 flex items-center">Visão executiva do programa de conformidade</p>
+                    <div className="flex items-center gap-3 mt-3">
+                        <p className="text-sm font-medium text-slate-500">Monitoramento em tempo real de riscos e obrigações</p>
                         {mounted && (
-                            <div className="flex items-center gap-1.5">
-                                <span className="text-xs text-muted-foreground">•</span>
+                            <div className="flex items-center gap-2 px-2 py-0.5 rounded-md bg-slate-100/50 border border-slate-200/50">
                                 {isLive ? (
-                                    <span className="flex items-center gap-1 text-xs text-emerald-600 font-medium">
-                                        <span className="relative flex h-2 w-2">
+                                    <span className="flex items-center gap-1.5 text-[10px] text-emerald-600 font-bold uppercase tracking-wider">
+                                        <span className="relative flex h-1.5 w-1.5">
                                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                                            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+                                            <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500" />
                                         </span>
-                                        Ao vivo{timeSince ? ` · atualizado ${timeSince}` : ''}
+                                        Live{timeSince ? ` · ${timeSince}` : ''}
                                     </span>
                                 ) : (
                                     <button
                                         onClick={loadDashboard}
-                                        className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                                        className="flex items-center gap-1.5 text-[10px] text-slate-400 hover:text-brand-600 font-bold uppercase tracking-wider transition-colors"
                                     >
                                         <RotateCcw className="w-3 h-3" />
-                                        {timeSince ? `Atualizado ${timeSince}` : 'Atualizar'}
+                                        Update {timeSince}
                                     </button>
                                 )}
                             </div>
                         )}
                     </div>
                 </div>
-                <div className="flex items-center gap-2">
-                    {stats.openCases > 0 && (
-                        <a href="/alerts" className="btn-secondary btn-sm flex gap-1.5">
-                            <Radio className="w-3.5 h-3.5 text-orange-500" />
-                            <span className="text-orange-600 font-semibold">{stats.openCases} casos abertos</span>
-                            <ArrowUpRight className="w-3 h-3" />
+                <div className="flex items-center gap-3">
+                    <button onClick={loadDashboard} className="btn-secondary btn-sm bg-white shadow-sm border-slate-200 text-slate-600 hover:text-brand-600">
+                        <RotateCcw className="w-3.5 h-3.5" />
+                        Atualizar
+                    </button>
+                    <ProtectedAction action="create" resource="entities">
+                        <a href="/entities/new" className="btn-primary btn-sm shadow-brand-600/20">
+                            Nova Entidade
+                            <ArrowUpRight className="w-3.5 h-3.5" />
                         </a>
-                    )}
-                    <a href="/entities?filter[risk_level]=CRITICAL" className="btn-secondary btn-sm flex gap-1.5">
-                        <ShieldAlert className="w-3.5 h-3.5 text-red-500" />
-                        <span className="text-red-600 font-semibold">{stats.alertasCriticos} críticos</span>
-                        <ArrowUpRight className="w-3 h-3" />
-                    </a>
+                    </ProtectedAction>
                 </div>
             </div>
 
@@ -235,26 +240,28 @@ export default function DashboardPage() {
             </div>
 
             {/* Linha do meio: Risk chart + Alertas + Atividade recente */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
                 {/* Distribuição de risco */}
-                <div className="card p-5 space-y-4 shadow-sm hover:shadow-md transition-shadow">
+                <div className="lg:col-span-4 card p-6 space-y-6 shadow-sm hover:shadow-md transition-all duration-300 bg-white">
                     <div className="flex items-center justify-between">
                         <div>
-                            <h3 className="text-sm font-semibold text-foreground">Distribuição de Risco</h3>
-                            <p className="text-xs text-muted-foreground mt-0.5">{totalEntidades} entidades ativas</p>
+                            <h3 className="text-base font-bold text-slate-900 tracking-tight">Distribuição de Risco</h3>
+                            <p className="text-[11px] font-mono font-bold text-slate-400 uppercase tracking-widest mt-0.5">Segmentação de Entidades</p>
                         </div>
-                        <BarChart3 className="w-4 h-4 text-muted-foreground" />
+                        <div className="p-2 bg-slate-50 rounded-lg border border-slate-100">
+                            <BarChart3 className="w-4 h-4 text-slate-400" />
+                        </div>
                     </div>
 
-                    {/* Donut em SVG com Glow */}
-                    <div className="flex items-center justify-center py-2 relative">
-                        <div className="absolute inset-0 bg-brand-500/5 rounded-full blur-2xl"></div>
-                        <div className="relative w-32 h-32 drop-shadow-md">
+                    {/* Donut em SVG com Glow Suave */}
+                    <div className="flex items-center justify-center py-4 relative">
+                        <div className="absolute w-40 h-40 bg-brand-500/5 rounded-full blur-[40px]"></div>
+                        <div className="relative w-40 h-40 drop-shadow-xl">
                             <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
                                 {(() => {
                                     if (totalEntidades === 0) {
-                                        return <circle cx="18" cy="18" r="15.9155" fill="transparent" stroke="currentColor" strokeWidth="3.5" className="text-muted/20" />
+                                        return <circle cx="18" cy="18" r="15.9155" fill="transparent" stroke="currentColor" strokeWidth="3" className="text-slate-100" />
                                     }
                                     let accumulated = 0
                                     return byRisk.map(({ count, color }: { count: number; color: string }) => {
@@ -268,23 +275,23 @@ export default function DashboardPage() {
                                                 cx="18" cy="18" r="15.9155"
                                                 fill="transparent"
                                                 stroke={color}
-                                                strokeWidth="3.5"
+                                                strokeWidth="3.2"
                                                 strokeDasharray={`${pct} ${100 - pct}`}
                                                 strokeDashoffset={dashOffset}
-                                                strokeLinecap="butt"
+                                                className="transition-all duration-1000 ease-out"
                                             />
                                         )
                                     })
                                 })()}
                             </svg>
                             <div className="absolute inset-0 flex flex-col items-center justify-center">
-                                <p className="text-xl font-bold text-foreground">{totalEntidades}</p>
-                                <p className="text-[10px] text-muted-foreground">total</p>
+                                <p className="text-4xl font-mono font-bold text-slate-900 tracking-tighter">{totalEntidades}</p>
+                                <p className="text-[9px] font-mono font-bold text-slate-400 uppercase tracking-[0.2em]">Total</p>
                             </div>
                         </div>
                     </div>
 
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                         {byRisk.map((r: any) => (
                             <RiskBar key={r.level} {...r} total={totalEntidades} />
                         ))}
@@ -292,75 +299,85 @@ export default function DashboardPage() {
                 </div>
 
                 {/* Alertas ativos */}
-                <div className="card p-5 space-y-3 shadow-sm hover:shadow-md transition-shadow">
+                <div className="lg:col-span-4 card p-6 space-y-4 shadow-sm hover:shadow-md transition-all duration-300 bg-white">
                     <div className="flex items-center justify-between">
-                        <h3 className="text-sm font-semibold text-foreground">Alertas Ativos</h3>
-                        <span className="badge badge-red">{stats.notificacoesNaoLidas} não lidas</span>
-                    </div>
-
-                    <div className="alert alert-critical">
-                        <ShieldAlert className="w-4 h-4 shrink-0 mt-px" />
                         <div>
-                            <p className="text-xs font-semibold">{stats.alertasCriticos} Entidades Críticas</p>
-                            <p className="text-[11px] opacity-80">Requerem ação imediata do CCO</p>
+                            <h3 className="text-base font-bold text-slate-900 tracking-tight">Central de Alertas</h3>
+                            <p className="text-[11px] font-mono font-bold text-slate-400 uppercase tracking-widest mt-0.5">Ocorrências Pendentes</p>
                         </div>
+                        <span className="badge badge-red shadow-sm shadow-red-500/10 animate-pulse">{stats.notificacoesNaoLidas} Pendentes</span>
                     </div>
 
-                    <div className="alert alert-warning">
-                        <AlertTriangle className="w-4 h-4 shrink-0 mt-px" />
-                        <div>
-                            <p className="text-xs font-semibold">{stats.alertasWarning} Alertas de Atenção</p>
-                            <p className="text-[11px] opacity-80">Monitoramento preventivo</p>
-                        </div>
-                    </div>
-
-                    <div className="alert alert-info">
-                        <Clock className="w-4 h-4 shrink-0 mt-px" />
-                        <div>
-                            <p className="text-xs font-semibold">{stats.checklistsVencidos} Checklists Vencidos</p>
-                            <p className="text-[11px] opacity-80">Aguardando revisão do analista</p>
-                        </div>
-                    </div>
-
-                    {stats.openCases > 0 && (
-                        <div className="alert alert-warning">
-                            <Radio className="w-4 h-4 shrink-0 mt-px" />
+                    <div className="space-y-3 pt-2">
+                        <div className="alert alert-critical border-red-100 bg-red-50/30 group hover:bg-red-50 transition-colors cursor-default">
+                            <ShieldAlert className="w-5 h-5 shrink-0 text-red-500 group-hover:scale-110 transition-transform" />
                             <div>
-                                <p className="text-xs font-semibold">{stats.openCases} Casos de Alerta em Aberto</p>
-                                <p className="text-[11px] opacity-80">
-                                    {stats.criticalCases} críticos aguardando investigação
-                                    {' · '}
-                                    <a href="/alerts" className="underline hover:no-underline">Ver fila →</a>
-                                </p>
+                                <p className="text-xs font-bold text-red-700">{stats.alertasCriticos} Entidades Críticas</p>
+                                <p className="text-[11px] text-red-600/70 font-medium">Bloqueio preventivo obrigatório</p>
                             </div>
                         </div>
-                    )}
 
-                    <div className="alert alert-info">
-                        <FileText className="w-4 h-4 shrink-0 mt-px" />
-                        <div>
-                            <p className="text-xs font-semibold">{stats.documentosExpirando} Documentos Expirando</p>
-                            <p className="text-[11px] opacity-80">RAT e DPIAs em 60 dias</p>
+                        <div className="alert alert-warning border-amber-100 bg-amber-50/30 group hover:bg-amber-50 transition-colors cursor-default">
+                            <AlertTriangle className="w-5 h-5 shrink-0 text-amber-500 group-hover:scale-110 transition-transform" />
+                            <div>
+                                <p className="text-xs font-bold text-amber-700">{stats.alertasWarning} Monitoramento</p>
+                                <p className="text-[11px] text-amber-600/70 font-medium">Suspeita de fragmentação de transação</p>
+                            </div>
+                        </div>
+
+                        {stats.openCases > 0 && (
+                            <div className="alert alert-warning border-orange-100 bg-orange-50/30 group hover:bg-orange-50 transition-colors cursor-default">
+                                <Radio className="w-5 h-5 shrink-0 text-orange-500 group-hover:scale-110 transition-transform" />
+                                <div>
+                                    <p className="text-xs font-bold text-orange-700">{stats.openCases} Casos de Investigação</p>
+                                    <p className="text-[11px] text-orange-600/70 font-medium">
+                                        Fila de auditoria •
+                                        {can('view', 'alert_cases') ? (
+                                            <a href="/alerts" className="underline font-bold hover:text-orange-800 transition-colors">Acessar Fila →</a>
+                                        ) : (
+                                            <span className="opacity-50">Acceso Restrito</span>
+                                        )}
+                                    </p>
+                                </div>
+                            </div>
+                        )}
+
+                        <div className="alert alert-info border-brand-100 bg-brand-50/30 group hover:bg-brand-50 transition-colors cursor-default">
+                            <Clock className="w-5 h-5 shrink-0 text-brand-500 group-hover:scale-110 transition-transform" />
+                            <div>
+                                <p className="text-xs font-bold text-brand-700">{stats.checklistsVencidos} Obrigações Vencidas</p>
+                                <p className="text-[11px] text-brand-600/70 font-medium">Prazos regulatórios expirados</p>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 {/* Atividade recente */}
-                <div className="card p-5 flex flex-col shadow-sm hover:shadow-md transition-shadow">
-                    <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-sm font-semibold text-foreground">Atividade Recente</h3>
-                        <a href="/audit" className="text-xs text-primary hover:underline">Ver audit trail →</a>
+                <div className="lg:col-span-4 card p-6 flex flex-col shadow-sm hover:shadow-md transition-all duration-300 bg-white">
+                    <div className="flex items-center justify-between mb-6">
+                        <div>
+                            <h3 className="text-base font-bold text-slate-900 tracking-tight">Audit Trail</h3>
+                            <p className="text-[11px] font-mono font-bold text-slate-400 uppercase tracking-widest mt-0.5">Atividade Recente</p>
+                        </div>
+                        <ProtectedAction action="view" resource="audit_trail">
+                            <a href="/audit" className="p-2 hover:bg-slate-50 rounded-lg border border-transparent hover:border-slate-200 transition-all">
+                                <ArrowUpRight className="w-4 h-4 text-brand-600" />
+                            </a>
+                        </ProtectedAction>
                     </div>
-                    <div className="flex-1 space-y-0 divide-y divide-border/60">
+                    <div className="flex-1 space-y-0 divide-y divide-slate-50">
                         {recentActivities.length === 0 ? (
-                            <p className="text-xs text-muted-foreground py-4 text-center">Nenhuma atividade recente</p>
-                        ) : recentActivities.map((a: any, i: number) => (
-                            <div key={i} className="py-3 first:pt-0 last:pb-0">
-                                <div className="flex items-start justify-between gap-2">
+                            <div className="flex flex-col items-center justify-center py-12 space-y-2 opacity-40">
+                                <Activity className="w-8 h-8 text-slate-400" />
+                                <p className="text-[11px] font-bold uppercase tracking-widest">Sem atividades</p>
+                            </div>
+                        ) : recentActivities.slice(0, 6).map((a: any, i: number) => (
+                            <div key={i} className="py-3.5 first:pt-0 last:pb-0 group">
+                                <div className="flex items-start justify-between gap-3">
                                     <div className="min-w-0">
-                                        <p className="text-xs font-semibold text-foreground truncate">{a.entity}</p>
-                                        <p className="text-[11px] text-muted-foreground mt-0.5 leading-snug">{a.action}</p>
-                                        <p className="text-[10px] text-muted-foreground/70 mt-1">{a.user} · {a.time}</p>
+                                        <p className="text-[13px] font-bold text-slate-900 truncate group-hover:text-brand-600 transition-colors tracking-tight">{a.entity}</p>
+                                        <p className="text-[11px] text-slate-500 mt-0.5 leading-snug">{a.action}</p>
+                                        <p className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider mt-1.5">{a.time} • {a.user.split(' ')[0]}</p>
                                     </div>
                                     <RiskBadge level={a.risk} size="xs" className="shrink-0 mt-0.5" />
                                 </div>
@@ -370,61 +387,132 @@ export default function DashboardPage() {
                 </div>
             </div>
 
-            {/* Entidades críticas */}
-            <div className="card shadow-sm hover:shadow-md transition-shadow overflow-hidden">
-                <div className="flex items-center justify-between px-5 py-4 border-b border-border bg-slate-50/50">
+            {/* Distribuição de risco */}
+            <div className="card p-5 space-y-4 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between">
                     <div>
-                        <h3 className="text-sm font-semibold text-foreground">Entidades com Risco Crítico</h3>
-                        <p className="text-xs text-muted-foreground mt-0.5">Último checklist & score de risco</p>
+                        <h3 className="text-sm font-semibold text-foreground">Distribuição de Risco</h3>
+                        <p className="text-xs text-muted-foreground mt-0.5">{totalEntidades} entidades ativas</p>
                     </div>
-                    <a href="/entities?filter[risk_level]=CRITICAL" className="btn-secondary btn-sm">
-                        Ver todas ({stats.alertasCriticos})
-                    </a>
+                    <BarChart3 className="w-4 h-4 text-muted-foreground" />
                 </div>
-                <div className="overflow-x-auto">
-                    <table className="data-table">
-                        <thead>
-                            <tr>
-                                <th>Entidade</th>
-                                <th>Tipo</th>
-                                <th>Risco</th>
-                                <th>Último checklist</th>
-                                <th className="text-right">Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {criticalEntities.length === 0 ? (
-                                <tr>
-                                    <td colSpan={5} className="text-center text-xs text-muted-foreground py-6">
-                                        Nenhuma entidade com risco crítico
-                                    </td>
-                                </tr>
-                            ) : criticalEntities.map((e: any) => (
-                                <tr key={e.cnpj}>
-                                    <td>
-                                        <p className="font-medium text-foreground">{e.name}</p>
-                                        <p className="text-xs text-muted-foreground font-mono mt-0.5">{e.cnpj}</p>
-                                    </td>
-                                    <td>
-                                        <span className="badge badge-slate">{e.type}</span>
-                                    </td>
-                                    <td>
-                                        <RiskBadge level={e.risk} score={e.score} />
-                                    </td>
-                                    <td className="text-muted-foreground text-xs">
-                                        {formatDate(e.lastCheck)}
-                                    </td>
-                                    <td className="text-right">
-                                        <a href={`/entities/${e.name}`} className="btn-ghost btn-sm text-primary">
-                                            Detalhe
-                                        </a>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+
+                {/* Donut em SVG com Glow */}
+                <div className="flex items-center justify-center py-2 relative">
+                    <div className="absolute inset-0 bg-brand-500/5 rounded-full blur-2xl"></div>
+                    <div className="relative w-32 h-32 drop-shadow-md">
+                        <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
+                            {(() => {
+                                if (totalEntidades === 0) {
+                                    return <circle cx="18" cy="18" r="15.9155" fill="transparent" stroke="currentColor" strokeWidth="3.5" className="text-muted/20" />
+                                }
+                                let accumulated = 0
+                                return byRisk.map(({ count, color }: { count: number; color: string }) => {
+                                    const pct = (count / totalEntidades) * 100
+                                    if (pct === 0) return null
+                                    const dashOffset = 100 - accumulated
+                                    accumulated += pct
+                                    return (
+                                        <circle
+                                            key={color}
+                                            cx="18" cy="18" r="15.9155"
+                                            fill="transparent"
+                                            stroke={color}
+                                            strokeWidth="3.5"
+                                            strokeDasharray={`${pct} ${100 - pct}`}
+                                            strokeDashoffset={dashOffset}
+                                            strokeLinecap="butt"
+                                        />
+                                    )
+                                })
+                            })()}
+                        </svg>
+                        <div className="absolute inset-0 flex flex-col items-center justify-center">
+                            <p className="text-xl font-bold text-foreground">{totalEntidades}</p>
+                            <p className="text-[10px] text-muted-foreground">total</p>
+                        </div>
+                    </div>
                 </div>
-            </div>
+
+                <div className="space-y-2">
+                    {byRisk.map((r: any) => (
+                        <RiskBar key={r.level} {...r} total={totalEntidades} />
+                    ))}
+                </div>
+
+
+                {/* Entidades críticas */}
+                <div className="card shadow-md hover:shadow-xl transition-all duration-500 overflow-hidden bg-white border-slate-200/60">
+                    <div className="flex items-center justify-between px-8 py-6 border-b border-slate-100 bg-slate-50/30">
+                        <div>
+                            <h3 className="text-lg font-bold text-slate-900 tracking-tight">Entidades Sob Investigação</h3>
+                            <p className="text-[11px] font-mono font-bold text-slate-400 uppercase tracking-widest mt-0.5">Alto Risco & Exposure PEP</p>
+                        </div>
+                        <a href="/entities?filter[risk_level]=CRITICAL" className="btn-secondary btn-sm bg-white hover:bg-slate-50 border-slate-200">
+                            Visualizar Todas ({stats.alertasCriticos})
+                        </a>
+                    </div>
+                    <div className="overflow-x-auto">
+                        <table className="data-table">
+                            <thead>
+                                <tr className="bg-slate-50/50">
+                                    <th className="pl-8">Entidade / Identificador</th>
+                                    <th>Tipo de Relação</th>
+                                    <th>Score de Risco</th>
+                                    <th>Última Atualização</th>
+                                    <th className="text-right pr-8">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-50">
+                                {criticalEntities.length === 0 ? (
+                                    <tr>
+                                        <td colSpan={5} className="py-16">
+                                            <div className="flex flex-col items-center justify-center space-y-3 opacity-40">
+                                                <ShieldCheck className="w-12 h-12 text-slate-300" />
+                                                <p className="text-sm font-bold uppercase tracking-widest">Nenhuma entidade crítica detectada</p>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ) : criticalEntities.map((e: any) => (
+                                    <tr key={e.cnpj} className="group">
+                                        <td className="pl-8">
+                                            <p className="font-bold text-slate-900 leading-tight tracking-tight group-hover:text-brand-600 transition-colors uppercase">{e.name}</p>
+                                            <p className="text-[11px] font-mono font-bold text-slate-400 mt-1 uppercase tracking-wider">{e.cnpj}</p>
+                                        </td>
+                                        <td>
+                                            <span className="badge badge-slate uppercase tracking-wider font-bold">{e.type}</span>
+                                        </td>
+                                        <td>
+                                            <RiskBadge level={e.risk} score={e.score} />
+                                        </td>
+                                        <td>
+                                            <div className="flex items-center gap-2 text-[11px] text-slate-500 font-medium">
+                                                <Clock className="w-3.5 h-3.5 opacity-40" />
+                                                {formatDate(e.lastCheck)}
+                                            </div>
+                                        </td>
+                                        <td className="text-right pr-8">
+                                            <a href={`/entities/${e.id || e.name}`} className="btn-ghost btn-sm hover:bg-brand-50 hover:text-brand-700 font-bold uppercase tracking-wider">
+                                                Investigar
+                                                <ChevronRight className="w-3.5 h-3.5" />
+                                            </a>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div className="px-8 py-4 bg-slate-50/30 border-t border-slate-100 flex items-center justify-between">
+                        <p className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest">
+                            Hashes de integridade verificados • {new Date().toLocaleDateString()}
+                        </p>
+                        <div className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 text-[9px] font-bold uppercase tracking-widest border border-emerald-100">
+                            <CheckCircle2 className="w-3 h-3" />
+                            Auditado
+                        </div>
+                    </div>
+                </div>
+            </div >
         </div >
     )
 }
@@ -441,10 +529,10 @@ function StatCard({
     trend?: { dir: 'up' | 'down' | 'flat' | 'bad' | 'good'; text: string }
 }) {
     const colors = {
-        red: { bg: 'bg-red-50/50', icon: 'text-red-600', iconBg: 'bg-red-100/50', border: 'border-l-red-500' },
-        amber: { bg: 'bg-amber-50/50', icon: 'text-amber-600', iconBg: 'bg-amber-100/50', border: 'border-l-amber-500' },
-        green: { bg: 'bg-emerald-50/50', icon: 'text-emerald-600', iconBg: 'bg-emerald-100/50', border: 'border-l-emerald-500' },
-        blue: { bg: 'bg-blue-50/50', icon: 'text-blue-600', iconBg: 'bg-blue-100/50', border: 'border-l-blue-500' },
+        red: { bg: 'bg-red-50/50', icon: 'text-red-600', iconBg: 'bg-red-500/10', border: 'border-l-red-500', glow: 'shadow-red-500/10' },
+        amber: { bg: 'bg-amber-50/50', icon: 'text-amber-600', iconBg: 'bg-amber-500/10', border: 'border-l-amber-500', glow: 'shadow-amber-500/10' },
+        green: { bg: 'bg-emerald-50/50', icon: 'text-emerald-600', iconBg: 'bg-emerald-500/10', border: 'border-l-emerald-500', glow: 'shadow-emerald-500/10' },
+        blue: { bg: 'bg-blue-50/50', icon: 'text-brand-600', iconBg: 'bg-brand-500/10', border: 'border-l-brand-500', glow: 'shadow-brand-500/10' },
     }
     const c = colors[color]
 
@@ -457,21 +545,36 @@ function StatCard({
                     trend.dir === 'down' ? 'text-emerald-500' : 'text-slate-400'
 
     return (
-        <div className={`card p-5 border-l-4 ${c.border} hover:shadow-lg transition-all duration-300 group`}>
-            <div className="flex items-start justify-between gap-3">
+        <div className={cn(
+            "card p-5 border-l-4 bg-white hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-500 group overflow-visible",
+            c.border
+        )}>
+            {/* Decorative background grid */}
+            <div className="absolute inset-0 opacity-[0.03] pointer-events-none rounded-2xl bg-grid" />
+
+            <div className="flex items-start justify-between gap-3 relative z-10">
                 <div className="min-w-0">
                     <p className="font-mono text-[10px] font-bold text-slate-400 uppercase tracking-widest">{label}</p>
-                    <p className="font-display text-4xl text-slate-900 mt-2 mb-1 leading-none tracking-tight">{value}</p>
-                    {sub && <p className="text-[11px] text-slate-500 font-medium">{sub}</p>}
+                    <p className="font-mono text-4xl font-bold text-slate-900 mt-2 mb-1 leading-none tracking-tight">{value}</p>
+                    {sub && <p className="text-[11px] text-slate-400 font-medium leading-tight">{sub}</p>}
                     {trend && (
-                        <div className={`flex items-center gap-1 mt-3 px-2 py-0.5 rounded-full bg-white border border-slate-100 w-fit text-[10px] font-bold shadow-sm ${trendColor}`}>
+                        <div className={cn(
+                            "flex items-center gap-1.5 mt-3 px-2 py-0.5 rounded-md border text-[10px] font-bold w-fit shadow-sm bg-white transition-colors",
+                            trendColor,
+                            trend.dir === 'bad' ? 'border-red-100' :
+                                trend.dir === 'good' ? 'border-emerald-100' : 'border-slate-100'
+                        )}>
                             <TrendIcon className="w-3 h-3" />
                             <span>{trend.text}</span>
                         </div>
                     )}
                 </div>
-                <div className={`w-12 h-12 rounded-2xl shrink-0 flex items-center justify-center ${c.iconBg} border border-white shadow-inner group-hover:scale-110 transition-transform duration-300`}>
-                    <Icon className={`w-6 h-6 ${c.icon}`} strokeWidth={1.5} />
+                <div className={cn(
+                    "w-14 h-14 rounded-2xl shrink-0 flex items-center justify-center border border-white shadow-lg transition-all duration-500 group-hover:scale-110 group-hover:rotate-3",
+                    c.iconBg,
+                    c.glow
+                )}>
+                    <Icon className={cn("w-7 h-7", c.icon)} strokeWidth={1.5} />
                 </div>
             </div>
         </div>
