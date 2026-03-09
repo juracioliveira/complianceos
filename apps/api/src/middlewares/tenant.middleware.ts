@@ -24,10 +24,13 @@ export async function tenantMiddleware(
     // Isso garante que QUALQUER código chamado nesta request tenha acesso ao tenant_id
     // sem precisar passá-lo manualmente por todos os métodos.
     return new Promise((resolve, reject) => {
-        dbContext.run({ tenantId }, async () => {
+        dbContext.run({ tenantId, db: undefined }, async () => {
             try {
                 // 2. Adquirir conexão do pool para configurar o RLS no PostgreSQL
                 const client = await pool.connect()
+
+                // Atualizar o contexto com o cliente agora que o temos
+                dbContext.getStore()!.db = client
 
                 try {
                     // CRÍTICO: esta linha ativa o Row Level Security no nível da conexão

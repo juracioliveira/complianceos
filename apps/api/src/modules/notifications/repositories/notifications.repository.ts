@@ -1,6 +1,6 @@
-import { db } from '../../../infra/db/db.js'
+import { getDb } from '../../../infra/db/db.js'
 import { notifications } from '../../../infra/db/schema.js'
-import { eq, and, desc, isNull } from 'drizzle-orm'
+import { eq, and, desc, isNull, sql } from 'drizzle-orm'
 
 export class NotificationsRepository {
     async list(tenantId: string, userId: string, filters: { unreadOnly?: boolean; limit?: number }) {
@@ -14,7 +14,7 @@ export class NotificationsRepository {
             conditions.push(isNull(notifications.readAt))
         }
 
-        return db
+        return getDb()
             .select()
             .from(notifications)
             .where(and(...conditions))
@@ -23,7 +23,7 @@ export class NotificationsRepository {
     }
 
     async markAsRead(id: string, userId: string, tenantId: string) {
-        await db
+        await getDb()
             .update(notifications)
             .set({ readAt: new Date() })
             .where(
@@ -37,7 +37,7 @@ export class NotificationsRepository {
     }
 
     async markAllAsRead(userId: string, tenantId: string) {
-        await db
+        await getDb()
             .update(notifications)
             .set({ readAt: new Date() })
             .where(
@@ -60,7 +60,7 @@ export class NotificationsRepository {
         relatedEntityId?: string | undefined
         actionUrl?: string | undefined
     }) {
-        const result = await db.execute(
+        const result = await getDb().execute(
             sql`INSERT INTO notifications
                 (tenant_id, user_id, type, severity, title, body, related_entity_type, related_entity_id, action_url)
             VALUES
@@ -73,4 +73,3 @@ export class NotificationsRepository {
     }
 }
 
-import { sql } from 'drizzle-orm'

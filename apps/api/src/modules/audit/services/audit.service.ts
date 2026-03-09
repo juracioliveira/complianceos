@@ -1,7 +1,7 @@
 import { AuditRepository } from '../repositories/audit.repository.js'
 import { DocumentsService } from '../../documents/services/documents.service.js'
 import { ForbiddenError, ComplianceOSError } from '@compliance-os/types'
-import { db } from '../../../infra/db/db.js'
+import { getDb } from '../../../infra/db/db.js'
 import { checklistRuns } from '../../../infra/db/schema.js'
 import { eq, and } from 'drizzle-orm'
 import crypto from 'node:crypto'
@@ -96,7 +96,7 @@ export class AuditService {
 
     async generateComplianceCertificate(tenantId: string, entityId: string, userId: string) {
         // Verificar se existe pelo menos um checklist concluído com sucesso
-        const completedRuns = await db
+        const completedRuns = await getDb()
             .select()
             .from(checklistRuns)
             .where(

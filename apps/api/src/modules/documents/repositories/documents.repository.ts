@@ -1,15 +1,15 @@
-import { db } from '../../../infra/db/db.js'
+import { getDb } from '../../../infra/db/db.js'
 import { documents, users as usersTable } from '../../../infra/db/schema.js'
 import { eq, and, desc, sql } from 'drizzle-orm'
 
 export class DocumentsRepository {
     async create(data: any) {
-        const [doc] = await db.insert(documents).values(data).returning()
+        const [doc] = await getDb().insert(documents).values(data).returning()
         return doc
     }
 
     async findById(id: string, tenantId: string) {
-        const [doc] = await db
+        const [doc] = await getDb()
             .select()
             .from(documents)
             .where(
@@ -23,7 +23,7 @@ export class DocumentsRepository {
     }
 
     async findByJobId(jobId: string, tenantId: string) {
-        const [doc] = await db
+        const [doc] = await getDb()
             .select()
             .from(documents)
             .where(
@@ -37,25 +37,8 @@ export class DocumentsRepository {
     }
 
     async list(tenantId: string, filters: { docType?: string; limit?: number } = {}) {
-        let query = db
-            .select({
-                id: documents.id,
-                docType: documents.docType,
-                title: documents.title,
-                status: documents.status,
-                contentHash: documents.contentHash,
-                fileSizeBytes: documents.fileSizeBytes,
-                validUntil: documents.validUntil,
-                createdAt: documents.createdAt,
-                generatedByName: usersTable.name
-            })
-            .from(documents)
-            .leftJoin(usersTable, eq(documents.generatedBy, usersTable.id))
-            .where(eq(documents.tenantId, tenantId))
-
         if (filters.docType) {
-            // Need to handle dynamic where more carefully with Drizzle
-            return db
+            return getDb()
                 .select({
                     id: documents.id,
                     docType: documents.docType,
@@ -79,7 +62,7 @@ export class DocumentsRepository {
                 .limit(filters.limit || 50)
         }
 
-        return db
+        return getDb()
             .select({
                 id: documents.id,
                 docType: documents.docType,
@@ -99,7 +82,7 @@ export class DocumentsRepository {
     }
 
     async updateStatus(id: string, tenantId: string, status: 'READY' | 'FAILED', data: any = {}) {
-        await db
+        await getDb()
             .update(documents)
             .set({
                 status,
@@ -115,7 +98,7 @@ export class DocumentsRepository {
     }
 
     async updateMetadata(id: string, tenantId: string, metadata: any) {
-        await db
+        await getDb()
             .update(documents)
             .set({
                 generationParams: sql`${documents.generationParams} || ${metadata}::jsonb`,

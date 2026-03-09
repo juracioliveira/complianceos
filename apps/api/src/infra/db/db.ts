@@ -7,7 +7,7 @@ import { logger } from '../logger.js'
 const { Pool } = pg
 
 // Contexto para Multi-tenancy (RLS + Isolamento)
-export const dbContext = new AsyncLocalStorage<{ tenantId: string }>()
+export const dbContext = new AsyncLocalStorage<{ tenantId: string; db?: pg.PoolClient }>()
 
 const connectionString = process.env['DATABASE_URL']
 if (!connectionString) {
@@ -37,23 +37,18 @@ export const db = drizzle(pool, {
 })
 
 /**
- * Retorna uma instância do Drizzle configurada para o tenant atual.
- * Se houver um tenantId no contexto, executa SET LOCAL para RLS.
+ * Retorna a instância do Drizzle (global ou limitada ao tenant no AsyncLocalStorage).
+ * Se houver um cliente no contexto, usa-o.
  */
-export async function getTenantDb(tenantId?: string) {
-    const id = tenantId || dbContext.getStore()?.tenantId
-
-    if (!id) {
-        return db // Fallback para query global (uso administrativo restrito)
+export function getDb() {
+    const store = dbContext.getStore()
+    if (store?.db) {
+        return drizzle(store.db, { schema })
     }
-
-    const client = await pool.connect()
-    await client.query(pg.format('SET LOCAL app.tenant_id = %L', id))
-
-    // Retornamos um proxy ou wrapper que libera o client após o uso?
-    // Para simplificar no Drizzle, podemos usar o client diretamente.
-    return drizzle(client, { schema })
+    return db
 }
+
+
 
 export async function checkDatabaseConnection(): Promise<boolean> {
     const client = await pool.connect()

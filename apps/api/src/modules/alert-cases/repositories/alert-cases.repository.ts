@@ -1,6 +1,6 @@
-import { db, pool } from '../../../infra/db/db.js'
+import { getDb } from '../../../infra/db/db.js'
 import { alertCases } from '../../../infra/db/schema.js'
-import { eq, and, desc, inArray } from 'drizzle-orm'
+import { eq, and, desc, inArray, sql } from 'drizzle-orm'
 
 export type AlertCaseFilters = {
     status?: string | string[] | undefined
@@ -17,47 +17,35 @@ export class AlertCasesRepository {
     async list(tenantId: string, filters: AlertCaseFilters = {}) {
         const { limit = 50, offset = 0 } = filters
 
-        // Raw SQL para flexibilidade de filtros dinâmicos
-        const conditions: string[] = ['ac.tenant_id = $1']
-        const params: any[] = [tenantId]
-        let paramIdx = 2
+        // Build conditions as SQL chunks for Drizzle to handle parameters safely
+        const conditions = [sql`ac.tenant_id = ${tenantId}`]
 
         if (filters.status) {
             const statuses = Array.isArray(filters.status) ? filters.status : [filters.status]
-            conditions.push(`ac.status = ANY($${paramIdx}::alert_case_status[])`)
-            params.push(statuses)
-            paramIdx++
+            conditions.push(sql`ac.status = ANY(${statuses}::alert_case_status[])`)
         }
 
         if (filters.severity) {
             const severities = Array.isArray(filters.severity) ? filters.severity : [filters.severity]
-            conditions.push(`ac.severity = ANY($${paramIdx}::alert_severity[])`)
-            params.push(severities)
-            paramIdx++
+            conditions.push(sql`ac.severity = ANY(${severities}::alert_severity[])`)
         }
 
         if (filters.source) {
-            conditions.push(`ac.source = $${paramIdx}::alert_source`)
-            params.push(filters.source)
-            paramIdx++
+            conditions.push(sql`ac.source = ${filters.source}::alert_source`)
         }
 
         if (filters.assignedTo) {
-            conditions.push(`ac.assigned_to = $${paramIdx}`)
-            params.push(filters.assignedTo)
-            paramIdx++
+            conditions.push(sql`ac.assigned_to = ${filters.assignedTo}`)
         }
 
         if (filters.entityId) {
-            conditions.push(`ac.entity_id = $${paramIdx}`)
-            params.push(filters.entityId)
-            paramIdx++
+            conditions.push(sql`ac.entity_id = ${filters.entityId}`)
         }
 
-        const where = conditions.join(' AND ')
+        const where = and(...conditions)
 
         const [rows, countRow] = await Promise.all([
-            pool.query<any>(`
+            getDb().execute(sql`
                 SELECT
                     ac.id, ac.source, ac.severity, ac.status,
                     ac.title, ac.description, ac.evidence,
@@ -78,21 +66,21 @@ export class AlertCasesRepository {
                 ORDER BY
                     CASE ac.severity WHEN 'CRITICAL' THEN 1 WHEN 'HIGH' THEN 2 WHEN 'MEDIUM' THEN 3 ELSE 4 END,
                     ac.created_at DESC
-                LIMIT $${paramIdx} OFFSET $${paramIdx + 1}
-            `, [...params, limit, offset]),
-            pool.query<{ total: string }>(`
+                LIMIT ${limit} OFFSET ${offset}
+            `),
+            getDb().execute(sql`
                 SELECT COUNT(*) AS total FROM alert_cases ac WHERE ${where}
-            `, params),
+            `),
         ])
 
         return {
-            data: rows.rows,
-            total: Number(countRow.rows[0]?.total ?? 0),
+            data: rows.rows as any[],
+            total: Number((countRow.rows[0] as any)?.total ?? 0),
         }
     }
 
     async findById(id: string, tenantId: string) {
-        const result = await pool.query<any>(`
+        const result = await getDb().execute(sql`
             SELECT
                 ac.*,
                 e.id         AS entity_id,
@@ -114,9 +102,9 @@ export class AlertCasesRepository {
             LEFT JOIN users u_assign      ON u_assign.id = ac.assigned_to
             LEFT JOIN users u_resolve     ON u_resolve.id = ac.resolved_by
             LEFT JOIN users u_create      ON u_create.id = ac.created_by
-            WHERE ac.id = $1 AND ac.tenant_id = $2
+            WHERE ac.id = ${id} AND ac.tenant_id = ${tenantId}
             LIMIT 1
-        `, [id, tenantId])
+        `)
 
         return result.rows[0] ?? null
     }
@@ -131,22 +119,13 @@ export class AlertCasesRepository {
         evidence: Record<string, any>
         createdBy?: string | undefined
     }) {
-        const result = await pool.query<any>(`
+        const result = await getDb().execute(sql`
             INSERT INTO alert_cases
                 (tenant_id, entity_id, source, severity, title, description, evidence, created_by)
             VALUES
-                ($1, $2, $3::alert_source, $4::alert_severity, $5, $6, $7, $8)
+                (${data.tenantId}, ${data.entityId ?? null}, ${data.source}::alert_source, ${data.severity}::alert_severity, ${data.title}, ${data.description}, ${JSON.stringify(data.evidence)}, ${data.createdBy})
             RETURNING *
-        `, [
-            data.tenantId,
-            data.entityId ?? null,
-            data.source,
-            data.severity,
-            data.title,
-            data.description,
-            JSON.stringify(data.evidence),
-            data.createdBy,
-        ])
+        `)
 
         return result.rows[0]
     }
@@ -159,51 +138,51 @@ export class AlertCasesRepository {
         resolvedBy?: string
         resolvedAt?: Date
     }) {
-        const setClauses: string[] = ['updated_at = NOW()']
-        const params: any[] = [id, tenantId]
-        let i = 3
+        const updates: any[] = [sql`updated_at = NOW()`]
 
         if (patch.status !== undefined) {
-            setClauses.push(`status = $${i}::alert_case_status`); params.push(patch.status); i++
+            updates.push(sql`status = ${patch.status}::alert_case_status`)
         }
         if (patch.severity !== undefined) {
-            setClauses.push(`severity = $${i}::alert_severity`); params.push(patch.severity); i++
+            updates.push(sql`severity = ${patch.severity}::alert_severity`)
         }
         if ('assignedTo' in patch) {
-            setClauses.push(`assigned_to = $${i}`); params.push(patch.assignedTo ?? null); i++
+            updates.push(sql`assigned_to = ${patch.assignedTo ?? null}`)
         }
         if (patch.resolutionNote !== undefined) {
-            setClauses.push(`resolution_note = $${i}`); params.push(patch.resolutionNote); i++
+            updates.push(sql`resolution_note = ${patch.resolutionNote}`)
         }
         if (patch.resolvedBy !== undefined) {
-            setClauses.push(`resolved_by = $${i}`); params.push(patch.resolvedBy); i++
+            updates.push(sql`resolved_by = ${patch.resolvedBy}`)
         }
         if (patch.resolvedAt !== undefined) {
-            setClauses.push(`resolved_at = $${i}`); params.push(patch.resolvedAt); i++
+            updates.push(sql`resolved_at = ${patch.resolvedAt}`)
         }
 
-        const result = await pool.query<any>(`
+        const setClause = sql.join(updates, sql`, `)
+
+        const result = await getDb().execute(sql`
             UPDATE alert_cases
-            SET ${setClauses.join(', ')}
-            WHERE id = $1 AND tenant_id = $2
+            SET ${setClause}
+            WHERE id = ${id} AND tenant_id = ${tenantId}
             RETURNING *
-        `, params)
+        `)
 
         return result.rows[0] ?? null
     }
 
     async countOpen(tenantId: string): Promise<{ open: number; critical: number }> {
-        const result = await pool.query<any>(`
+        const result = await getDb().execute(sql`
             SELECT
                 COUNT(*) FILTER (WHERE status IN ('OPEN', 'UNDER_REVIEW', 'ESCALATED')) AS open,
                 COUNT(*) FILTER (WHERE status IN ('OPEN', 'UNDER_REVIEW', 'ESCALATED') AND severity = 'CRITICAL') AS critical
             FROM alert_cases
-            WHERE tenant_id = $1
-        `, [tenantId])
+            WHERE tenant_id = ${tenantId}
+        `)
 
         return {
-            open: Number(result.rows[0]?.open ?? 0),
-            critical: Number(result.rows[0]?.critical ?? 0),
+            open: Number((result.rows[0] as any)?.open ?? 0),
+            critical: Number((result.rows[0] as any)?.critical ?? 0),
         }
     }
 }

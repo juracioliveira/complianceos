@@ -1,4 +1,4 @@
-import { db } from '../../../infra/db/db.js'
+import { getDb } from '../../../infra/db/db.js'
 import { tenants } from '../../../infra/db/schema.js'
 import { eq } from 'drizzle-orm'
 

@@ -1,4 +1,4 @@
-import { db } from '../../../infra/db/db.js'
+import { getDb } from '../../../infra/db/db.js'
 import { auditEvents } from '../../../infra/db/schema.js'
 import { eq, and, asc, desc, gte, lte, sql } from 'drizzle-orm'
 
@@ -14,7 +14,7 @@ export class AuditRepository {
         if (filters.resourceId) conditions.push(eq(auditEvents.resourceId, filters.resourceId))
         if (filters.result) conditions.push(eq(auditEvents.result, filters.result))
 
-        return db
+        return getDb()
             .select()
             .from(auditEvents)
             .where(and(...conditions))
@@ -23,7 +23,7 @@ export class AuditRepository {
     }
 
     async listAll(tenantId: string) {
-        return db
+        return getDb()
             .select()
             .from(auditEvents)
             .where(eq(auditEvents.tenantId, tenantId))
@@ -31,7 +31,7 @@ export class AuditRepository {
     }
 
     async getLastEvent(tenantId: string) {
-        const [last] = await db
+        const [last] = await getDb()
             .select()
             .from(auditEvents)
             .where(eq(auditEvents.tenantId, tenantId))
@@ -42,7 +42,7 @@ export class AuditRepository {
     }
 
     async create(data: any) {
-        const [event] = await db.insert(auditEvents).values(data).returning()
+        const [event] = await getDb().insert(auditEvents).values(data).returning()
         return event
     }
 }

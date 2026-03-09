@@ -1,10 +1,10 @@
-import { db } from '../../../infra/db/db.js'
+import { getDb } from '../../../infra/db/db.js'
 import { checklistRuns, checklists } from '../../../infra/db/schema.js'
 import { eq, and } from 'drizzle-orm'
 
 export class ChecklistsRepository {
     async findRunById(id: string, tenantId: string) {
-        const [run] = await db
+        const [run] = await getDb()
             .select()
             .from(checklistRuns)
             .where(
@@ -17,7 +17,7 @@ export class ChecklistsRepository {
     }
 
     async findTemplateById(id: string, tenantId: string) {
-        const [template] = await db
+        const [template] = await getDb()
             .select()
             .from(checklists)
             .where(
@@ -30,7 +30,7 @@ export class ChecklistsRepository {
     }
 
     async updateRunStatus(id: string, tenantId: string, status: string, answers?: any) {
-        await db
+        await getDb()
             .update(checklistRuns)
             .set({
                 status,

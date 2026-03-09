@@ -1,10 +1,10 @@
-import { db } from '../../../infra/db/db.js'
+import { getDb } from '../../../infra/db/db.js'
 import { entities } from '../../../infra/db/schema.js'
 import { eq, and, or } from 'drizzle-orm'
 
 export class EntitiesRepository {
     async findById(id: string, tenantId: string) {
-        const [entity] = await db
+        const [entity] = await getDb()
             .select()
             .from(entities)
             .where(
@@ -17,7 +17,7 @@ export class EntitiesRepository {
     }
 
     async findByTaxId(taxId: string, tenantId: string) {
-        const [entity] = await db
+        const [entity] = await getDb()
             .select()
             .from(entities)
             .where(
@@ -33,7 +33,7 @@ export class EntitiesRepository {
     }
 
     async create(data: typeof entities.$inferInsert) {
-        const [entity] = await db
+        const [entity] = await getDb()
             .insert(entities)
             .values(data)
             .returning()
@@ -41,7 +41,7 @@ export class EntitiesRepository {
     }
 
     async update(id: string, tenantId: string, data: Partial<typeof entities.$inferInsert>) {
-        const [entity] = await db
+        const [entity] = await getDb()
             .update(entities)
             .set({ ...data, updatedAt: new Date() })
             .where(
@@ -55,7 +55,7 @@ export class EntitiesRepository {
     }
 
     async listByTenant(tenantId: string) {
-        return db
+        return getDb()
             .select()
             .from(entities)
             .where(eq(entities.tenantId, tenantId))

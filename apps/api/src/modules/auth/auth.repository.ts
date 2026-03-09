@@ -1,4 +1,4 @@
-import { db } from '../../infra/db/db.js'
+import { getDb } from '../../infra/db/db.js'
 import { users, tenants } from '../../infra/db/schema.js'
 import { eq, and, sql, ne } from 'drizzle-orm'
 import type { User } from '@compliance-os/types'
@@ -7,7 +7,7 @@ export class AuthRepository {
     async findUserByEmail(email: string) {
         // Usando direct SQL driver or Drizzle
         // Para manter compatibilidade com o join complexo atual e retorno de User estendido:
-        const result = await db.execute(sql`
+        const result = await getDb().execute(sql`
             SELECT 
                 u.*, 
                 t.plan AS tenant_plan, 
@@ -49,7 +49,7 @@ export class AuthRepository {
     }
 
     async findUserById(id: string) {
-        const result = await db.execute(sql`
+        const result = await getDb().execute(sql`
             SELECT 
                 u.*, 
                 t.name AS tenant_name,
@@ -80,7 +80,7 @@ export class AuthRepository {
     }
 
     async incrementFailedAttempts(userId: string) {
-        const result = await db.execute(sql`
+        const result = await getDb().execute(sql`
             UPDATE users
             SET failed_attempts = failed_attempts + 1,
                 locked_until = CASE
@@ -94,7 +94,7 @@ export class AuthRepository {
     }
 
     async resetFailedAttempts(userId: string, ip: string) {
-        await db.execute(sql`
+        await getDb().execute(sql`
             UPDATE users
             SET failed_attempts = 0,
                 locked_until = NULL,

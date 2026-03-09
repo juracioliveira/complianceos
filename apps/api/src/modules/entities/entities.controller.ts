@@ -44,7 +44,7 @@ export const entitiesRoutes: FastifyPluginAsync = async (fastify) => {
 
     // GET /v1/entities
     fastify.get('/', {
-        preHandler: [authMiddleware],
+        preHandler: [authMiddleware, tenantMiddleware],
         handler: async (request: FastifyRequest, reply: FastifyReply) => {
             const user = request.user as JwtPayload
             const query = listEntitiesSchema.safeParse(request.query)
