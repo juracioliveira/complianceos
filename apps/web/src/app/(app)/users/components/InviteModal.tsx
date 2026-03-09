@@ -10,34 +10,58 @@ import {
     ShieldAlert,
     Briefcase,
     History,
-    CheckCircle2
+    CheckCircle2,
+    UserPlus,
+    AlertCircle,
+    User,
 } from 'lucide-react'
+import { useApi } from '@/hooks/useApi'
 
 interface InviteModalProps {
     isOpen: boolean
     onClose: () => void
+    onSuccess?: () => void
 }
 
-type Role = 'ADMIN' | 'CCO' | 'ANALYST' | 'AUDITOR'
+type Role = 'COMPLIANCE_OFFICER' | 'ANALYST' | 'AUDITOR' | 'READONLY'
 
-export default function InviteModal({ isOpen, onClose }: InviteModalProps) {
+export default function InviteModal({ isOpen, onClose, onSuccess }: InviteModalProps) {
+    const { fetchWithAuth } = useApi()
     const [email, setEmail] = useState('')
+    const [name, setName] = useState('')
     const [role, setRole] = useState<Role>('ANALYST')
     const [sending, setSending] = useState(false)
     const [success, setSuccess] = useState(false)
+    const [error, setError] = useState<string | null>(null)
+
+    const handleClose = () => {
+        setEmail('')
+        setName('')
+        setRole('ANALYST')
+        setError(null)
+        setSuccess(false)
+        onClose()
+    }
 
     const handleInvite = async (e: React.FormEvent) => {
         e.preventDefault()
         setSending(true)
-        // Simulação de convite via API
-        await new Promise(resolve => setTimeout(resolve, 1500))
-        setSending(false)
-        setSuccess(true)
-        setTimeout(() => {
-            setSuccess(false)
-            onClose()
-            setEmail('')
-        }, 2000)
+        setError(null)
+        try {
+            await fetchWithAuth('/v1/users/invite', {
+                method: 'POST',
+                body: JSON.stringify({ email, name, role }),
+            })
+            setSuccess(true)
+            onSuccess?.()
+            setTimeout(() => {
+                handleClose()
+            }, 2000)
+        } catch (err: any) {
+            setError(err.message || 'Erro ao enviar convite. Tente novamente.')
+        } finally {
+            setSending(false)
+        }
     }
 
     if (!isOpen) return null
@@ -46,7 +70,7 @@ export default function InviteModal({ isOpen, onClose }: InviteModalProps) {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <div
                 className="absolute inset-0 bg-background/80 backdrop-blur-sm animate-in fade-in duration-300"
-                onClick={onClose}
+                onClick={handleClose}
             />
 
             <div className="relative w-full max-w-md card p-0 overflow-hidden shadow-2xl animate-in zoom-in-95 fade-in duration-300">
@@ -64,7 +88,7 @@ export default function InviteModal({ isOpen, onClose }: InviteModalProps) {
                             </div>
                             <button
                                 type="button"
-                                onClick={onClose}
+                                onClick={handleClose}
                                 className="p-2 hover:bg-muted rounded-full text-muted-foreground transition-colors"
                                 aria-label="Botão de fechamento"
                             >
@@ -73,6 +97,29 @@ export default function InviteModal({ isOpen, onClose }: InviteModalProps) {
                         </div>
 
                         <div className="p-8 space-y-6">
+                            {error && (
+                                <div className="flex items-center gap-2 p-3 rounded-xl bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 text-sm">
+                                    <AlertCircle className="w-4 h-4 shrink-0" />
+                                    {error}
+                                </div>
+                            )}
+
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground pl-1">Nome Completo</label>
+                                <div className="relative">
+                                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                                    <input
+                                        type="text"
+                                        required
+                                        minLength={2}
+                                        className="input-field pl-10"
+                                        placeholder="ex: João da Silva"
+                                        value={name}
+                                        onChange={(e) => setName(e.target.value)}
+                                    />
+                                </div>
+                            </div>
+
                             <div className="space-y-2">
                                 <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground pl-1">E-mail do Usuário</label>
                                 <div className="relative">
@@ -92,15 +139,8 @@ export default function InviteModal({ isOpen, onClose }: InviteModalProps) {
                                 <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground pl-1">Papel & Permissões</label>
                                 <div className="grid grid-cols-1 gap-2">
                                     <RoleOption
-                                        selected={role === 'ADMIN'}
-                                        onClick={() => setRole('ADMIN')}
-                                        title="Administrador"
-                                        desc="Acesso total ao tenant e configurações."
-                                        icon={<Shield className="w-4 h-4" />}
-                                    />
-                                    <RoleOption
-                                        selected={role === 'CCO'}
-                                        onClick={() => setRole('CCO')}
+                                        selected={role === 'COMPLIANCE_OFFICER'}
+                                        onClick={() => setRole('COMPLIANCE_OFFICER')}
                                         title="Chief Compliance Officer"
                                         desc="Aprovações e gestão de políticas de risco."
                                         icon={<ShieldCheck className="w-4 h-4" />}
@@ -119,6 +159,13 @@ export default function InviteModal({ isOpen, onClose }: InviteModalProps) {
                                         desc="Acesso de leitura para registros e auditoria."
                                         icon={<History className="w-4 h-4" />}
                                     />
+                                    <RoleOption
+                                        selected={role === 'READONLY'}
+                                        onClick={() => setRole('READONLY')}
+                                        title="Somente Leitura"
+                                        desc="Visualização de dados sem permissão de edição."
+                                        icon={<Shield className="w-4 h-4" />}
+                                    />
                                 </div>
                             </div>
                         </div>
@@ -126,7 +173,7 @@ export default function InviteModal({ isOpen, onClose }: InviteModalProps) {
                         <div className="p-6 border-t border-border bg-muted/20 flex gap-3">
                             <button
                                 type="button"
-                                onClick={onClose}
+                                onClick={handleClose}
                                 className="btn btn-secondary flex-1"
                             >
                                 Cancelar
@@ -150,9 +197,9 @@ export default function InviteModal({ isOpen, onClose }: InviteModalProps) {
                         <div className="w-20 h-20 rounded-full bg-emerald-100 dark:bg-emerald-950/40 flex items-center justify-center text-emerald-600 mb-6">
                             <CheckCircle2 className="w-10 h-10" />
                         </div>
-                        <h3 className="text-xl font-bold">Convite Enviado!</h3>
+                        <h3 className="text-xl font-bold">Convite Criado!</h3>
                         <p className="text-sm text-muted-foreground mt-2 max-w-[240px]">
-                            Enviamos as instruções de onboarding para <strong>{email}</strong>.
+                            O usuário <strong>{email}</strong> receberá as instruções de acesso em breve.
                         </p>
                     </div>
                 )}
@@ -190,27 +237,5 @@ function RoleOption({ selected, onClick, title, desc, icon }: {
                 <p className="text-[10px] text-muted-foreground font-medium leading-tight mt-0.5">{desc}</p>
             </div>
         </button>
-    )
-}
-
-function UserPlus({ className }: { className?: string }) {
-    return (
-        <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className={className}
-        >
-            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-            <circle cx="9" cy="7" r="4" />
-            <line x1="19" x2="19" y1="8" y2="14" />
-            <line x1="16" x2="22" y1="11" y2="11" />
-        </svg>
     )
 }

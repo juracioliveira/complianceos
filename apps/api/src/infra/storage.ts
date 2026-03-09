@@ -1,8 +1,12 @@
 import AWS from 'aws-sdk'
 
-const endpoint = process.env['MINIO_SERVER_URL'] || 'https://complian-os-minio-complianceos.qztbnm.easypanel.host'
-const accessKeyId = process.env['MINIO_ROOT_USER'] || 'admin'
-const secretAccessKey = process.env['MINIO_ROOT_PASSWORD'] || 'sjMZIp01gv4g'
+const endpoint = process.env['MINIO_SERVER_URL']
+const accessKeyId = process.env['MINIO_ROOT_USER']
+const secretAccessKey = process.env['MINIO_ROOT_PASSWORD']
+
+if (!endpoint || !accessKeyId || !secretAccessKey) {
+    throw new Error('Variáveis de ambiente obrigatórias ausentes: MINIO_SERVER_URL, MINIO_ROOT_USER, MINIO_ROOT_PASSWORD')
+}
 
 const region = process.env['MINIO_REGION'] || 'us-east-1'
 

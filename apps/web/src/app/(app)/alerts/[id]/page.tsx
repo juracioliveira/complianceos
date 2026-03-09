@@ -60,6 +60,7 @@ function ActionPanel({ alertCase, onUpdated }: { alertCase: any; onUpdated: () =
     const [selectedAction, setSelectedAction] = useState('')
     const [note, setNote] = useState('')
     const [saving, setSaving] = useState(false)
+    const [actionError, setActionError] = useState<string | null>(null)
 
     const isTerminal = TERMINAL_STATUSES.includes(alertCase.status)
     const availableActions = TRANSITIONS[alertCase.status] ?? []
@@ -67,8 +68,9 @@ function ActionPanel({ alertCase, onUpdated }: { alertCase: any; onUpdated: () =
 
     const handleSubmit = async () => {
         if (!selectedAction) return
-        if (needsNote && !note.trim()) { alert('Nota de resolução obrigatória.'); return }
+        if (needsNote && !note.trim()) { setActionError('Nota de resolução obrigatória.'); return }
         setSaving(true)
+        setActionError(null)
         try {
             await fetchWithAuth(`/v1/alert-cases/${alertCase.id}`, {
                 method: 'PATCH',
@@ -78,7 +80,7 @@ function ActionPanel({ alertCase, onUpdated }: { alertCase: any; onUpdated: () =
             setSelectedAction('')
             setNote('')
         } catch (err) {
-            alert('Erro: ' + (err as Error).message)
+            setActionError('Erro: ' + (err as Error).message)
         } finally {
             setSaving(false)
         }
@@ -141,6 +143,13 @@ function ActionPanel({ alertCase, onUpdated }: { alertCase: any; onUpdated: () =
                         value={note}
                         onChange={e => setNote(e.target.value)}
                     />
+                </div>
+            )}
+
+            {actionError && (
+                <div className="flex items-center gap-2 p-3 rounded-lg bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 text-sm">
+                    <AlertTriangle className="w-4 h-4 shrink-0" />
+                    {actionError}
                 </div>
             )}
 

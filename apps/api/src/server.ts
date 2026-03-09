@@ -26,6 +26,7 @@ import { usersRoutes } from './modules/users/users.controller.js'
 import { intelligenceRoutes } from './modules/intelligence/intelligence.controller.js'
 import { billingRoutes } from './modules/billing/billing.controller.js'
 import { alertCasesRoutes } from './modules/alert-cases/alert-cases.controller.js'
+import { settingsRoutes } from './modules/settings/settings.controller.js'
 
 const isDev = process.env['NODE_ENV'] === 'development'
 const PORT = Number(process.env['API_PORT'] ?? 4000)
@@ -41,8 +42,11 @@ export const app = Fastify({
 
 // ─── Registrar plugins ───────────────────────────────────────────────────────
 await app.register(fastifyHelmet, { contentSecurityPolicy: false })
-const cookieSecret = process.env['COOKIE_SECRET'] || 'default-compliance-os-cookie-secret-for-dev-only'
-await app.register(fastifyCookie, { secret: cookieSecret })
+const cookieSecret = process.env['COOKIE_SECRET']
+if (!cookieSecret && process.env['NODE_ENV'] === 'production') {
+    throw new Error('Variável de ambiente obrigatória ausente em produção: COOKIE_SECRET')
+}
+await app.register(fastifyCookie, { secret: cookieSecret || 'default-compliance-os-cookie-secret-for-dev-only' })
 await app.register(fastifyCors, {
     origin: (origin, cb) => {
         const allowed = (process.env['CORS_ALLOWED_ORIGINS'] ?? 'http://localhost:3000,http://localhost:4000').split(',')
@@ -77,12 +81,14 @@ await app.register(fastifyRateLimit, {
     }
 })
 
-const secretKey = process.env['JWT_SECRET']
-    || process.env['JWT_PRIVATE_KEY_BASE64']
-    || 'default-compliance-os-jwt-secret-for-dev-only-do-not-use-in-prod'
+const secretKey = process.env['JWT_SECRET'] || process.env['JWT_PRIVATE_KEY_BASE64']
+if (!secretKey && process.env['NODE_ENV'] === 'production') {
+    throw new Error('Variável de ambiente obrigatória ausente em produção: JWT_SECRET ou JWT_PRIVATE_KEY_BASE64')
+}
+const jwtSecret = secretKey || 'default-compliance-os-jwt-secret-for-dev-only-do-not-use-in-prod'
 
 await app.register(fastifyJwt, {
-    secret: secretKey,
+    secret: jwtSecret,
     sign: { algorithm: 'HS256', expiresIn: 900 },
 })
 
@@ -149,6 +155,7 @@ await app.register(usersRoutes, { prefix: '/v1/users' })
 await app.register(intelligenceRoutes, { prefix: '/v1/intelligence' })
 await app.register(billingRoutes, { prefix: '/v1/billing' })
 await app.register(alertCasesRoutes, { prefix: '/v1/alert-cases' })
+await app.register(settingsRoutes, { prefix: '/v1/settings' })
 
 // ─── Health Checks ───────────────────────────────────────────────────────────
 app.get('/', async () => ({ status: 'ok', service: 'ComplianceOS API', timestamp: new Date().toISOString() }))

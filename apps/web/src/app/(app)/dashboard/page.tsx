@@ -57,10 +57,10 @@ export default function DashboardPage() {
 
         // Conectar SSE após carregamento inicial
         const connectSSE = () => {
-            const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null
+            const token = typeof window !== 'undefined' ? sessionStorage.getItem('access_token') : null
             if (!token) return
 
-            const apiBase = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001'
+            const apiBase = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000'
             const url = `${apiBase}/v1/dashboard/stream`
 
             const es = new EventSource(url + `?token=${encodeURIComponent(token)}`)

@@ -53,16 +53,18 @@ function QuickCreateModal({ onClose, onCreated }: { onClose: () => void; onCreat
         title: '', description: '',
     })
     const [saving, setSaving] = useState(false)
+    const [submitError, setSubmitError] = useState<string | null>(null)
 
     useEffect(() => {
         fetchWithAuth('/v1/entities?status=ACTIVE&limit=50')
             .then(res => setEntities(res?.data ?? []))
-            .catch(console.error)
+            .catch(() => {/* silently ignore */})
     }, [fetchWithAuth])
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setSaving(true)
+        setSubmitError(null)
         try {
             await fetchWithAuth('/v1/alert-cases', {
                 method: 'POST',
@@ -74,7 +76,7 @@ function QuickCreateModal({ onClose, onCreated }: { onClose: () => void; onCreat
             onCreated()
             onClose()
         } catch (err) {
-            alert('Erro ao criar alerta: ' + (err as Error).message)
+            setSubmitError('Erro ao criar alerta: ' + (err as Error).message)
         } finally {
             setSaving(false)
         }
@@ -100,6 +102,12 @@ function QuickCreateModal({ onClose, onCreated }: { onClose: () => void; onCreat
                     </button>
                 </div>
                 <form onSubmit={handleSubmit} className="p-5 space-y-4">
+                    {submitError && (
+                        <div className="flex items-center gap-2 p-3 rounded-lg bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 text-sm">
+                            <AlertTriangle className="w-4 h-4 shrink-0" />
+                            {submitError}
+                        </div>
+                    )}
                     {field('entity', 'Entidade (opcional)',
                         <select id="entity" className="input-field w-full" value={form.entityId} onChange={e => setForm(f => ({ ...f, entityId: e.target.value }))}>
                             <option value="">— Nenhuma entidade —</option>

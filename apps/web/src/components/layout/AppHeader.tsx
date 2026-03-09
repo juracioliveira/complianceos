@@ -20,18 +20,15 @@ export function AppHeader() {
     return (
         <header className="h-20 flex items-center justify-between px-8 border-b border-slate-200/80 bg-white/80 backdrop-blur-xl shrink-0 z-10 font-sans text-slate-900">
             {/* Busca */}
-            <div className="flex items-center gap-3 bg-slate-50/50 hover:bg-white border border-slate-200/60 hover:border-brand-200 transition-all rounded-xl px-4 py-2.5 w-96 cursor-text group shadow-sm">
-                <Search className="w-4 h-4 text-slate-400 group-hover:text-brand-500 shrink-0 transition-colors" />
+            <div className="flex items-center gap-3 bg-slate-50/50 border border-slate-200/60 rounded-xl px-4 py-2.5 w-96 cursor-not-allowed group shadow-sm opacity-60">
+                <Search className="w-4 h-4 text-slate-400 shrink-0" />
                 <input
                     type="text"
-                    placeholder="Buscar entidades, checklists, alertas..."
-                    className="bg-transparent text-[13px] text-slate-700 placeholder:text-slate-400 focus:outline-none w-full"
+                    placeholder="Busca global — em breve"
+                    className="bg-transparent text-[13px] text-slate-700 placeholder:text-slate-400 focus:outline-none w-full cursor-not-allowed"
+                    disabled
+                    aria-label="Busca global (em desenvolvimento)"
                 />
-                <div className="flex items-center gap-1 shrink-0">
-                    <kbd className="text-[10px] text-slate-400 bg-white border border-slate-200 rounded px-1.5 py-0.5 font-mono shadow-sm">
-                        ⌘K
-                    </kbd>
-                </div>
             </div>
 
             {/* Ações */}
