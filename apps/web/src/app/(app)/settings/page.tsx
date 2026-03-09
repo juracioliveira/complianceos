@@ -1,31 +1,79 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
     Building2,
     Globe,
     ShieldCheck,
     Bell,
     Zap,
-    Lock,
     Save,
-    Image as ImageIcon
+    Image as ImageIcon,
+    AlertCircle,
+    CheckCircle2,
 } from 'lucide-react'
 import LogoUpload from './components/LogoUpload'
 import WebhookManager from './components/WebhookManager'
 import SecurityPolicy from './components/SecurityPolicy'
+import { useApi } from '@/hooks/useApi'
 
 type SettingsTab = 'general' | 'appearance' | 'security' | 'webhooks'
 
+interface TenantSettings {
+    id: string
+    name: string
+    cnpj: string
+    plan: string
+    authorizedDomain: string | null
+    billingEmail: string | null
+}
+
 export default function SettingsPage() {
+    const { fetchWithAuth } = useApi()
     const [activeTab, setActiveTab] = useState<SettingsTab>('general')
     const [saving, setSaving] = useState(false)
+    const [loading, setLoading] = useState(true)
+    const [saveError, setSaveError] = useState<string | null>(null)
+    const [saveSuccess, setSaveSuccess] = useState(false)
+    const [tenant, setTenant] = useState<TenantSettings | null>(null)
+    const [name, setName] = useState('')
+    const [authorizedDomain, setAuthorizedDomain] = useState('')
+
+    useEffect(() => {
+        fetchWithAuth('/v1/settings')
+            .then((res) => {
+                setTenant(res.data)
+                setName(res.data.name)
+                setAuthorizedDomain(res.data.authorizedDomain ?? '')
+            })
+            .catch(() => {/* silently ignore on load */})
+            .finally(() => setLoading(false))
+    }, [fetchWithAuth])
 
     const handleSave = async () => {
         setSaving(true)
-        // Simulação de salvamento
-        await new Promise(resolve => setTimeout(resolve, 1500))
-        setSaving(false)
+        setSaveError(null)
+        setSaveSuccess(false)
+        try {
+            await fetchWithAuth('/v1/settings', {
+                method: 'PATCH',
+                body: JSON.stringify({
+                    name: name || undefined,
+                    authorizedDomain: authorizedDomain || undefined,
+                }),
+            })
+            setSaveSuccess(true)
+            setTimeout(() => setSaveSuccess(false), 3000)
+        } catch (err: any) {
+            setSaveError(err.message || 'Erro ao salvar configurações.')
+        } finally {
+            setSaving(false)
+        }
+    }
+
+    const formatCnpj = (cnpj: string) => {
+        const n = cnpj.replace(/\D/g, '')
+        return n.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5')
     }
 
     return (
@@ -37,18 +85,27 @@ export default function SettingsPage() {
                         Gerencie as preferências globais, identidade visual e segurança da sua organização.
                     </p>
                 </div>
-                <button
-                    onClick={handleSave}
-                    disabled={saving}
-                    className="btn btn-primary gap-2 min-w-[120px]"
-                >
-                    {saving ? (
-                        <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    ) : (
-                        <Save className="w-4 h-4" />
-                    )}
-                    {saving ? 'Salvando...' : 'Salvar Alterações'}
-                </button>
+                {activeTab === 'general' && (
+                    <div className="flex items-center gap-3">
+                        {saveSuccess && (
+                            <div className="flex items-center gap-1.5 text-emerald-600 text-sm font-medium">
+                                <CheckCircle2 className="w-4 h-4" /> Salvo
+                            </div>
+                        )}
+                        <button
+                            onClick={handleSave}
+                            disabled={saving || loading}
+                            className="btn btn-primary gap-2 min-w-[120px]"
+                        >
+                            {saving ? (
+                                <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                            ) : (
+                                <Save className="w-4 h-4" />
+                            )}
+                            {saving ? 'Salvando...' : 'Salvar Alterações'}
+                        </button>
+                    </div>
+                )}
             </div>
 
             <div className="flex flex-col lg:flex-row gap-8 mt-4">
@@ -88,25 +145,54 @@ export default function SettingsPage() {
                 <div className="flex-1 max-w-4xl">
                     {activeTab === 'general' && (
                         <div className="card p-8 space-y-8 animate-in fade-in slide-in-from-right-4 duration-300">
+                            {saveError && (
+                                <div className="flex items-center gap-2 p-3 rounded-xl bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 text-sm">
+                                    <AlertCircle className="w-4 h-4 shrink-0" />
+                                    {saveError}
+                                </div>
+                            )}
                             <div className="space-y-4">
                                 <h3 className="font-bold text-lg border-b border-border pb-2">Informações da Organização</h3>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div className="flex flex-col gap-2">
-                                        <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Nome Comercial</label>
-                                        <input type="text" className="input-field" defaultValue="Grupo Guinle Corretora" />
+                                {loading ? (
+                                    <div className="h-24 flex items-center justify-center text-muted-foreground text-sm animate-pulse">
+                                        Carregando configurações...
                                     </div>
-                                    <div className="flex flex-col gap-2">
-                                        <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">CNPJ Principal</label>
-                                        <input type="text" className="input-field opacity-60" defaultValue="45.123.456/0001-99" disabled />
-                                    </div>
-                                    <div className="flex flex-col gap-2">
-                                        <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Domínio Autorizado</label>
-                                        <div className="relative">
-                                            <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                                            <input type="text" className="input-field pl-10" defaultValue="grupoguinle.com.br" />
+                                ) : (
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div className="flex flex-col gap-2">
+                                            <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Nome Comercial</label>
+                                            <input
+                                                type="text"
+                                                className="input-field"
+                                                value={name}
+                                                onChange={(e) => setName(e.target.value)}
+                                            />
+                                        </div>
+                                        <div className="flex flex-col gap-2">
+                                            <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">CNPJ Principal</label>
+                                            <input
+                                                type="text"
+                                                className="input-field opacity-60"
+                                                value={tenant ? formatCnpj(tenant.cnpj) : ''}
+                                                disabled
+                                                readOnly
+                                            />
+                                        </div>
+                                        <div className="flex flex-col gap-2">
+                                            <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Domínio Autorizado</label>
+                                            <div className="relative">
+                                                <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                                                <input
+                                                    type="text"
+                                                    className="input-field pl-10"
+                                                    value={authorizedDomain}
+                                                    onChange={(e) => setAuthorizedDomain(e.target.value)}
+                                                    placeholder="ex: suaempresa.com.br"
+                                                />
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                )}
                             </div>
 
                             <div className="p-4 rounded-xl bg-muted/30 border border-border/50 flex items-start gap-4">

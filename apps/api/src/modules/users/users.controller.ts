@@ -106,8 +106,8 @@ export const usersRoutes: FastifyPluginAsync = async (fastify) => {
             const body = updateUserSchema.safeParse(request.body)
             if (!body.success) throw new ValidationError('Dados inválidos', body.error)
 
-            // Não permitir que não-ADMIN altere o próprio role
-            if (!isSelf || request.user.role !== 'ADMIN') {
+            // Apenas ADMIN pode alterar roles (de qualquer usuário, incluindo o próprio)
+            if (request.user.role !== 'ADMIN') {
                 delete body.data.role
             }
 

@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Plus, Search, SlidersHorizontal, Download, Loader2 } from 'lucide-react'
+import { Plus, Search, SlidersHorizontal, Download, Loader2, CheckCircle2, AlertCircle } from 'lucide-react'
 import { RiskBadge } from '@/components/ui/RiskBadge'
 import { formatCNPJ, formatDate, KYC_LABELS } from '@/lib/utils'
 import { useApi } from '@/hooks/useApi'
@@ -36,6 +36,7 @@ export default function EntitiesPage() {
     const [isLoading, setIsLoading] = useState(true)
     const [isExporting, setIsExporting] = useState(false)
     const [error, setError] = useState<string | null>(null)
+    const [exportMessage, setExportMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
 
     useEffect(() => {
         async function loadEntities() {
@@ -72,12 +73,13 @@ export default function EntitiesPage() {
                 link.click()
                 document.body.removeChild(link)
             } else {
-                alert(`Exportação ${format} solicitada. O arquivo estará disponível na seção de Auditoria em breve.`)
+                setExportMessage({ type: 'success', text: `Exportação ${format} solicitada. O arquivo estará disponível na seção de Auditoria em breve.` })
+                setTimeout(() => setExportMessage(null), 5000)
             }
 
         } catch (err) {
-            console.error('Falha na exportação', err)
-            alert('Falha na exportação: ' + (err as Error).message)
+            setExportMessage({ type: 'error', text: 'Falha na exportação: ' + (err as Error).message })
+            setTimeout(() => setExportMessage(null), 5000)
         } finally {
             setIsExporting(false)
         }
@@ -103,6 +105,18 @@ export default function EntitiesPage() {
 
     return (
         <div className="max-w-7xl mx-auto space-y-6 animate-fade-in">
+            {exportMessage && (
+                <div className={`flex items-center gap-2 p-3 rounded-xl border text-sm font-medium ${
+                    exportMessage.type === 'success'
+                        ? 'bg-emerald-50 border-emerald-200 text-emerald-700 dark:bg-emerald-950/20 dark:border-emerald-800 dark:text-emerald-400'
+                        : 'bg-red-50 border-red-200 text-red-700 dark:bg-red-950/20 dark:border-red-800 dark:text-red-400'
+                }`}>
+                    {exportMessage.type === 'success'
+                        ? <CheckCircle2 className="w-4 h-4 shrink-0" />
+                        : <AlertCircle className="w-4 h-4 shrink-0" />}
+                    {exportMessage.text}
+                </div>
+            )}
 
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">

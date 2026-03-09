@@ -58,8 +58,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                     }
                 }
 
-                console.log('[Auth] Carregando usuário de:', apiUrl)
-
                 const controller = new AbortController()
                 const timeoutId = setTimeout(() => controller.abort(), 10000) // 10s timeout
 
@@ -78,17 +76,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                         document.cookie = `user_role=${data.role}; path=/; max-age=86400`
                     }
                 } else {
-                    console.warn('[Auth] Sessão inválida ou expirada')
                     sessionStorage.removeItem('access_token')
                     document.cookie = 'access_token=; path=/; max-age=0'
                     document.cookie = 'user_role=; path=/; max-age=0'
                 }
-            } catch (err: any) {
-                if (err.name === 'AbortError') {
-                    console.error('[Auth] Timeout ao conectar com a API')
-                } else {
-                    console.error('[Auth] Erro ao carregar usuário:', err)
-                }
+            } catch {
+                // silently handle network/auth errors during session restore
             } finally {
                 setIsLoading(false)
             }

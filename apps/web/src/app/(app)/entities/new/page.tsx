@@ -2,13 +2,14 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, Save, Building2, User, Loader2 } from 'lucide-react'
+import { ArrowLeft, Save, Building2, User, Loader2, AlertCircle } from 'lucide-react'
 import { useApi } from '@/hooks/useApi'
 
 export default function NewEntityPage() {
     const router = useRouter()
     const { fetchWithAuth } = useApi()
     const [loading, setLoading] = useState(false)
+    const [formError, setFormError] = useState<string | null>(null)
     const [formData, setFormData] = useState({
         name: '',
         taxId: '',
@@ -36,6 +37,7 @@ export default function NewEntityPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setLoading(true)
+        setFormError(null)
         try {
             const taxIdClean = formData.taxId.replace(/\D/g, '')
             // Aceita 11 (CPF) ou 14 (CNPJ)
@@ -57,7 +59,7 @@ export default function NewEntityPage() {
             })
             router.push('/entities')
         } catch (err: any) {
-            alert(err.message || 'Erro ao criar entidade')
+            setFormError(err.message || 'Erro ao criar entidade')
         } finally {
             setLoading(false)
         }
@@ -76,6 +78,12 @@ export default function NewEntityPage() {
             </div>
 
             <form onSubmit={handleSubmit} className="card p-8 space-y-8">
+                {formError && (
+                    <div className="flex items-center gap-2 p-3 rounded-xl bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 text-sm">
+                        <AlertCircle className="w-4 h-4 shrink-0" />
+                        {formError}
+                    </div>
+                )}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div className="flex flex-col gap-2 md:col-span-2">
                         <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Nome Completo ou Razão Social</label>

@@ -1,24 +1,30 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import {
     ShieldCheck,
-    ChevronRight,
-    ChevronLeft,
-    Save,
-    CheckCircle2,
-    AlertCircle,
-    Clock
 } from 'lucide-react'
 import WizardShell from './components/WizardShell'
+import { useApi } from '@/hooks/useApi'
 
 export default function ChecklistRunPage() {
     const params = useParams()
     const searchParams = useSearchParams()
     const router = useRouter()
+    const { fetchWithAuth } = useApi()
     const id = params.id as string
     const entityId = searchParams.get('entityId')
+    const [entityName, setEntityName] = useState<string | null>(null)
+
+    useEffect(() => {
+        if (!entityId) return
+        fetchWithAuth(`/v1/entities/${entityId}`)
+            .then((res) => {
+                setEntityName(res?.data?.name ?? null)
+            })
+            .catch(() => {/* silently ignore */})
+    }, [entityId, fetchWithAuth])
 
     return (
         <div className="max-w-5xl mx-auto py-4 md:py-8 px-4 animate-fade-in">
@@ -30,21 +36,14 @@ export default function ChecklistRunPage() {
                         Execução de Compliance
                     </div>
                     <h1 className="text-3xl font-bold tracking-tight">Checklist de Due Diligence</h1>
-                    <p className="text-muted-foreground text-sm font-medium">
-                        Entidade: <span className="text-foreground font-semibold">Alpha Pagamentos S.A.</span>
-                    </p>
+                    {entityName && (
+                        <p className="text-muted-foreground text-sm font-medium">
+                            Entidade: <span className="text-foreground font-semibold">{entityName}</span>
+                        </p>
+                    )}
                 </div>
 
                 <div className="flex items-center gap-3">
-                    <div className="flex flex-col items-end mr-4 hidden md:flex">
-                        <span className="text-[10px] font-bold uppercase text-muted-foreground">Progresso Total</span>
-                        <div className="flex items-center gap-2 mt-1">
-                            <div className="w-32 h-2 bg-muted rounded-full overflow-hidden border border-border">
-                                <div className="h-full bg-primary transition-all duration-500" style={{ width: '45%' }} />
-                            </div>
-                            <span className="text-xs font-bold text-foreground">45%</span>
-                        </div>
-                    </div>
                     <button
                         onClick={() => router.back()}
                         className="btn btn-secondary btn-sm"

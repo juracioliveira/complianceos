@@ -59,7 +59,6 @@ export default function LoginPage() {
 
                 if (data.data?.accessToken) {
                     sessionStorage.setItem('access_token', data.data.accessToken)
-                    document.cookie = `access_token=${data.data.accessToken}; path=/; max-age=86400; samesite=Lax`
                     window.location.href = '/dashboard'
                 }
             } catch (err) {

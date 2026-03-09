@@ -34,7 +34,7 @@ export async function tenantMiddleware(
 
                 try {
                     // CRÍTICO: esta linha ativa o Row Level Security no nível da conexão
-                    await client.query(`SET LOCAL app.tenant_id = '${tenantId}'`)
+                    await client.query(`SELECT set_config('app.tenant_id', $1, true)`, [tenantId])
 
                         // Injetar o client no request para handlers que ainda usam db injetado
                         ; (request as any).db = client
