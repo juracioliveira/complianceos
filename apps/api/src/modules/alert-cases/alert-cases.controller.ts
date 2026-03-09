@@ -2,6 +2,7 @@ import type { FastifyPluginAsync, FastifyRequest, FastifyReply } from 'fastify'
 import { z } from 'zod'
 import { authMiddleware } from '../../middlewares/auth.middleware.js'
 import { tenantMiddleware } from '../../middlewares/tenant.middleware.js'
+import { authorize } from '../../middlewares/authorize.middleware.js'
 import type { JwtPayload } from '@compliance-os/types'
 import { ValidationError } from '@compliance-os/types'
 import { AlertCasesService } from './services/alert-cases.service.js'
@@ -88,7 +89,7 @@ export const alertCasesRoutes: FastifyPluginAsync = async (fastify) => {
 
     // POST /v1/alert-cases
     fastify.post('/', {
-        preHandler: [authMiddleware, tenantMiddleware],
+        preHandler: [authMiddleware, tenantMiddleware, authorize('create', ['ADMIN', 'COMPLIANCE_OFFICER', 'ANALYST'])],
         handler: async (request: FastifyRequest, reply: FastifyReply) => {
             const user = request.user as JwtPayload
             const body = createSchema.safeParse(request.body)
@@ -112,7 +113,7 @@ export const alertCasesRoutes: FastifyPluginAsync = async (fastify) => {
 
     // PATCH /v1/alert-cases/:id
     fastify.patch('/:id', {
-        preHandler: [authMiddleware, tenantMiddleware],
+        preHandler: [authMiddleware, tenantMiddleware, authorize('edit', ['ADMIN', 'COMPLIANCE_OFFICER', 'ANALYST'])],
         handler: async (request: FastifyRequest, reply: FastifyReply) => {
             const user = request.user as JwtPayload
             const { id } = request.params as { id: string }
@@ -152,7 +153,7 @@ export const alertCasesRoutes: FastifyPluginAsync = async (fastify) => {
 
     // POST /v1/alert-cases/export  — P1-C: Download do relatório PDF regulatório
     fastify.post('/export', {
-        preHandler: [authMiddleware, tenantMiddleware],
+        preHandler: [authMiddleware, tenantMiddleware, authorize('export', ['ADMIN', 'COMPLIANCE_OFFICER', 'AUDITOR'])],
         handler: async (request: FastifyRequest, reply: FastifyReply) => {
             const user = request.user as JwtPayload
             const body = exportSchema.safeParse(request.body)

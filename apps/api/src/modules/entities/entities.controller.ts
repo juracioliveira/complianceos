@@ -2,6 +2,7 @@ import type { FastifyPluginAsync, FastifyRequest, FastifyReply } from 'fastify'
 import { z } from 'zod'
 import { authMiddleware } from '../../middlewares/auth.middleware.js'
 import { tenantMiddleware } from '../../middlewares/tenant.middleware.js'
+import { authorize } from '../../middlewares/authorize.middleware.js'
 import type { JwtPayload } from '@compliance-os/types'
 import { ValidationError, ForbiddenError, paginationSchema } from '@compliance-os/types'
 import { EntitiesService } from './services/entities.service.js'
@@ -30,7 +31,7 @@ const entitiesService = new EntitiesService(entitiesRepository)
 export const entitiesRoutes: FastifyPluginAsync = async (fastify) => {
     // POST /v1/entities
     fastify.post('/', {
-        preHandler: [authMiddleware],
+        preHandler: [authMiddleware, authorize('create', ['ADMIN', 'COMPLIANCE_OFFICER', 'ANALYST'])],
         handler: async (request: FastifyRequest, reply: FastifyReply) => {
             const user = request.user as JwtPayload
             const body = createEntitySchema.safeParse(request.body)
@@ -51,13 +52,14 @@ export const entitiesRoutes: FastifyPluginAsync = async (fastify) => {
             if (!query.success) throw new ValidationError('Parâmetros inválidos', query.error)
 
             const data = await entitiesService.listEntities(user.tenantId)
+            const isReadOnly = user.role === 'READONLY'
 
             return reply.send({
                 data: data.map(r => ({
                     id: r.id,
                     name: r.name,
-                    cnpj: r.cnpj,
-                    cpf: r.cpf,
+                    cnpj: isReadOnly ? '••••••••••••••' : r.cnpj,
+                    cpf: isReadOnly ? '•••••••••••' : r.cpf,
                     entityType: r.entityType,
                     riskLevel: r.riskLevel,
                     kycStatus: r.kycStatus,
@@ -77,20 +79,23 @@ export const entitiesRoutes: FastifyPluginAsync = async (fastify) => {
     fastify.get('/:id', {
         preHandler: [authMiddleware, tenantMiddleware],
         handler: async (request: FastifyRequest, reply: FastifyReply) => {
+            const user = request.user as JwtPayload
             const { id } = request.params as { id: string }
             const entity = await entitiesService.getEntityDetails(id, request.tenantId)
+
+            if (user.role === 'READONLY' && entity) {
+                if (entity.cnpj) entity.cnpj = '••••••••••••••'
+                if (entity.cpf) entity.cpf = '•••••••••••'
+            }
+
             return reply.send({ data: entity })
         },
     })
 
     // POST /v1/entities/:id/sync
     fastify.post('/:id/sync', {
-        preHandler: [authMiddleware, tenantMiddleware],
+        preHandler: [authMiddleware, tenantMiddleware, authorize(undefined, ['ADMIN', 'COMPLIANCE_OFFICER'])],
         handler: async (request: FastifyRequest, reply: FastifyReply) => {
-            const user = request.user as JwtPayload
-            if (!['COMPLIANCE_OFFICER', 'ADMIN'].includes(user.role)) {
-                throw new ForbiddenError('Apenas COMPLIANCE_OFFICER ou ADMIN podem sincronizar dados')
-            }
             const { id } = request.params as { id: string }
             const result = await entitiesService.syncKybData(id, request.tenantId)
             return reply.send(result)
@@ -99,7 +104,7 @@ export const entitiesRoutes: FastifyPluginAsync = async (fastify) => {
 
     // POST /v1/entities/:id/due-diligence
     fastify.post('/:id/due-diligence', {
-        preHandler: [authMiddleware, tenantMiddleware],
+        preHandler: [authMiddleware, tenantMiddleware, authorize('create', ['ADMIN', 'COMPLIANCE_OFFICER', 'ANALYST'])],
         handler: async (request: FastifyRequest, reply: FastifyReply) => {
             const user = request.user as JwtPayload
             const { id } = request.params as { id: string }

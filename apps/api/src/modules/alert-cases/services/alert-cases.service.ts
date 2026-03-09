@@ -91,8 +91,14 @@ export class AlertCasesService {
         }
 
         const isClosing = TERMINAL_STATUSES.has(newStatus)
-        if (isClosing && !resolutionNote?.trim()) {
-            throw new ForbiddenError('Nota de resolução obrigatória ao fechar um caso.')
+        if (isClosing) {
+            if (!resolutionNote?.trim()) {
+                throw new ForbiddenError('Nota de resolução obrigatória ao fechar um caso.')
+            }
+            // Segregação de Funções (SoD): Quem criou não pode aprovar/fechar o mesmo caso
+            if (existing.createdBy === userId) {
+                throw new ForbiddenError('Segregação de Funções: O usuário que criou o alerta não pode fechá-lo (GOV-01).')
+            }
         }
 
         const updated = await this.repo.update(id, tenantId, {
