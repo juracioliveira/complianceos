@@ -40,12 +40,12 @@ export default function EntityDetailPage() {
     const isReadOnly = role === 'READONLY'
 
     // Definir abas permitidas baseadas em RBAC
-    const availableTabs: { id: TabType; label: string; icon: any }[] = [
+    const availableTabs = ([
         { id: 'overview', label: 'Visão Geral', icon: LayoutDashboard },
         { id: 'checklists', label: 'Avaliações', icon: CheckCircle2 },
         { id: 'documents', label: 'Documentos', icon: FileText },
         { id: 'audit', label: 'Auditoria', icon: ShieldCheck },
-    ].filter(tab => {
+    ] as { id: TabType; label: string; icon: any }[]).filter(tab => {
         if (tab.id === 'checklists') return can('view', 'checklist_runs')
         if (tab.id === 'documents') return can('view', 'documents')
         if (tab.id === 'audit') return can('view', 'audit_trail')
