@@ -50,4 +50,15 @@ export const notificationsRoutes: FastifyPluginAsync = async (fastify) => {
             return reply.status(204).send()
         },
     })
+
+    // PATCH /v1/notifications/:id/dismiss
+    fastify.patch('/:id/dismiss', {
+        preHandler: [authMiddleware, tenantMiddleware],
+        handler: async (request: FastifyRequest, reply: FastifyReply) => {
+            const user = request.user as JwtPayload
+            const { id } = request.params as { id: string }
+            await notificationsService.dismissNotification(id, user.sub, request.tenantId)
+            return reply.status(204).send()
+        },
+    })
 }

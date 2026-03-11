@@ -51,15 +51,17 @@ export function getDb() {
 
 
 export async function checkDatabaseConnection(): Promise<boolean> {
-    const client = await pool.connect()
     try {
-        await client.query('SELECT 1')
-        return true
+        const client = await pool.connect()
+        try {
+            await client.query('SELECT 1')
+            return true
+        } finally {
+            client.release()
+        }
     } catch (err) {
         logger.error({ err }, 'Erro na conexão com o Banco de Dados')
         return false
-    } finally {
-        client.release()
     }
 }
 

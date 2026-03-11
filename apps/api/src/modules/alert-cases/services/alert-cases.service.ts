@@ -3,6 +3,18 @@ import { AuditService } from '../../audit/services/audit.service.js'
 import { NotificationsService } from '../../notifications/services/notifications.service.js'
 import { NotFoundError, ForbiddenError } from '@compliance-os/types'
 
+interface AlertCaseRow {
+    id: string
+    status: string
+    severity: string
+    title: string
+    source: string
+    entity_id?: string | null
+    createdBy?: string | null
+    created_by?: string | null
+    [key: string]: unknown
+}
+
 const TERMINAL_STATUSES = new Set(['CLOSED_FALSE_POSITIVE', 'CLOSED_CONFIRMED'])
 const VALID_TRANSITIONS: Record<string, string[]> = {
     'OPEN': ['UNDER_REVIEW', 'ESCALATED', 'CLOSED_FALSE_POSITIVE', 'CLOSED_CONFIRMED'],
@@ -46,7 +58,7 @@ export class AlertCasesService {
             description: data.description,
             evidence: data.evidence ?? {},
             createdBy: userId,
-        })
+        }) as AlertCaseRow
 
         await this.auditService.logEvent({
             tenantId,
@@ -80,10 +92,10 @@ export class AlertCasesService {
         newStatus: string,
         resolutionNote?: string,
     ) {
-        const existing = await this.repo.findById(id, tenantId)
+        const existing = await this.repo.findById(id, tenantId) as AlertCaseRow | null
         if (!existing) throw new NotFoundError(`Caso de alerta não encontrado: ${id}`)
 
-        const allowed = VALID_TRANSITIONS[existing.status] ?? []
+        const allowed = (VALID_TRANSITIONS[existing.status] ?? []) as string[]
         if (!allowed.includes(newStatus)) {
             throw new ForbiddenError(
                 `Transição inválida: ${existing.status} → ${newStatus}. Permitido: ${allowed.join(', ') || 'nenhum'}`
@@ -96,7 +108,8 @@ export class AlertCasesService {
                 throw new ForbiddenError('Nota de resolução obrigatória ao fechar um caso.')
             }
             // Segregação de Funções (SoD): Quem criou não pode aprovar/fechar o mesmo caso
-            if (existing.createdBy === userId) {
+            const createdBy = (existing.created_by ?? existing.createdBy) as string | undefined
+            if (createdBy === userId) {
                 throw new ForbiddenError('Segregação de Funções: O usuário que criou o alerta não pode fechá-lo (GOV-01).')
             }
         }
@@ -123,13 +136,14 @@ export class AlertCasesService {
 
         // P1-B: Notificação ao escalar
         if (newStatus === 'ESCALATED') {
+            const existingRow = existing as AlertCaseRow
             await this.notificationsService.notifyAlertCase({
                 tenantId,
                 alertCaseId: id,
-                title: existing.title,
-                severity: existing.severity as 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW',
-                source: existing.source,
-                entityId: existing.entity_id ?? undefined,
+                title: existingRow.title,
+                severity: existingRow.severity as 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW',
+                source: existingRow.source,
+                entityId: (existingRow.entity_id ?? undefined) as string | undefined,
                 event: 'ESCALATED',
             })
         }
@@ -138,7 +152,7 @@ export class AlertCasesService {
     }
 
     async assignCase(id: string, tenantId: string, userId: string, assigneeId: string | null) {
-        const existing = await this.repo.findById(id, tenantId)
+        const existing = await this.repo.findById(id, tenantId) as AlertCaseRow | null
         if (!existing) throw new NotFoundError(`Caso de alerta não encontrado: ${id}`)
 
         const updated = await this.repo.update(id, tenantId, { assignedTo: assigneeId })

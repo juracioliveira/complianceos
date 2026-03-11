@@ -71,5 +71,19 @@ export class NotificationsRepository {
         )
         return result.rows[0]
     }
+
+    async dismiss(id: string, userId: string, tenantId: string) {
+        await getDb()
+            .update(notifications)
+            .set({ dismissedAt: new Date() })
+            .where(
+                and(
+                    eq(notifications.id, id),
+                    eq(notifications.tenantId, tenantId),
+                    sql`(${notifications.userId} = ${userId} OR ${notifications.userId} IS NULL)`,
+                    isNull(notifications.dismissedAt)
+                )
+            )
+    }
 }
 

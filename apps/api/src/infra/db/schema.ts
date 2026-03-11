@@ -1,4 +1,4 @@
-import { pgTable, uuid, varchar, timestamp, integer, boolean, jsonb, text, pgEnum } from 'drizzle-orm/pg-core'
+import { pgTable, uuid, varchar, timestamp, integer, boolean, jsonb, text, pgEnum, smallint } from 'drizzle-orm/pg-core'
 
 export const entityTypeEnum = pgEnum('entity_type', ['CLIENTE', 'FORNECEDOR', 'PARCEIRO', 'COLABORADOR'])
 export const riskLevelEnum = pgEnum('risk_level', ['LOW', 'MEDIUM', 'HIGH', 'CRITICAL', 'UNKNOWN'])
@@ -10,6 +10,9 @@ export const tenants = pgTable('tenants', {
     id: uuid('id').primaryKey().defaultRandom(),
     name: varchar('name', { length: 255 }).notNull(),
     slug: varchar('slug', { length: 100 }).notNull().unique(),
+    plan: varchar('plan', { length: 30 }).notNull().default('FREE'),
+    settings: jsonb('settings').notNull().default({}),
+    status: varchar('status', { length: 20 }).notNull().default('ACTIVE'),
     createdAt: timestamp('created_at').defaultNow(),
     updatedAt: timestamp('updated_at').defaultNow()
 })
@@ -84,11 +87,19 @@ export const users = pgTable('users', {
 
 export const checklists = pgTable('checklists', {
     id: uuid('id').primaryKey().defaultRandom(),
-    tenantId: uuid('tenant_id').references(() => tenants.id), // No null for system templates
-    title: varchar('title', { length: 255 }).notNull(),
-    module: varchar('module', { length: 50 }).notNull(),
-    items: jsonb('items').notNull(),
-    createdAt: timestamp('created_at').defaultNow()
+    tenantId: uuid('tenant_id').references(() => tenants.id), // null = system template
+    module: varchar('module', { length: 20 }).notNull(), // PLD_FT, LGPD, ANTICORRUPCAO
+    regulationCode: varchar('regulation_code', { length: 50 }).notNull().default(''),
+    title: varchar('title', { length: 200 }).notNull(),
+    description: text('description'),
+    version: varchar('version', { length: 10 }).notNull().default('1.0'),
+    status: varchar('status', { length: 20 }).notNull().default('ACTIVE'), // DRAFT, ACTIVE, DEPRECATED
+    items: jsonb('items').notNull().default([]),
+    periodicityDays: smallint('periodicity_days'),
+    appliesTo: jsonb('applies_to').notNull().default([]),
+    createdBy: uuid('created_by').references(() => users.id),
+    createdAt: timestamp('created_at').defaultNow(),
+    updatedAt: timestamp('updated_at').defaultNow()
 })
 
 export const checklistRuns = pgTable('checklist_runs', {
@@ -96,10 +107,16 @@ export const checklistRuns = pgTable('checklist_runs', {
     tenantId: uuid('tenant_id').notNull().references(() => tenants.id),
     checklistId: uuid('checklist_id').notNull().references(() => checklists.id),
     entityId: uuid('entity_id').notNull().references(() => entities.id),
-    status: varchar('status', { length: 50 }).notNull(), // IN_PROGRESS, COMPLETED
-    answers: jsonb('answers'),
-    score: integer('score'),
+    executedBy: uuid('executed_by').notNull().references(() => users.id),
+    answers: jsonb('answers').notNull().default([]),
+    score: smallint('score'),
+    riskLevel: varchar('risk_level', { length: 20 }), // LOW, MEDIUM, HIGH, CRITICAL
+    status: varchar('status', { length: 20 }).notNull().default('IN_PROGRESS'), // IN_PROGRESS, COMPLETED, CANCELLED
+    startedAt: timestamp('started_at').defaultNow(),
     completedAt: timestamp('completed_at'),
+    summaryNotes: text('summary_notes'),
+    evidenceKeys: jsonb('evidence_keys').notNull().default([]),
+    durationSecs: integer('duration_secs'),
     createdAt: timestamp('created_at').defaultNow(),
     updatedAt: timestamp('updated_at').defaultNow()
 })

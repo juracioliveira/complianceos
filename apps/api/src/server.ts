@@ -1,4 +1,5 @@
 import Fastify from 'fastify'
+// RESTART TRIGGER — PRODUCTION DB CONFIG
 import fastifyJwt from '@fastify/jwt'
 import fastifyCors from '@fastify/cors'
 import fastifyHelmet from '@fastify/helmet'

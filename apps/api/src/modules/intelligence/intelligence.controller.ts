@@ -10,7 +10,6 @@ import { DocumentsRepository } from '../documents/repositories/documents.reposit
 import type { JwtPayload } from '@compliance-os/types'
 
 export const intelligenceRoutes: FastifyPluginAsync = async (fastify) => {
-    // Injeção manual (pode ser melhorada com DI no futuro)
     const auditRepository = new AuditRepository()
     const documentsRepository = new DocumentsRepository()
     const documentsService = new DocumentsService(documentsRepository)
@@ -18,7 +17,7 @@ export const intelligenceRoutes: FastifyPluginAsync = async (fastify) => {
     const intelligenceRepository = new IntelligenceRepository()
     const intelligenceService = new IntelligenceService(intelligenceRepository, auditService)
 
-    // GET /v1/intelligence/ubo/:entityId
+    // GET /v1/intelligence/ubo/:entityId — buscar dados UBO
     fastify.get('/ubo/:entityId', {
         preHandler: [authMiddleware, tenantMiddleware],
         handler: async (request: FastifyRequest, reply: FastifyReply) => {
@@ -37,6 +36,28 @@ export const intelligenceRoutes: FastifyPluginAsync = async (fastify) => {
                 user.sub
             )
 
+            return reply.send({ data })
+        }
+    })
+
+    // GET /v1/intelligence/sanctions/:entityId — screening de sanções
+    fastify.get('/sanctions/:entityId', {
+        preHandler: [authMiddleware, tenantMiddleware],
+        handler: async (request: FastifyRequest, reply: FastifyReply) => {
+            const user = request.user as JwtPayload
+            const { entityId } = request.params as { entityId: string }
+
+            const data = await intelligenceService.getSanctionsData(entityId, request.tenantId, user.sub)
+            return reply.send({ data })
+        }
+    })
+
+    // GET /v1/intelligence/report/:entityId — relatório consolidado de inteligência
+    fastify.get('/report/:entityId', {
+        preHandler: [authMiddleware, tenantMiddleware],
+        handler: async (request: FastifyRequest, reply: FastifyReply) => {
+            const { entityId } = request.params as { entityId: string }
+            const data = await intelligenceService.getIntelligenceReport(entityId, request.tenantId)
             return reply.send({ data })
         }
     })

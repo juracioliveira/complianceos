@@ -24,7 +24,7 @@ export async function tenantMiddleware(
     // Isso garante que QUALQUER código chamado nesta request tenha acesso ao tenant_id
     // sem precisar passá-lo manualmente por todos os métodos.
     return new Promise((resolve, reject) => {
-        dbContext.run({ tenantId, db: undefined }, async () => {
+        dbContext.run({ tenantId }, async () => {
             try {
                 // 2. Adquirir conexão do pool para configurar o RLS no PostgreSQL
                 const client = await pool.connect()

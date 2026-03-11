@@ -3,14 +3,48 @@ import { entities } from '../../../infra/db/schema.js'
 import { eq, and } from 'drizzle-orm'
 
 export class IntelligenceRepository {
+    /**
+     * Persiste dados corporativos externos (UBO, holding tree) na coluna corporateData da entidade.
+     */
     async updateCorporateData(id: string, tenantId: string, data: any) {
-        // No esquema atual, corporateData está dentro de metadata ou jsonb?
-        // Vamos checar o schema.ts novamente. entities tem riskScore, riskLevel, etc.
-        // O schema original tinha corporateData no types/domain.ts mas não no schema.ts físico (entities table).
-        // Vamos assumir que vamos salvar em uma coluna nova ou jsonb metadata se existir.
-        // Olhando o schema.ts atualizado: entities não tem jsonb.
+        const [updated] = await getDb()
+            .update(entities)
+            .set({
+                corporateData: data,
+                updatedAt: new Date(),
+            })
+            .where(
+                and(
+                    eq(entities.id, id),
+                    eq(entities.tenantId, tenantId)
+                )
+            )
+            .returning({ id: entities.id, corporateData: entities.corporateData })
+        return updated
+    }
 
-        // Vamos atualizar o schema.ts depois se necessário, por enquanto simulamos o repositório.
-        return true
+    /**
+     * Busca dados corporativos já persistidos para uma entidade.
+     */
+    async getCorporateData(id: string, tenantId: string) {
+        const [entity] = await getDb()
+            .select({
+                id: entities.id,
+                name: entities.name,
+                cnpj: entities.cnpj,
+                corporateData: entities.corporateData,
+                riskLevel: entities.riskLevel,
+                isPep: entities.isPep,
+                pepDetails: entities.pepDetails,
+                lastAssessedAt: entities.lastAssessedAt,
+            })
+            .from(entities)
+            .where(
+                and(
+                    eq(entities.id, id),
+                    eq(entities.tenantId, tenantId)
+                )
+            )
+        return entity
     }
 }

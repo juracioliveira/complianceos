@@ -21,7 +21,7 @@ export const riskScoringWorker = new Worker(
         try {
             const { score, level } = ScoringEngine.calculate(factors)
 
-            await entitiesRepository.updateRiskScore(entityId, tenantId, score, level)
+            await entitiesRepository.updateRiskScore(entityId, tenantId, score, level, 'system:risk-scoring-worker')
 
             log.info({ score, level }, 'Score de risco atualizado com sucesso')
 

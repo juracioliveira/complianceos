@@ -20,6 +20,10 @@ export class NotificationsService {
         return this.notificationsRepository.markAllAsRead(userId, tenantId)
     }
 
+    async dismissNotification(id: string, userId: string, tenantId: string) {
+        return this.notificationsRepository.dismiss(id, userId, tenantId)
+    }
+
     // Notificação genérica de evento (webhooks externos)
     async notifyEvent(tenantId: string, event: string, payload: any) {
         await this.webhooksService.notify(tenantId, event, payload)

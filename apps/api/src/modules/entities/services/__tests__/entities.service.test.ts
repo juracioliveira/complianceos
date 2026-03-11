@@ -102,8 +102,8 @@ describe('EntitiesService', () => {
 
             const result = await service.startAutomatedDueDiligence('e1', 't1', 'u1')
 
-            expect(result.success).toBe(true)
-            expect(result.queued).toBe(true)
+            expect(result!.success).toBe(true)
+            expect(result!.queued).toBe(true)
         })
     })
 })
