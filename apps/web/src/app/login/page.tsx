@@ -58,7 +58,21 @@ export default function LoginPage() {
                 }
 
                 if (data.data?.accessToken) {
+                    // Decodificar o payload do JWT para pegar o role
+                    const [, payloadB64] = data.data.accessToken.split('.')
+                    let role = 'ANALYST'
+                    try {
+                        const payload = JSON.parse(atob(payloadB64!.replace(/-/g, '+').replace(/_/g, '/')))
+                        role = payload.role ?? 'ANALYST'
+                    } catch { /* ignora erro de decode */ }
+
+                    // Salvar em cookie (lido pelo middleware) E sessionStorage (lido pelo frontend)
+                    const maxAge = 60 * 60 * 24 // 24 horas
+                    const secure = window.location.protocol === 'https:' ? '; Secure' : ''
+                    document.cookie = `access_token=${data.data.accessToken}; path=/; max-age=${maxAge}; SameSite=Lax${secure}`
+                    document.cookie = `user_role=${role}; path=/; max-age=${maxAge}; SameSite=Lax${secure}`
                     sessionStorage.setItem('access_token', data.data.accessToken)
+
                     window.location.href = '/dashboard'
                 }
             } catch (err) {

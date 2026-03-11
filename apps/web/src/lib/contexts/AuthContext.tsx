@@ -36,7 +36,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         let isMounted = true
 
         async function loadUser() {
-            const token = sessionStorage.getItem('access_token')
+            // Ler token do sessionStorage OU do cookie (fallback pós-redirect)
+            let token = sessionStorage.getItem('access_token')
+            if (!token) {
+                const match = document.cookie.match(/(?:^|;\s*)access_token=([^;]+)/)
+                if (match?.[1]) {
+                    token = match[1]!
+                    // Sincronizar de volta ao sessionStorage
+                    sessionStorage.setItem('access_token', token)
+                }
+            }
             if (!token) {
                 setIsLoading(false)
                 return
